@@ -17,28 +17,28 @@ export default function PerfilPage() {
   };
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div className="p-4 md:p-8 max-w-3xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#111]">Perfil</h1>
-        <p className="text-sm text-muted mt-0.5">Tus datos y metas de entrenamiento</p>
+      <div className="mb-5 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-bold text-[#111]">Perfil</h1>
+        <p className="text-xs md:text-sm text-muted mt-0.5">Tus datos y metas de entrenamiento</p>
       </div>
 
       {/* Avatar + name banner */}
-      <div className="flex items-center gap-5 mb-8 p-6 bg-surface border border-border rounded-xl">
-        <div className="w-16 h-16 rounded-2xl bg-accent-light border-2 border-accent flex items-center justify-center text-3xl flex-shrink-0">
+      <div className="flex items-center gap-4 mb-6 p-4 md:p-6 bg-surface border border-border rounded-xl">
+        <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-accent-light border-2 border-accent flex items-center justify-center text-2xl md:text-3xl flex-shrink-0">
           🏋️
         </div>
         <div>
-          <div className="text-lg font-bold text-[#111]">{name}</div>
-          <div className="text-sm text-muted">{goal}</div>
+          <div className="text-base md:text-lg font-bold text-[#111]">{name}</div>
+          <div className="text-xs md:text-sm text-muted">{goal}</div>
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-8">
+      <form onSubmit={handleSave} className="space-y-6 md:space-y-8">
         {/* Personal info */}
         <section>
-          <h2 className="text-sm font-semibold text-muted uppercase tracking-wide mb-4">
+          <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
             Información personal
           </h2>
           <div className="space-y-4">
@@ -48,7 +48,7 @@ export default function PerfilPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               />
             </div>
             <div>
@@ -56,7 +56,7 @@ export default function PerfilPage() {
               <select
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
               >
                 <option>Perder grasa y ganar músculo</option>
                 <option>Ganar músculo</option>
@@ -81,7 +81,7 @@ export default function PerfilPage() {
                         : "bg-surface border-border text-muted hover:border-[#ccc]"
                     }`}
                   >
-                    {n} días
+                    {n}d
                   </button>
                 ))}
               </div>
@@ -92,15 +92,13 @@ export default function PerfilPage() {
         {/* InBody data */}
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wide">
-              Datos InBody
-            </h2>
+            <h2 className="text-xs font-semibold text-muted uppercase tracking-wide">Datos InBody</h2>
             <span className="text-[10px] bg-accent-light text-accent-dark border border-accent px-2 py-0.5 rounded-full font-medium">
-              Última medición: 10 Abr
+              Última: 10 Abr
             </span>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="bg-surface border border-border rounded-xl p-5">
+          <div className="grid grid-cols-2 gap-3 md:gap-4 mb-4">
+            <div className="bg-surface border border-border rounded-xl p-4 md:p-5">
               <div className="text-xs text-muted mb-1">Masa muscular</div>
               <div className="flex items-end gap-1">
                 <input
@@ -108,12 +106,12 @@ export default function PerfilPage() {
                   value={muscleMass}
                   onChange={(e) => setMuscleMass(e.target.value)}
                   step="0.1"
-                  className="text-2xl font-bold text-[#111] w-20 bg-transparent outline-none border-b-2 border-transparent focus:border-accent"
+                  className="text-xl md:text-2xl font-bold text-[#111] w-16 bg-transparent outline-none border-b-2 border-transparent focus:border-accent"
                 />
-                <span className="text-sm text-muted mb-1">kg</span>
+                <span className="text-sm text-muted mb-0.5">kg</span>
               </div>
             </div>
-            <div className="bg-surface border border-border rounded-xl p-5">
+            <div className="bg-surface border border-border rounded-xl p-4 md:p-5">
               <div className="text-xs text-muted mb-1">Grasa corporal</div>
               <div className="flex items-end gap-1">
                 <input
@@ -121,15 +119,15 @@ export default function PerfilPage() {
                   value={bodyFat}
                   onChange={(e) => setBodyFat(e.target.value)}
                   step="0.1"
-                  className="text-2xl font-bold text-[#111] w-20 bg-transparent outline-none border-b-2 border-transparent focus:border-accent"
+                  className="text-xl md:text-2xl font-bold text-[#111] w-16 bg-transparent outline-none border-b-2 border-transparent focus:border-accent"
                 />
-                <span className="text-sm text-muted mb-1">%</span>
+                <span className="text-sm text-muted mb-0.5">%</span>
               </div>
             </div>
           </div>
 
           {/* Body composition bar */}
-          <div className="bg-surface border border-border rounded-xl p-5">
+          <div className="bg-surface border border-border rounded-xl p-4 md:p-5">
             <div className="flex justify-between text-xs text-muted mb-2">
               <span>Composición corporal</span>
               <span>Músculo {muscleMass}kg · Grasa {bodyFat}%</span>
@@ -146,29 +144,37 @@ export default function PerfilPage() {
             </div>
             <div className="flex gap-4 mt-2">
               <div className="flex items-center gap-1.5 text-xs text-muted">
-                <div className="w-2.5 h-2.5 rounded-sm bg-accent" />
-                Músculo
+                <div className="w-2.5 h-2.5 rounded-sm bg-accent" /> Músculo
               </div>
               <div className="flex items-center gap-1.5 text-xs text-muted">
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#f07840]" />
-                Grasa
+                <div className="w-2.5 h-2.5 rounded-sm bg-[#f07840]" /> Grasa
               </div>
             </div>
           </div>
         </section>
 
-        {/* Save */}
+        {/* Save — desktop inline, mobile pinned */}
         <button
           type="submit"
-          className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${
-            saved
-              ? "bg-[#4caf50] text-white"
-              : "bg-accent hover:bg-accent-dark text-white shadow-sm"
+          className={`hidden md:block w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${
+            saved ? "bg-[#4caf50] text-white" : "bg-accent hover:bg-accent-dark text-white shadow-sm"
           }`}
         >
           {saved ? "✓ Perfil guardado" : "Guardar cambios"}
         </button>
       </form>
+
+      {/* Mobile sticky CTA */}
+      <div className="md:hidden fixed bottom-[72px] left-4 right-4">
+        <button
+          onClick={handleSave}
+          className={`w-full py-3.5 rounded-xl text-sm font-semibold shadow-lg transition-all ${
+            saved ? "bg-[#4caf50] text-white" : "bg-accent text-white"
+          }`}
+        >
+          {saved ? "✓ Guardado" : "Guardar cambios"}
+        </button>
+      </div>
     </div>
   );
 }

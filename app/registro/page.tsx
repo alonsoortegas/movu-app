@@ -32,33 +32,34 @@ export default function RegistroPage() {
   };
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="p-4 md:p-8 max-w-2xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#111]">Registrar entrenamiento</h1>
-        <p className="text-sm text-muted mt-0.5">Lunes 21 de Abril</p>
+      <div className="mb-5 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-bold text-[#111]">Registrar entrenamiento</h1>
+        <p className="text-xs md:text-sm text-muted mt-0.5">Lunes 21 de Abril</p>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-6">
+      <form onSubmit={handleSave} className="space-y-5 md:space-y-6">
         {/* Tipo de clase */}
         <div>
           <label className="block text-sm font-medium text-[#444] mb-3">
             Tipo de clase
           </label>
-          <div className="grid grid-cols-3 gap-2.5">
+          {/* Mobile: 3-col grid (2 rows of 3) | Desktop: same */}
+          <div className="grid grid-cols-3 gap-2 md:gap-2.5">
             {CLASS_TYPES.map(({ value, label, emoji }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setType(value)}
-                className={`flex flex-col items-center gap-1.5 py-4 rounded-xl border-2 transition-all ${
+                className={`flex flex-col items-center gap-1 md:gap-1.5 py-3 md:py-4 rounded-xl border-2 transition-all ${
                   type === value
                     ? "bg-accent-light border-accent shadow-sm"
                     : "bg-surface border-border hover:border-[#ccc]"
                 }`}
               >
-                <span className="text-2xl">{emoji}</span>
-                <span className={`text-xs font-medium ${type === value ? "text-[#444]" : "text-muted"}`}>
+                <span className="text-xl md:text-2xl">{emoji}</span>
+                <span className={`text-[11px] md:text-xs font-medium ${type === value ? "text-[#444]" : "text-muted"}`}>
                   {label}
                 </span>
               </button>
@@ -76,7 +77,7 @@ export default function RegistroPage() {
             value={className}
             onChange={(e) => setClassName(e.target.value)}
             placeholder="ej. Spinning, Barre, HIIT..."
-            className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+            className="w-full bg-surface border border-border rounded-lg md:rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
           />
         </div>
 
@@ -90,12 +91,12 @@ export default function RegistroPage() {
             value={studio}
             onChange={(e) => setStudio(e.target.value)}
             placeholder="ej. Cyclo Studio, Gym Club, CDMX..."
-            className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
           />
         </div>
 
         {/* Duración + Calorías */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-4">
           <div>
             <label className="block text-sm font-medium text-[#444] mb-2">
               Duración (min)
@@ -107,7 +108,7 @@ export default function RegistroPage() {
               placeholder="ej. 60"
               min={0}
               max={300}
-              className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
             />
           </div>
           <div>
@@ -120,7 +121,7 @@ export default function RegistroPage() {
               onChange={(e) => setCalories(e.target.value)}
               placeholder="ej. 420"
               min={0}
-              className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
             />
           </div>
         </div>
@@ -131,21 +132,19 @@ export default function RegistroPage() {
             showDistance ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div>
-            <label className="block text-sm font-medium text-[#444] mb-2">
-              Distancia en km{" "}
-              <span className="text-muted font-normal text-xs">(opcional)</span>
-            </label>
-            <input
-              type="number"
-              value={distance}
-              onChange={(e) => setDistance(e.target.value)}
-              placeholder="ej. 5.4"
-              step="0.1"
-              min={0}
-              className="w-full bg-accent-light border-2 border-dashed border-accent rounded-lg px-4 py-3 text-sm text-[#111] placeholder-[#999] outline-none focus:ring-2 focus:ring-accent/20 transition-all"
-            />
-          </div>
+          <label className="block text-sm font-medium text-[#444] mb-2">
+            Distancia en km{" "}
+            <span className="text-muted font-normal text-xs">(opcional)</span>
+          </label>
+          <input
+            type="number"
+            value={distance}
+            onChange={(e) => setDistance(e.target.value)}
+            placeholder="ej. 5.4"
+            step="0.1"
+            min={0}
+            className="w-full bg-accent-light border-2 border-dashed border-accent rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-[#999] outline-none focus:ring-2 focus:ring-accent/20 transition-all"
+          />
         </div>
 
         {/* Esfuerzo percibido */}
@@ -159,7 +158,7 @@ export default function RegistroPage() {
                 key={n}
                 type="button"
                 onClick={() => setEffort(n)}
-                className={`flex-1 h-8 rounded-md border-2 transition-all ${
+                className={`flex-1 h-6 md:h-8 rounded-md border-2 transition-all ${
                   n <= effort
                     ? "bg-accent-light border-accent"
                     : "bg-surface border-border hover:border-[#ccc]"
@@ -174,8 +173,8 @@ export default function RegistroPage() {
           </div>
         </div>
 
-        {/* Submit */}
-        <div className="pt-2">
+        {/* Submit — stays in flow on desktop, pinned on mobile */}
+        <div className="hidden md:block pt-2">
           <button
             type="submit"
             className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${
@@ -188,6 +187,20 @@ export default function RegistroPage() {
           </button>
         </div>
       </form>
+
+      {/* Mobile sticky CTA */}
+      <div className="md:hidden fixed bottom-[72px] left-4 right-4">
+        <button
+          onClick={handleSave}
+          className={`w-full py-3.5 rounded-xl text-sm font-semibold shadow-lg transition-all ${
+            saved
+              ? "bg-[#4caf50] text-white"
+              : "bg-accent text-white"
+          }`}
+        >
+          {saved ? "✓ Entrenamiento guardado" : "Guardar entrenamiento"}
+        </button>
+      </div>
     </div>
   );
 }

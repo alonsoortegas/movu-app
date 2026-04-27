@@ -10,11 +10,11 @@ const NAV_ITEMS = [
   { href: "/perfil", label: "Perfil", icon: "◉" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ className = "" }: { className?: string }) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[200px] flex-shrink-0 h-screen sticky top-0 bg-sidebar border-r border-[#e8e8e8] flex flex-col">
+    <aside className={`hidden md:flex w-[200px] flex-shrink-0 h-screen sticky top-0 bg-sidebar border-r border-[#e8e8e8] flex-col ${className}`}>
       {/* Logo */}
       <div className="px-5 py-5 border-b border-[#e8e8e8]">
         <span className="text-[22px] font-bold tracking-tight text-accent">
