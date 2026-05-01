@@ -1,0 +1,105 @@
+"use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+
+const CLASS_TYPE_KEYS = ["pesas", "cardio", "correr", "combinado", "bootcamp", "taller"] as const;
+const CLASS_EMOJIS: Record<string, string> = { pesas: "💪", cardio: "🚴", correr: "🏃", combinado: "🔄", bootcamp: "🥊", taller: "📚" };
+
+export default function RegistroPage() {
+  const t = useTranslations("registro");
+  const [type, setType] = useState("pesas");
+  const [className, setClassName] = useState("");
+  const [studio, setStudio] = useState("");
+  const [duration, setDuration] = useState("");
+  const [calories, setCalories] = useState("");
+  const [distance, setDistance] = useState("");
+  const [effort, setEffort] = useState(3);
+  const [saved, setSaved] = useState(false);
+
+  const showDistance = type === "correr" || type === "cardio";
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
+  };
+
+  return (
+    <div className="p-4 md:p-8 max-w-2xl mx-auto">
+      <div className="mb-5 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-bold text-[#111]">{t("title")}</h1>
+        <p className="text-xs md:text-sm text-muted mt-0.5">{t("dateLabel")}</p>
+      </div>
+      <form onSubmit={handleSave} className="space-y-5 md:space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-[#444] mb-3">{t("classType")}</label>
+          <div className="grid grid-cols-3 gap-2 md:gap-2.5">
+            {CLASS_TYPE_KEYS.map((key) => (
+              <button key={key} type="button" onClick={() => setType(key)}
+                className={`flex flex-col items-center gap-1 md:gap-1.5 py-3 md:py-4 rounded-xl border-2 transition-all ${type === key ? "bg-accent-light border-accent shadow-sm" : "bg-surface border-border hover:border-[#ccc]"}`}>
+                <span className="text-xl md:text-2xl">{CLASS_EMOJIS[key]}</span>
+                <span className={`text-[11px] md:text-xs font-medium ${type === key ? "text-[#444]" : "text-muted"}`}>{t(`classTypes.${key}`)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-[#444] mb-2">{t("className")}</label>
+          <input type="text" value={className} onChange={(e) => setClassName(e.target.value)} placeholder={t("classPlaceholder")}
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-[#444] mb-2">{t("studio")}</label>
+          <input type="text" value={studio} onChange={(e) => setStudio(e.target.value)} placeholder={t("studioPlaceholder")}
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:gap-4">
+          <div>
+            <label className="block text-sm font-medium text-[#444] mb-2">{t("duration")}</label>
+            <input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder={t("durationPlaceholder")} min={0} max={300}
+              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#444] mb-2">{t("calories")}</label>
+            <input type="number" value={calories} onChange={(e) => setCalories(e.target.value)} placeholder={t("caloriesPlaceholder")} min={0}
+              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+          </div>
+        </div>
+        <div className={`transition-all duration-300 overflow-hidden ${showDistance ? "max-h-24 opacity-100" : "max-h-0 opacity-0"}`}>
+          <label className="block text-sm font-medium text-[#444] mb-2">
+            {t("distance")} <span className="text-muted font-normal text-xs">{t("distanceOptional")}</span>
+          </label>
+          <input type="number" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder={t("distancePlaceholder")} step="0.1" min={0}
+            className="w-full bg-accent-light border-2 border-dashed border-accent rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-[#999] outline-none focus:ring-2 focus:ring-accent/20 transition-all" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-[#444] mb-3">{t("effort")}</label>
+          <div className="flex gap-2 mb-2">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button key={n} type="button" onClick={() => setEffort(n)}
+                className={`flex-1 h-6 md:h-8 rounded-md border-2 transition-all ${n <= effort ? "bg-accent-light border-accent" : "bg-surface border-border hover:border-[#ccc]"}`} />
+            ))}
+          </div>
+          <div className="flex justify-between text-xs text-muted">
+            <span>{t("effortSoft")}</span>
+            <span className="text-[#555] font-medium">{t(`effortLabels.${effort}`)}</span>
+            <span>{t("effortMax")}</span>
+          </div>
+        </div>
+        <div className="hidden md:block pt-2">
+          <button type="submit"
+            className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${saved ? "bg-[#4caf50] text-white" : "bg-accent hover:bg-accent-dark text-white shadow-sm hover:shadow-md"}`}>
+            {saved ? t("saved") : t("save")}
+          </button>
+        </div>
+      </form>
+      <div className="md:hidden fixed bottom-[72px] left-4 right-4">
+        <button onClick={handleSave}
+          className={`w-full py-3.5 rounded-xl text-sm font-semibold shadow-lg transition-all ${saved ? "bg-[#4caf50] text-white" : "bg-accent text-white"}`}>
+          {saved ? t("savedShort") : t("save")}
+        </button>
+      </div>
+    </div>
+  );
+}

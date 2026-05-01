@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "title": "Movu — Entrena más inteligente",
+    "description": "Plataforma de inteligencia fitness para usuarios de boutique fitness en CDMX."
+  },
+  "sidebar": {
+    "tagline": "Entrena más inteligente.",
+    "nav": {
+      "dashboard": "Dashboard",
+      "registro": "Registro",
+      "plan": "Mi Plan",
+      "perfil": "Perfil"
+    },
+    "cta": "+ Registrar hoy"
+  },
+  "bottomNav": {
+    "dashboard": "Dashboard",
+    "registro": "Registrar",
+    "plan": "Mi Plan",
+    "perfil": "Perfil"
+  },
+  "localeSwitcher": { "label": "Idioma" },
+  "dashboard": {
+    "title": "Dashboard",
+    "greeting": "Hola, Ana 👋",
+    "weekLabel": "Semana del 14–20 Abr · 2025",
+    "registerToday": "+ Registrar hoy",
+    "registerCta": "+ Registrar entrenamiento de hoy",
+    "aiLabel": "IA",
+    "aiInsightTitle": "Insight de hoy",
+    "aiInsight": "Hoy es buen día para intensidad alta — dormiste bien y tu carga semanal es baja. Considera una sesión de pesas o HIIT.",
+    "thisWeek": "Esta semana",
+    "recentWorkouts": "Últimos entrenamientos",
+    "weeklyProgress": "Progreso semanal",
+    "muscleGroups": "Grupos musculares",
+    "metrics": {
+      "sleep": "Sueño",
+      "sleepSub": "Buena calidad",
+      "calories": "Calorías",
+      "time": "Tiempo"
+    },
+    "progress": {
+      "workouts": "Entrenamientos",
+      "activeMinutes": "Minutos activos",
+      "calories": "Calorías"
+    },
+    "weekDays": {
+      "mon": { "short": "L", "label": "Lun", "type": "pesas" },
+      "tue": { "short": "M", "label": "Mar", "type": "cardio" },
+      "wed": { "short": "X", "label": "Mié", "type": "pesas" },
+      "thu": { "short": "J", "label": "Jue", "type": "descanso" },
+      "fri": { "short": "V", "label": "Vie", "type": "correr" },
+      "sat": { "short": "S", "label": "Sáb", "type": "combinado" },
+      "sun": { "short": "D", "label": "Dom", "type": "—" }
+    }
+  },
+  "plan": {
+    "title": "Mi Plan Semanal",
+    "subtitle": "Generado por IA · Semana 14–20 Abr",
+    "regenerateDesktop": "✨ Regenerar plan",
+    "regenerateMobile": "✨ Regenerar",
+    "planLogicTitle": "✨ LÓGICA DEL PLAN",
+    "planLogicText": "Basado en tu historial, priorizamos pierna y espalda. Cardio intercalado para recuperación activa. Dos días de descanso para evitar sobreentrenamiento.",
+    "weeklyVolume": "Volumen semanal",
+    "weeklyGoalLabel": "Meta semanal",
+    "weeklyGoalDays": "/ 5 días",
+    "muscleGroupsWeek": "Grupos musculares esta semana",
+    "tableHeaders": {
+      "day": "Día",
+      "muscleGroup": "Grupo Muscular",
+      "type": "Tipo",
+      "min": "Min"
+    },
+    "planRows": {
+      "mon": { "day": "Lunes", "dayShort": "Lun", "muscle": "Pecho + Tríceps", "type": "Pesas" },
+      "tue": { "day": "Martes", "dayShort": "Mar", "muscle": "Pierna", "type": "Pesas" },
+      "wed": { "day": "Miércoles", "dayShort": "Mié", "muscle": "Cardio HIIT", "type": "Cardio" },
+      "thu": { "day": "Jueves", "dayShort": "Jue", "muscle": "Descanso", "type": "—" },
+      "fri": { "day": "Viernes", "dayShort": "Vie", "muscle": "Espalda + Bícep", "type": "Pesas" },
+      "sat": { "day": "Sábado", "dayShort": "Sáb", "muscle": "Full Body", "type": "Combinado" },
+      "sun": { "day": "Domingo", "dayShort": "Dom", "muscle": "Descanso", "type": "—" }
+    },
+    "muscleBadges": {
+      "chest": "Pecho",
+      "legs": "Pierna",
+      "cardio": "Cardio",
+      "back": "Espalda"
+    },
+    "volumeBars": {
+      "chest": "💪 Pecho / Tríceps",
+      "legs": "🦵 Pierna",
+      "back": "🔙 Espalda / Bícep",
+      "core": "⭕ Core",
+      "cardio": "🏃 Cardio"
+    }
+  },
+  "registro": {
+    "title": "Registrar entrenamiento",
+    "dateLabel": "Lunes 21 de Abril",
+    "classType": "Tipo de clase",
+    "classTypes": {
+      "pesas": "Pesas",
+      "cardio": "Cardio",
+      "correr": "Correr",
+      "combinado": "Combinado",
+      "bootcamp": "Bootcamp",
+      "taller": "Taller"
+    },
+    "className": "Nombre de la clase",
+    "classPlaceholder": "ej. Spinning, Barre, HIIT...",
+    "studio": "Estudio o lugar",
+    "studioPlaceholder": "ej. Cyclo Studio, Gym Club, CDMX...",
+    "duration": "Duración (min)",
+    "durationPlaceholder": "ej. 60",
+    "calories": "Calorías",
+    "caloriesPlaceholder": "ej. 420",
+    "distance": "Distancia en km",
+    "distanceOptional": "(opcional)",
+    "distancePlaceholder": "ej. 5.4",
+    "effort": "Esfuerzo percibido",
+    "effortSoft": "Suave",
+    "effortMax": "Máximo",
+    "effortLabels": {
+      "1": "Muy suave",
+      "2": "Suave",
+      "3": "Moderado",
+      "4": "Intenso",
+      "5": "Máximo"
+    },
+    "save": "Guardar entrenamiento",
+    "saved": "✓ Entrenamiento guardado",
+    "savedShort": "✓ Entrenamiento guardado"
+  },
+  "perfil": {
+    "title": "Perfil",
+    "subtitle": "Tus datos y metas de entrenamiento",
+    "personalInfo": "Información personal",
+    "nameLabel": "Nombre",
+    "goalLabel": "Objetivo principal",
+    "weeklyGoal": "Meta semanal de entrenamientos",
+    "goals": {
+      "loseGainMuscle": "Perder grasa y ganar músculo",
+      "gainMuscle": "Ganar músculo",
+      "loseWeight": "Perder peso",
+      "endurance": "Mejorar resistencia",
+      "stayActive": "Mantenerme activo/a"
+    },
+    "inbody": "Datos InBody",
+    "lastMeasurement": "Última: 10 Abr",
+    "muscleMass": "Masa muscular",
+    "bodyFat": "Grasa corporal",
+    "bodyComp": "Composición corporal",
+    "muscle": "Músculo",
+    "fat": "Grasa",
+    "save": "Guardar cambios",
+    "saved": "✓ Perfil guardado",
+    "savedShort": "✓ Guardado"
+  }
+}
