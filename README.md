@@ -1,36 +1,212 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Movu
 
-## Getting Started
+Fitness intelligence platform for boutique fitness users in CDMX. Aggregates Strava activity data, sleep, and body composition to generate AI-powered weekly coaching insights.
 
-First, run the development server:
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Frontend | Next.js 14 (App Router) + TypeScript + Tailwind CSS |
+| Database | Supabase Postgres with RLS |
+| Auth | Supabase Auth (magic link + Google OAuth) |
+| API / Webhooks | Supabase Edge Functions (Deno) |
+| Activity sync | Strava OAuth + Webhook |
+| AI coaching | Claude API (`claude-sonnet-4-20250514`) |
+| Email | Resend |
+
+## Project structure
+
+```
+app/
+  api/
+    me/                     GET  — user profile + onboarding status
+    activities/             GET  — paginated activity list with zone summary
+    activities/[id]/rpe/    POST — submit RPE for a session
+    insights/latest/        GET  — most recent coaching insight
+    dashboard/              GET  — aggregated weekly stats
+    waitlist/               POST — join waitlist (public)
+    strava/connect/         GET  — start Strava OAuth flow
+    strava/callback/        GET  — Strava OAuth callback + token storage
+    strava/backfill/        POST — fetch last 90 days of activities
+    auth/callback/          GET  — Supabase auth callback
+  (auth)/signup/            Invite-gated signup page
+  (auth)/login/             Login page
+  dashboard/                Weekly training view + AI insight card
+  admin/                    Waitlist management + invite code generation
+lib/
+  supabase/
+    client.ts               Browser Supabase client
+    server.ts               Server-side Supabase client (cookie-based)
+    admin.ts                Service-role client (server/Edge Functions only)
+  strava/
+    client.ts               Token refresh + Strava API helpers
+    normalize.ts            Strava activity → activities table row
+  claude/
+    prompts.ts              Coaching system prompt (Spanish)
+    insights.ts             Claude API call + response parsing
+  admin.ts                  Admin user ID check
+supabase/
+  migrations/               SQL migrations (run in order)
+  functions/
+    validate-invite/        POST — check invite code validity before signup
+    strava-webhook/         GET/POST — Strava webhook handler
+    generate-insight/       POST — generate weekly coaching insight via Claude
+    create-invite-code/     POST — admin: create a new invite code
+    send-waitlist-email/    POST — send confirmation email via Resend
+  seed.sql                  Local dev seed data
+types/
+  database.ts               Typed Database schema for @supabase/supabase-js
+middleware.ts               Session refresh + auth gating
+```
+
+## Local development
+
+### Prerequisites
+
+- Node.js 20+
+- [Supabase CLI](https://supabase.com/docs/guides/cli) — `npm install -g supabase`
+- A Supabase project (free tier is fine)
+
+### Setup
+
+1. **Clone and install**
+
+```bash
+git clone <repo>
+cd movu
+npm install
+```
+
+2. **Environment variables** — copy and fill in:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Required variables:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=         # from Supabase project → Settings → API
+NEXT_PUBLIC_SUPABASE_ANON_KEY=    # from Supabase project → Settings → API
+SUPABASE_SERVICE_ROLE_KEY=        # from Supabase project → Settings → API
+
+STRAVA_CLIENT_ID=233223
+STRAVA_CLIENT_SECRET=             # from strava.com/settings/api
+STRAVA_WEBHOOK_VERIFY_TOKEN=      # any random string you choose
+NEXT_PUBLIC_STRAVA_REDIRECT_URI=http://localhost:3000/api/strava/callback
+
+ANTHROPIC_API_KEY=                # from console.anthropic.com
+RESEND_API_KEY=                   # from resend.com (optional for dev)
+RESEND_FROM_EMAIL=hola@movu.app
+
+ADMIN_USER_IDS=                   # comma-separated Supabase UUIDs for admin access
+```
+
+3. **Run migrations**
+
+```bash
+supabase link --project-ref <your-project-ref>
+supabase db push
+```
+
+Or for fully local development with `supabase start`:
+
+```bash
+supabase start          # starts local Postgres + Auth + Studio at localhost:54321
+supabase db reset       # runs migrations + seed.sql
+```
+
+4. **Start the dev server**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App runs at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Edge Functions (local)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+supabase functions serve validate-invite --env-file supabase/functions/.env
+```
 
-## Learn More
+For Strava webhook testing locally, use [ngrok](https://ngrok.com) to expose your local port:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+ngrok http 54321   # expose Supabase Edge Functions port
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Database schema
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+7 tables, all with RLS enabled:
 
-## Deploy on Vercel
+| Table | Description |
+|---|---|
+| `invite_codes` | Admin-generated codes, single or multi-use |
+| `waitlist` | Pre-signup demand capture |
+| `user_profiles` | Extends `auth.users` with Movu-specific data + Strava tokens |
+| `activities` | Normalized workouts from Strava (or manual) |
+| `sleep_logs` | Manual sleep entries (Phase 1), HealthKit in Phase 2 |
+| `body_measurements` | InBody snapshots |
+| `insights` | AI-generated coaching outputs, stored for history |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Users can only read/write their own rows. Admin access uses the `service_role` key, only in Edge Functions and server-side API routes — never client-side.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Access control
+
+Signup requires a valid invite code. Flow:
+
+1. User visits `/signup?code=MOVU-XXX`
+2. `validate-invite` Edge Function checks code validity (active, not expired, uses remaining)
+3. On Supabase signup: DB trigger creates `user_profiles` row, increments `uses_count`, converts waitlist entry if email matches
+
+## Strava integration
+
+1. User clicks "Connect Strava" → `/api/strava/connect` → Strava OAuth
+2. Callback at `/api/strava/callback` stores tokens in `user_profiles`
+3. Backfill fires immediately: fetches last 90 days of activities
+4. Strava POSTs new activities to the `strava-webhook` Edge Function in real time
+5. Tokens refresh automatically when expired (6h TTL)
+
+**One-time webhook registration** (run after deploying the Edge Function):
+
+```bash
+curl -X POST https://www.strava.com/api/v3/push_subscriptions \
+  -F client_id=$STRAVA_CLIENT_ID \
+  -F client_secret=$STRAVA_CLIENT_SECRET \
+  -F callback_url=https://<project>.supabase.co/functions/v1/strava-webhook \
+  -F verify_token=$STRAVA_WEBHOOK_VERIFY_TOKEN
+```
+
+## AI coaching insights
+
+Weekly insights are generated by the `generate-insight` Edge Function, scheduled via Supabase's built-in cron (every Monday 07:00 UTC). Each insight receives:
+
+- Last 7 days of activities (category, duration, HR zones, RPE)
+- Last 7 sleep logs
+- Most recent body measurement
+- User goal
+
+Output is stored as markdown in the `insights` table and surfaced on the dashboard.
+
+You can also trigger manually from the admin panel.
+
+## Strava export tool
+
+The `strava-export/` directory contains a Python script to bulk-export your own Strava history to a JSONL file. Used for initial data analysis and seeding during development. See `strava-export/.env.example` for configuration.
+
+## Environment variable reference
+
+| Variable | Required | Description |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anon key (safe for client) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Service role key — server only, never expose |
+| `STRAVA_CLIENT_ID` | Yes | Strava developer app client ID |
+| `STRAVA_CLIENT_SECRET` | Yes | Strava developer app client secret |
+| `STRAVA_WEBHOOK_VERIFY_TOKEN` | Yes | Random string for Strava webhook validation |
+| `NEXT_PUBLIC_STRAVA_REDIRECT_URI` | Yes | OAuth callback URL |
+| `ANTHROPIC_API_KEY` | Yes | Claude API key |
+| `RESEND_API_KEY` | No | Resend email API key (emails silently skip if missing) |
+| `RESEND_FROM_EMAIL` | No | From address for transactional emails |
+| `ADMIN_USER_IDS` | No | Comma-separated UUIDs for admin panel access |
