@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-const CLASS_TYPE_KEYS = ["pesas", "cardio", "correr", "combinado", "bootcamp", "taller"] as const;
-const CLASS_EMOJIS: Record<string, string> = { pesas: "💪", cardio: "🚴", correr: "🏃", combinado: "🔄", bootcamp: "🥊", taller: "📚" };
+import type { WorkoutType } from "@/types";
+
+const CLASS_TYPE_KEYS: WorkoutType[] = ["weightlifting", "cardio", "running", "combined", "bootcamp", "workshop"];
+const CLASS_EMOJIS: Record<string, string> = { weightlifting: "💪", cardio: "🚴", running: "🏃", combined: "🔄", bootcamp: "🥊", workshop: "📚" };
 
 export default function RegistroPage() {
   const t = useTranslations("registro");
-  const [type, setType] = useState("pesas");
+  const [type, setType] = useState<WorkoutType>("weightlifting");
   const [className, setClassName] = useState("");
   const [studio, setStudio] = useState("");
   const [duration, setDuration] = useState("");
@@ -17,7 +19,7 @@ export default function RegistroPage() {
   const [effort, setEffort] = useState(3);
   const [saved, setSaved] = useState(false);
 
-  const showDistance = type === "correr" || type === "cardio";
+  const showDistance = type === "running" || type === "cardio";
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
