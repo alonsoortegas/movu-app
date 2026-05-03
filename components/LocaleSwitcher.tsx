@@ -24,7 +24,7 @@ export default function LocaleSwitcher() {
             key={l}
             onClick={() => handleSwitch(l)}
             className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
-              locale === l ? "bg-white text-[#111] shadow-sm" : "text-muted hover:text-[#555]"
+              locale === l ? "bg-white text-[#111] shadow-sm" : "text-[#888] hover:text-[#333]"
             }`}
           >
             {LOCALE_LABELS[l]}
