@@ -33,6 +33,10 @@
     "recentWorkouts": "Recent workouts",
     "weeklyProgress": "Weekly progress",
     "muscleGroups": "Muscle groups",
+    "noActivities": "No workouts logged this week yet.",
+    "noMuscleData": "Log workouts to see muscle group data.",
+    "aiInsightEmpty": "No insight generated yet for this week.",
+    "aiGenerate": "Generate →",
     "metrics": {
       "sleep": "Sleep",
       "sleepSub": "Good quality",

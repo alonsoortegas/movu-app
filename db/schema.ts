@@ -34,10 +34,15 @@ export const userProfiles = pgTable('user_profiles', {
   goal: text('goal'),
   max_hr_bpm: integer('max_hr_bpm'),
   weight_kg: real('weight_kg'),
+  height_m: real('height_m'),
   strava_athlete_id: integer('strava_athlete_id'),
   strava_access_token: text('strava_access_token'),
   strava_refresh_token: text('strava_refresh_token'),
   strava_token_expires: timestamp('strava_token_expires', { withTimezone: true }),
+  whoop_user_id: bigint('whoop_user_id', { mode: 'number' }),
+  whoop_access_token: text('whoop_access_token'),
+  whoop_refresh_token: text('whoop_refresh_token'),
+  whoop_token_expires: timestamp('whoop_token_expires', { withTimezone: true }),
   invite_code_used: text('invite_code_used'),
   onboarding_complete: boolean('onboarding_complete').notNull().default(false),
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -63,6 +68,7 @@ export const activities = pgTable('activities', {
     .notNull()
     .references(() => userProfiles.id, { onDelete: 'cascade' }),
   strava_id: bigint('strava_id', { mode: 'number' }).unique(),
+  whoop_activity_id: uuid('whoop_activity_id').unique(),
   source: text('source').notNull().default('strava'),
   activity_type: text('activity_type'),
   activity_category: text('activity_category'),
@@ -78,6 +84,8 @@ export const activities = pgTable('activities', {
   max_hr_bpm: real('max_hr_bpm'),
   avg_pace_per_km_s: real('avg_pace_per_km_s'),
   avg_cadence_spm: real('avg_cadence_spm'),
+  strain: real('strain'),
+  calories_kcal: real('calories_kcal'),
   rpe: integer('rpe'),
   inferred_muscle_groups: text('inferred_muscle_groups').array(),
   hr_zones: jsonb('hr_zones'),
@@ -96,6 +104,20 @@ export const sleepLogs = pgTable('sleep_logs', {
   quality: integer('quality'),
   source: text('source').notNull().default('manual'),
   notes: text('notes'),
+  whoop_sleep_id: uuid('whoop_sleep_id').unique(),
+  performance_pct: real('performance_pct'),
+  consistency_pct: real('consistency_pct'),
+  efficiency_pct: real('efficiency_pct'),
+  respiratory_rate: real('respiratory_rate'),
+  rem_hours: real('rem_hours'),
+  deep_hours: real('deep_hours'),
+  light_hours: real('light_hours'),
+  awake_hours: real('awake_hours'),
+  cycle_count: integer('cycle_count'),
+  disturbance_count: integer('disturbance_count'),
+  sleep_needed_baseline_h: real('sleep_needed_baseline_h'),
+  sleep_needed_debt_h: real('sleep_needed_debt_h'),
+  sleep_needed_strain_h: real('sleep_needed_strain_h'),
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
@@ -116,6 +138,28 @@ export const bodyMeasurements = pgTable('body_measurements', {
   muscle_right_leg: real('muscle_right_leg'),
   muscle_trunk: real('muscle_trunk'),
   notes: text('notes'),
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ---------- daily_metrics ----------
+export const dailyMetrics = pgTable('daily_metrics', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id')
+    .notNull()
+    .references(() => userProfiles.id, { onDelete: 'cascade' }),
+  date: date('date').notNull(),
+  whoop_cycle_id: bigint('whoop_cycle_id', { mode: 'number' }),
+  recovery_score: real('recovery_score'),
+  hrv_ms: real('hrv_ms'),
+  resting_hr_bpm: real('resting_hr_bpm'),
+  spo2_pct: real('spo2_pct'),
+  skin_temp_c: real('skin_temp_c'),
+  daily_strain: real('daily_strain'),
+  daily_avg_hr: real('daily_avg_hr'),
+  daily_max_hr: real('daily_max_hr'),
+  total_calories_kcal: real('total_calories_kcal'),
+  active_min: integer('active_min'),
+  source: text('source').notNull().default('whoop'),
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
@@ -144,6 +188,8 @@ export type Activity = typeof activities.$inferSelect
 export type NewActivity = typeof activities.$inferInsert
 export type SleepLog = typeof sleepLogs.$inferSelect
 export type NewSleepLog = typeof sleepLogs.$inferInsert
+export type DailyMetric = typeof dailyMetrics.$inferSelect
+export type NewDailyMetric = typeof dailyMetrics.$inferInsert
 export type BodyMeasurement = typeof bodyMeasurements.$inferSelect
 export type NewBodyMeasurement = typeof bodyMeasurements.$inferInsert
 export type Insight = typeof insights.$inferSelect
@@ -151,6 +197,6 @@ export type NewInsight = typeof insights.$inferInsert
 
 // ---------- Union types for constrained text columns ----------
 export type ActivityCategory = 'run' | 'ride' | 'strength' | 'hiit' | 'mobility' | 'walk' | 'swim' | 'other'
-export type ActivitySource = 'strava' | 'manual' | 'healthkit'
+export type ActivitySource = 'strava' | 'manual' | 'whoop' | 'healthkit'
 export type WaitlistStatus = 'waiting' | 'invited' | 'converted'
 export type InsightType = 'weekly_summary' | 'recovery_alert' | 'plan_suggestion'

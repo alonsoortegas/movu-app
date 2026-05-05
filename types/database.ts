@@ -10,6 +10,8 @@ export type {
   NewActivity,
   SleepLog as SleepLogRow,
   NewSleepLog,
+  DailyMetric as DailyMetricRow,
+  NewDailyMetric,
   BodyMeasurement as BodyMeasurementRow,
   NewBodyMeasurement,
   Insight as InsightRow,
@@ -184,6 +186,9 @@ export type Database = {
           inferred_muscle_groups: string[] | null
           hr_zones: Json | null
           trainer: boolean | null
+          whoop_activity_id: string | null
+          strain: number | null
+          calories_kcal: number | null
           created_at: string
         }
         Insert: {
@@ -209,6 +214,9 @@ export type Database = {
           inferred_muscle_groups?: string[] | null
           hr_zones?: Json | null
           trainer?: boolean | null
+          whoop_activity_id?: string | null
+          strain?: number | null
+          calories_kcal?: number | null
           created_at?: string
         }
         Update: {
@@ -234,6 +242,9 @@ export type Database = {
           inferred_muscle_groups?: string[] | null
           hr_zones?: Json | null
           trainer?: boolean | null
+          whoop_activity_id?: string | null
+          strain?: number | null
+          calories_kcal?: number | null
           created_at?: string
         }
         Relationships: []
@@ -247,6 +258,20 @@ export type Database = {
           quality: number | null
           source: string
           notes: string | null
+          whoop_sleep_id: string | null
+          performance_pct: number | null
+          consistency_pct: number | null
+          efficiency_pct: number | null
+          respiratory_rate: number | null
+          rem_hours: number | null
+          deep_hours: number | null
+          light_hours: number | null
+          awake_hours: number | null
+          cycle_count: number | null
+          disturbance_count: number | null
+          sleep_needed_baseline_h: number | null
+          sleep_needed_debt_h: number | null
+          sleep_needed_strain_h: number | null
           created_at: string
         }
         Insert: {
@@ -257,6 +282,20 @@ export type Database = {
           quality?: number | null
           source?: string
           notes?: string | null
+          whoop_sleep_id?: string | null
+          performance_pct?: number | null
+          consistency_pct?: number | null
+          efficiency_pct?: number | null
+          respiratory_rate?: number | null
+          rem_hours?: number | null
+          deep_hours?: number | null
+          light_hours?: number | null
+          awake_hours?: number | null
+          cycle_count?: number | null
+          disturbance_count?: number | null
+          sleep_needed_baseline_h?: number | null
+          sleep_needed_debt_h?: number | null
+          sleep_needed_strain_h?: number | null
           created_at?: string
         }
         Update: {
@@ -267,6 +306,77 @@ export type Database = {
           quality?: number | null
           source?: string
           notes?: string | null
+          whoop_sleep_id?: string | null
+          performance_pct?: number | null
+          consistency_pct?: number | null
+          efficiency_pct?: number | null
+          respiratory_rate?: number | null
+          rem_hours?: number | null
+          deep_hours?: number | null
+          light_hours?: number | null
+          awake_hours?: number | null
+          cycle_count?: number | null
+          disturbance_count?: number | null
+          sleep_needed_baseline_h?: number | null
+          sleep_needed_debt_h?: number | null
+          sleep_needed_strain_h?: number | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      daily_metrics: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          whoop_cycle_id: number | null
+          recovery_score: number | null
+          hrv_ms: number | null
+          resting_hr_bpm: number | null
+          spo2_pct: number | null
+          skin_temp_c: number | null
+          daily_strain: number | null
+          daily_avg_hr: number | null
+          daily_max_hr: number | null
+          total_calories_kcal: number | null
+          active_min: number | null
+          source: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          whoop_cycle_id?: number | null
+          recovery_score?: number | null
+          hrv_ms?: number | null
+          resting_hr_bpm?: number | null
+          spo2_pct?: number | null
+          skin_temp_c?: number | null
+          daily_strain?: number | null
+          daily_avg_hr?: number | null
+          daily_max_hr?: number | null
+          total_calories_kcal?: number | null
+          active_min?: number | null
+          source?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          whoop_cycle_id?: number | null
+          recovery_score?: number | null
+          hrv_ms?: number | null
+          resting_hr_bpm?: number | null
+          spo2_pct?: number | null
+          skin_temp_c?: number | null
+          daily_strain?: number | null
+          daily_avg_hr?: number | null
+          daily_max_hr?: number | null
+          total_calories_kcal?: number | null
+          active_min?: number | null
+          source?: string
           created_at?: string
         }
         Relationships: []
