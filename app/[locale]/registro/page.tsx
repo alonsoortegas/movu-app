@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useState, useMemo } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import type { WorkoutType } from "@/types";
 
-const CLASS_TYPE_KEYS = ["pesas", "cardio", "correr", "combinado", "bootcamp", "taller"] as const;
-const CLASS_EMOJIS: Record<string, string> = { pesas: "💪", cardio: "🚴", correr: "🏃", combinado: "🔄", bootcamp: "🥊", taller: "📚" };
+const CLASS_TYPE_KEYS: WorkoutType[] = ["weightlifting", "cardio", "running", "combined", "bootcamp", "workshop"];
+const CLASS_EMOJIS: Record<string, string> = { weightlifting: "💪", cardio: "🚴", running: "🏃", combined: "🔄", bootcamp: "🥊", workshop: "📚" };
 
 export default function RegistroPage() {
   const t = useTranslations("registro");
-  const [type, setType] = useState("pesas");
+  const locale = useLocale();
+  const todayLabel = useMemo(() =>
+    new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long" }).format(new Date()),
+    [locale]
+  );
+  const [type, setType] = useState<WorkoutType>("weightlifting");
   const [className, setClassName] = useState("");
   const [studio, setStudio] = useState("");
   const [duration, setDuration] = useState("");
@@ -19,7 +25,7 @@ export default function RegistroPage() {
   const [loading, setLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  const showDistance = type === "correr" || type === "cardio";
+  const showDistance = type === "running" || type === "cardio";
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +69,7 @@ export default function RegistroPage() {
     <div className="p-4 md:p-8 max-w-2xl mx-auto">
       <div className="mb-5 md:mb-8">
         <h1 className="text-xl md:text-2xl font-bold text-[#111]">{t("title")}</h1>
-        <p className="text-xs md:text-sm text-muted mt-0.5">{t("dateLabel")}</p>
+        <p className="text-xs md:text-sm text-muted mt-0.5 capitalize">{todayLabel}</p>
       </div>
       <form onSubmit={handleSave} className="space-y-5 md:space-y-6">
         <div>

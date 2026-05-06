@@ -103,12 +103,12 @@
     "dateLabel": "Monday, April 21",
     "classType": "Class type",
     "classTypes": {
-      "pesas": "Weights",
+      "weightlifting": "Weights",
       "cardio": "Cardio",
-      "correr": "Run",
-      "combinado": "Combined",
+      "running": "Run",
+      "combined": "Combined",
       "bootcamp": "Bootcamp",
-      "taller": "Workshop"
+      "workshop": "Workshop"
     },
     "className": "Class name",
     "classPlaceholder": "e.g. Spinning, Barre, HIIT...",

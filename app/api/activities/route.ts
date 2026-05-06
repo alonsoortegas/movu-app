@@ -2,12 +2,12 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 const CATEGORY_MAP: Record<string, string> = {
-  pesas: 'strength',
+  weightlifting: 'strength',
   cardio: 'ride',
-  correr: 'run',
-  combinado: 'hiit',
+  running: 'run',
+  combined: 'hiit',
   bootcamp: 'hiit',
-  taller: 'other',
+  workshop: 'other',
 }
 
 export async function POST(request: Request) {
