@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import type { Database } from '@/types/database'
+
+type ActivityInsert = Database['public']['Tables']['activities']['Insert']
 
 const CATEGORY_MAP: Record<string, string> = {
   weightlifting: 'strength',
@@ -22,7 +25,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'type and duration_min are required' }, { status: 400 })
   }
 
-  const row: Record<string, unknown> = {
+  const row: ActivityInsert = {
     user_id: user.id,
     source: 'manual',
     activity_type: type,

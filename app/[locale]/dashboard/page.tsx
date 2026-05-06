@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
+import { getISOWeekBounds } from '@/lib/dates'
 
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
@@ -13,18 +14,6 @@ const CATEGORY_EMOJI: Record<string, string> = {
   walk: '🚶',
   swim: '🏊',
   other: '🏋️',
-}
-
-function getISOWeekBounds() {
-  const now = new Date()
-  const day = now.getUTCDay() || 7
-  const monday = new Date(now)
-  monday.setUTCDate(now.getUTCDate() - day + 1)
-  monday.setUTCHours(0, 0, 0, 0)
-  const sunday = new Date(monday)
-  sunday.setUTCDate(monday.getUTCDate() + 6)
-  sunday.setUTCHours(23, 59, 59, 999)
-  return { weekStart: monday.toISOString(), weekEnd: sunday.toISOString() }
 }
 
 function formatDuration(seconds: number): string {

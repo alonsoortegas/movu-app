@@ -49,7 +49,7 @@ export default function RegistroPage() {
         const data = await res.json();
         throw new Error(data.error ?? "Failed to save");
       }
-      setType("pesas");
+      setType("weightlifting");
       setClassName("");
       setStudio("");
       setDuration("");

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WHOOP Data — Alonso Ortega</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0f; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 2rem; }
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .subtitle { color: #6b7280; font-size: 0.875rem; margin-bottom: 2rem; }
+  .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat { background: #111118; border: 1px solid #1f2937; border-radius: 12px; padding: 1.25rem; }
+  .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 0.5rem; }
+  .stat-value { font-size: 2rem; font-weight: 800; }
+  .stat-unit { font-size: 0.75rem; color: #9ca3af; margin-left: 2px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .card { background: #111118; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; }
+  .card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 1.25rem; }
+  canvas { max-height: 220px; }
+  .sport-list { list-style: none; }
+  .sport-list li { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #1f2937; font-size: 0.875rem; }
+  .sport-list li:last-child { border-bottom: none; }
+  .sport-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 0.6rem; display: inline-block; flex-shrink: 0; }
+  .sport-name { display: flex; align-items: center; text-transform: capitalize; }
+  .sport-count { color: #9ca3af; font-size: 0.75rem; }
+  .body-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-top: 1rem; }
+  .body-stat { text-align: center; }
+  .body-stat-val { font-size: 1.25rem; font-weight: 700; }
+  .body-stat-label { font-size: 0.7rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
+  .section-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #4b5563; border-bottom: 1px solid #1f2937; padding-bottom: 0.5rem; margin-bottom: 1.25rem; }
+</style>
+</head>
+<body>
+
+<h1>Alonso Ortega</h1>
+<p class="subtitle">WHOOP data &middot; last 25 days (Apr 8 – May 3, 2026)</p>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-label">Avg Recovery</div>
+    <div class="stat-value" style="color:#00ff87">64<span class="stat-unit">%</span></div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Avg HRV</div>
+    <div class="stat-value" style="color:#3b82f6">62.0<span class="stat-unit">ms</span></div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Avg RHR</div>
+    <div class="stat-value" style="color:#f97316">52.1<span class="stat-unit">bpm</span></div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Avg Strain</div>
+    <div class="stat-value" style="color:#a78bfa">10.7</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Avg Sleep Perf</div>
+    <div class="stat-value" style="color:#06b6d4">79<span class="stat-unit">%</span></div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Avg Daily Calories</div>
+    <div class="stat-value" style="color:#f43f5e">2142<span class="stat-unit">kcal</span></div>
+  </div>
+</div>
+
+<div class="section-label">Recovery</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Recovery Score</div>
+    <canvas id="recoveryChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">HRV &amp; Resting Heart Rate</div>
+    <canvas id="hrvChart"></canvas>
+  </div>
+</div>
+
+<div class="section-label">Sleep</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Sleep Performance</div>
+    <canvas id="sleepPerfChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Sleep Consistency &amp; Respiratory Rate</div>
+    <canvas id="sleepConsistencyChart"></canvas>
+  </div>
+</div>
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-title">Sleep Stages (hours per night)</div>
+  <canvas id="sleepStagesChart" style="max-height:220px"></canvas>
+</div>
+
+<div class="section-label">Strain &amp; Activity</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Daily Strain</div>
+    <canvas id="strainChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Daily Calories Burned (kcal)</div>
+    <canvas id="caloriesChart"></canvas>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Workout Strain by Session</div>
+    <canvas id="workoutChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Avg &amp; Max Heart Rate per Workout</div>
+    <canvas id="workoutHRChart"></canvas>
+  </div>
+</div>
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-title">Heart Rate Zones per Workout (minutes)</div>
+  <canvas id="zonesChart" style="max-height:220px"></canvas>
+</div>
+
+<div class="section-label">Profile</div>
+<div class="grid-3" style="margin-bottom:2rem">
+  <div class="card">
+    <div class="card-title">Workouts by Activity</div>
+    <ul class="sport-list">
+  <li>
+    <span class="sport-name">
+      <span class="sport-dot" style="background:#6b7280"></span>
+      walking
+    </span>
+    <span class="sport-count">5 sessions</span>
+  </li>
+  <li>
+    <span class="sport-name">
+      <span class="sport-dot" style="background:#f97316"></span>
+      functional fitness
+    </span>
+    <span class="sport-count">4 sessions</span>
+  </li>
+  <li>
+    <span class="sport-name">
+      <span class="sport-dot" style="background:#ef4444"></span>
+      barrys
+    </span>
+    <span class="sport-count">3 sessions</span>
+  </li>
+  <li>
+    <span class="sport-name">
+      <span class="sport-dot" style="background:#f59e0b"></span>
+      hiit
+    </span>
+    <span class="sport-count">3 sessions</span>
+  </li>
+  <li>
+    <span class="sport-name">
+      <span class="sport-dot" style="background:#06b6d4"></span>
+      weightlifting
+    </span>
+    <span class="sport-count">3 sessions</span>
+  </li>
+  <li>
+    <span class="sport-name">
+      <span class="sport-dot" style="background:#3b82f6"></span>
+      cycling
+    </span>
+    <span class="sport-count">2 sessions</span>
+  </li>
+  <li>
+    <span class="sport-name">
+      <span class="sport-dot" style="background:#10b981"></span>
+      yoga
+    </span>
+    <span class="sport-count">2 sessions</span>
+  </li>
+  <li>
+    <span class="sport-name">
+      <span class="sport-dot" style="background:#8b5cf6"></span>
+      running
+    </span>
+    <span class="sport-count">2 sessions</span>
+  </li>
+  <li>
+    <span class="sport-name">
+      <span class="sport-dot" style="background:#9ca3af"></span>
+      commuting
+    </span>
+    <span class="sport-count">1 session</span>
+  </li></ul>
+  </div>
+  <div class="card">
+    <div class="card-title">Body Measurements</div>
+    <div class="body-stats">
+      <div class="body-stat">
+        <div class="body-stat-val">180<span style="font-size:.75rem;color:#9ca3af"> cm</span></div>
+        <div class="body-stat-label">Height</div>
+      </div>
+      <div class="body-stat">
+        <div class="body-stat-val">71.3<span style="font-size:.75rem;color:#9ca3af"> kg</span></div>
+        <div class="body-stat-label">Weight</div>
+      </div>
+      <div class="body-stat">
+        <div class="body-stat-val">187<span style="font-size:.75rem;color:#9ca3af"> bpm</span></div>
+        <div class="body-stat-label">Max HR</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color = '#6b7280';
+Chart.defaults.borderColor = '#1f2937';
+
+const tooltip = {
+  backgroundColor: '#1a1a2e',
+  borderColor: '#374151',
+  borderWidth: 1,
+  titleColor: '#e5e7eb',
+  bodyColor: '#9ca3af',
+  padding: 10,
+};
+
+new Chart(document.getElementById('recoveryChart'), {
+  type: 'line',
+  data: {
+    labels: ["Apr 9","Apr 10","Apr 11","Apr 12","Apr 13","Apr 14","Apr 15","Apr 16","Apr 18","Apr 19","Apr 20","Apr 21","Apr 22","Apr 23","Apr 24","Apr 25","Apr 26","Apr 27","Apr 28","Apr 29","Apr 30","May 1","May 2","May 3","May 4"],
+    datasets: [{
+      label: 'Recovery %',
+      data: [55,70,43,50,81,90,54,44,83,24,77,87,79,79,95,48,6,61,65,63,68,61,57,62,94],
+      borderColor: '#00ff87',
+      backgroundColor: 'rgba(0,255,135,0.08)',
+      fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#00ff87',
+    }]
+  },
+  options: { plugins: { legend: { display: false }, tooltip }, scales: { y: { min: 0, max: 100 } }, responsive: true, maintainAspectRatio: true }
+});
+
+new Chart(document.getElementById('hrvChart'), {
+  type: 'line',
+  data: {
+    labels: ["Apr 9","Apr 10","Apr 11","Apr 12","Apr 13","Apr 14","Apr 15","Apr 16","Apr 18","Apr 19","Apr 20","Apr 21","Apr 22","Apr 23","Apr 24","Apr 25","Apr 26","Apr 27","Apr 28","Apr 29","Apr 30","May 1","May 2","May 3","May 4"],
+    datasets: [
+      { label: 'HRV (ms)', data: [59.5,66.4,56.3,59,65,82.2,61.6,56.9,69.5,43.2,66.6,71.5,69.5,69.8,73.4,56.1,21.5,60.2,63.9,60.5,62.7,58.7,59.1,61.1,74.7], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', fill: true, tension: 0.4, pointRadius: 3, yAxisID: 'y' },
+      { label: 'RHR (bpm)', data: [54,51,56,52,54,50,53,56,51,57,50,48,47,48,48,54,69,50,50,52,50,53,52,50,47], borderColor: '#f97316', tension: 0.4, pointRadius: 3, yAxisID: 'y2' }
+    ]
+  },
+  options: { plugins: { tooltip }, scales: { y: { position: 'left' }, y2: { position: 'right', grid: { drawOnChartArea: false } } }, responsive: true, maintainAspectRatio: true }
+});
+
+new Chart(document.getElementById('strainChart'), {
+  type: 'bar',
+  data: {
+    labels: ["Apr 9","Apr 10","Apr 11","Apr 12","Apr 13","Apr 14","Apr 15","Apr 16","Apr 17","Apr 19","Apr 20","Apr 21","Apr 22","Apr 23","Apr 24","Apr 25","Apr 26","Apr 27","Apr 28","Apr 28","Apr 29","Apr 30","May 1","May 2"],
+    datasets: [{ label: 'Strain', data: [4.07,12.67,15.23,4.78,10.79,5.18,15.14,7.23,20.38,5.29,4.71,7.01,11.32,5.27,15.77,6.38,4.65,14.03,13.1,16.62,13.82,17.38,14.71,11.89], backgroundColor: 'rgba(167,139,250,0.7)', borderColor: '#a78bfa', borderWidth: 1, borderRadius: 4 }]
+  },
+  options: { plugins: { legend: { display: false }, tooltip }, scales: { y: { min: 0, max: 21 } }, responsive: true, maintainAspectRatio: true }
+});
+
+new Chart(document.getElementById('sleepPerfChart'), {
+  type: 'line',
+  data: {
+    labels: ["Apr 11","Apr 12","Apr 13","Apr 14","Apr 15","Apr 16","Apr 17","Apr 19","Apr 20","Apr 21","Apr 22","Apr 23","Apr 24","Apr 25","Apr 26","Apr 27","Apr 28","Apr 28","Apr 29","Apr 30","May 1","May 2","May 3"],
+    datasets: [{
+      label: 'Sleep Performance %',
+      data: [71,75,77,79,79,75,76,63,77,82,81,83,91,95,46,82,82,83,82,85,85,86,87],
+      borderColor: '#06b6d4',
+      backgroundColor: 'rgba(6,182,212,0.08)',
+      fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#06b6d4',
+    }]
+  },
+  options: { plugins: { legend: { display: false }, tooltip }, scales: { y: { min: 0, max: 100 } }, responsive: true, maintainAspectRatio: true }
+});
+
+new Chart(document.getElementById('sleepStagesChart'), {
+  type: 'bar',
+  data: {
+    labels: ["Apr 11","Apr 12","Apr 13","Apr 14","Apr 15","Apr 16","Apr 17","Apr 19","Apr 20","Apr 21","Apr 22","Apr 23","Apr 24","Apr 25","Apr 26","Apr 27","Apr 28","Apr 28","Apr 29","Apr 30","May 1","May 2","May 3"],
+    datasets: [
+      { label: 'REM', data: [1.88,1.62,1.24,2.33,1.8,0.68,2.08,1.23,1.2,2.3,2.11,2.21,2.41,2.66,2.15,1.82,1.96,2.49,2.15,2.67,2.31,2.24,2.55], backgroundColor: '#6366f1' },
+      { label: 'Deep (SWS)', data: [1.77,1.96,2.07,1.75,1.88,1.56,1.58,1.65,1.93,2.08,1.73,2.13,1.92,2.13,1.4,2.14,1.71,1.64,1.96,1.68,1.54,1.69,2.15], backgroundColor: '#0ea5e9' },
+      { label: 'Light', data: [2.23,2.65,2.9,1.84,2.45,3.85,3.68,2.23,3.49,2.52,3.52,2.96,4.01,3.91,2.26,3.47,3.07,3.43,2.58,3.12,3.54,3.36,2.43], backgroundColor: '#334155' },
+      { label: 'Awake', data: [0.61,0.33,0.25,0.66,0.18,0.75,0.26,0.1,0.31,0.1,0.5,0.43,0.49,0.44,0.18,0.17,0.17,0.14,0.43,0.19,0.39,0.43,0.26], backgroundColor: '#374151' },
+    ]
+  },
+  options: {
+    plugins: { tooltip },
+    scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: 'hours' } } },
+    responsive: true, maintainAspectRatio: true
+  }
+});
+
+new Chart(document.getElementById('caloriesChart'), {
+  type: 'bar',
+  data: {
+    labels: ["Apr 9","Apr 10","Apr 11","Apr 12","Apr 13","Apr 14","Apr 15","Apr 16","Apr 17","Apr 19","Apr 20","Apr 21","Apr 22","Apr 23","Apr 24","Apr 25","Apr 26","Apr 27","Apr 28","Apr 28","Apr 29","Apr 30","May 1","May 2"],
+    datasets: [{ label: 'kcal', data: [1721,2362,2183,1792,1933,1742,2325,2933,3426,1744,1726,1946,1779,1733,2606,2033,1548,2194,1941,2576,2125,2940,2266,1837], backgroundColor: 'rgba(244,63,94,0.7)', borderColor: '#f43f5e', borderWidth: 1, borderRadius: 4 }]
+  },
+  options: { plugins: { legend: { display: false }, tooltip }, responsive: true, maintainAspectRatio: true }
+});
+
+new Chart(document.getElementById('workoutChart'), {
+  type: 'bar',
+  data: {
+    labels: ["Apr 5 · functional fitness","Apr 7 · barrys","Apr 9 · barrys","Apr 10 · cycling","Apr 11 · hiit","Apr 14 · yoga","Apr 15 · barrys","Apr 18 · hiit","Apr 22 · weightlifting","Apr 24 · running","Apr 25 · cycling","Apr 27 · weightlifting","Apr 28 · weightlifting","Apr 29 · hiit","Apr 30 · functional fitness","May 1 · running","May 2 · functional fitness","May 3 · yoga","May 4 · functional fitness"],
+    datasets: [{ label: 'Strain', data: [15.28,15.15,15.91,11.21,14.91,10.03,14.17,19.71,11.04,15.21,4.44,12.93,11.67,15.54,12.7,16.21,13.25,11.14,12.52], backgroundColor: ["#f97316","#ef4444","#ef4444","#3b82f6","#f59e0b","#10b981","#ef4444","#f59e0b","#06b6d4","#8b5cf6","#3b82f6","#06b6d4","#06b6d4","#f59e0b","#f97316","#8b5cf6","#f97316","#10b981","#f97316"], borderRadius: 4 }]
+  },
+  options: { plugins: { legend: { display: false }, tooltip }, responsive: true, maintainAspectRatio: true }
+});
+
+new Chart(document.getElementById('zonesChart'), {
+  type: 'bar',
+  data: {
+    labels: ["Apr 5 · functional fitness","Apr 7 · barrys","Apr 9 · barrys","Apr 10 · cycling","Apr 11 · hiit","Apr 14 · yoga","Apr 15 · barrys","Apr 18 · hiit","Apr 22 · weightlifting","Apr 24 · running","Apr 25 · cycling","Apr 27 · weightlifting","Apr 28 · weightlifting","Apr 29 · hiit","Apr 30 · functional fitness","May 1 · running","May 2 · functional fitness","May 3 · yoga","May 4 · functional fitness"],
+    datasets: [
+      { label: 'Zone 0 (rest)',    data: [1.4,0.9,0.1,4.7,2.6,11.2,1.9,0,57.7,0.3,56.8,27.9,67.9,10.5,25.6,0.3,39.3,52.3,50.7], backgroundColor: '#1e293b' },
+      { label: 'Zone 1 (warm-up)', data: [13.5,10,18.1,17.7,12.1,29.2,12.4,0.5,2.3,2.3,3.3,39.4,17,20.1,24.3,16.7,30,13.4,30.9], backgroundColor: '#3b82f6' },
+      { label: 'Zone 2 (easy)',    data: [15.5,16.2,20.2,19.5,15.6,0.1,19.6,1.6,0,20.3,0,4.2,0,11.1,4.3,21.9,6.2,0,2.9], backgroundColor: '#22c55e' },
+      { label: 'Zone 3 (aerobic)',  data: [9.8,14.7,12.6,11.2,18.8,0,10.9,12.3,0,36.3,0,1.9,0,21.9,3.3,27.9,4.5,0,1.4], backgroundColor: '#f59e0b' },
+      { label: 'Zone 4 (threshold)',data: [12.3,7.7,7.7,0.4,5,0,3.4,63.8,0,4.5,0,0.6,0,6.3,0.7,6.8,1.4,0,0], backgroundColor: '#f97316' },
+      { label: 'Zone 5 (max)',     data: [0,1.5,2.8,0,0,0,0.6,1.9,0,0.7,0,0,0,0.5,0,6.3,0,0,0], backgroundColor: '#ef4444' },
+    ]
+  },
+  options: {
+    plugins: { tooltip },
+    scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: 'minutes' } } },
+    responsive: true, maintainAspectRatio: true
+  }
+});
+
+new Chart(document.getElementById('workoutHRChart'), {
+  type: 'bar',
+  data: {
+    labels: ["Apr 5 · functional fitness","Apr 7 · barrys","Apr 9 · barrys","Apr 10 · cycling","Apr 11 · hiit","Apr 14 · yoga","Apr 15 · barrys","Apr 18 · hiit","Apr 22 · weightlifting","Apr 24 · running","Apr 25 · cycling","Apr 27 · weightlifting","Apr 28 · weightlifting","Apr 29 · hiit","Apr 30 · functional fitness","May 1 · running","May 2 · functional fitness","May 3 · yoga","May 4 · functional fitness"],
+    datasets: [
+      { label: 'Avg HR (bpm)', data: [141,142,140,129,137,110,136,163,84,148,84,107,90,129,106,144,106,90,96], backgroundColor: 'rgba(251,113,133,0.7)', borderColor: '#fb7185', borderWidth: 1, borderRadius: 4 },
+      { label: 'Max HR (bpm)', data: [174,185,190,165,172,135,182,180,112,181,118,164,129,177,164,187,168,128,152], backgroundColor: 'rgba(244,63,94,0.4)',  borderColor: '#f43f5e', borderWidth: 1, borderRadius: 4 },
+    ]
+  },
+  options: { plugins: { tooltip }, scales: { y: { min: 40 } }, responsive: true, maintainAspectRatio: true }
+});
+
+new Chart(document.getElementById('sleepConsistencyChart'), {
+  type: 'line',
+  data: {
+    labels: ["Apr 11","Apr 12","Apr 13","Apr 14","Apr 15","Apr 16","Apr 17","Apr 19","Apr 20","Apr 21","Apr 22","Apr 23","Apr 24","Apr 25","Apr 26","Apr 27","Apr 28","Apr 28","Apr 29","Apr 30","May 1","May 2","May 3"],
+    datasets: [
+      { label: 'Consistency %', data: [72,81,66,82,87,87,12,36,58,79,70,77,83,84,69,66,75,77,81,86,87,93,90], borderColor: '#a78bfa', backgroundColor: 'rgba(167,139,250,0.08)', fill: true, tension: 0.4, pointRadius: 3, yAxisID: 'y' },
+      { label: 'Resp. Rate (brpm)', data: [17.3,17.1,17.1,16.4,16.6,16.8,16.1,17.1,16.3,15.7,15.2,15.9,15.4,16.3,17.3,16.2,16.1,15.8,16,16,15.8,15.8,15.3], borderColor: '#34d399', tension: 0.4, pointRadius: 3, yAxisID: 'y2' },
+    ]
+  },
+  options: {
+    plugins: { tooltip },
+    scales: {
+      y:  { position: 'left',  min: 0, max: 100, title: { display: true, text: '%' } },
+      y2: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'brpm' } }
+    },
+    responsive: true, maintainAspectRatio: true
+  }
+});
+</script>
+</body>
+</html>

@@ -1,20 +1,24 @@
-import { corsHeaders } from '../_shared/cors.ts'
 import { createAdminClient } from '../_shared/supabase-admin.ts'
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+const restrictedCorsHeaders = {
+  'Access-Control-Allow-Origin': Deno.env.get('APP_URL') ?? 'https://movu.app',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
 
-  // Verify caller is an admin via service role header
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: restrictedCorsHeaders })
+
   const authHeader = req.headers.get('Authorization')
-  if (authHeader !== `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`) {
-    return new Response('Forbidden', { status: 403, headers: corsHeaders })
+  const expectedSecret = Deno.env.get('FUNCTION_SECRET')
+  if (!expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
+    return new Response('Unauthorized', { status: 401, headers: restrictedCorsHeaders })
   }
 
   const { code, max_uses = 1, note, expires_at } = await req.json()
   if (!code) {
     return new Response(
       JSON.stringify({ error: 'code is required' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 400, headers: { ...restrictedCorsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 
@@ -28,12 +32,12 @@ Deno.serve(async (req) => {
   if (error) {
     return new Response(
       JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { ...restrictedCorsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 
   return new Response(
     JSON.stringify({ invite: data }),
-    { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { status: 201, headers: { ...restrictedCorsHeaders, 'Content-Type': 'application/json' } }
   )
 })

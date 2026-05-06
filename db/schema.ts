@@ -35,10 +35,6 @@ export const userProfiles = pgTable('user_profiles', {
   max_hr_bpm: integer('max_hr_bpm'),
   weight_kg: real('weight_kg'),
   height_m: real('height_m'),
-  strava_athlete_id: integer('strava_athlete_id'),
-  strava_access_token: text('strava_access_token'),
-  strava_refresh_token: text('strava_refresh_token'),
-  strava_token_expires: timestamp('strava_token_expires', { withTimezone: true }),
   whoop_user_id: bigint('whoop_user_id', { mode: 'number' }),
   whoop_access_token: text('whoop_access_token'),
   whoop_refresh_token: text('whoop_refresh_token'),
@@ -67,9 +63,8 @@ export const activities = pgTable('activities', {
   user_id: uuid('user_id')
     .notNull()
     .references(() => userProfiles.id, { onDelete: 'cascade' }),
-  strava_id: bigint('strava_id', { mode: 'number' }).unique(),
   whoop_activity_id: uuid('whoop_activity_id').unique(),
-  source: text('source').notNull().default('strava'),
+  source: text('source').notNull().default('manual'),
   activity_type: text('activity_type'),
   activity_category: text('activity_category'),
   activity_name: text('activity_name'),
@@ -127,7 +122,7 @@ export const bodyMeasurements = pgTable('body_measurements', {
   user_id: uuid('user_id')
     .notNull()
     .references(() => userProfiles.id, { onDelete: 'cascade' }),
-  measured_at: timestamp('measured_at', { withTimezone: true }).notNull(),
+  measured_at: date('measured_at').notNull(),
   weight_kg: real('weight_kg'),
   muscle_mass_kg: real('muscle_mass_kg'),
   fat_mass_kg: real('fat_mass_kg'),
@@ -197,6 +192,6 @@ export type NewInsight = typeof insights.$inferInsert
 
 // ---------- Union types for constrained text columns ----------
 export type ActivityCategory = 'run' | 'ride' | 'strength' | 'hiit' | 'mobility' | 'walk' | 'swim' | 'other'
-export type ActivitySource = 'strava' | 'manual' | 'whoop' | 'healthkit'
+export type ActivitySource = 'manual' | 'whoop' | 'apple_health'
 export type WaitlistStatus = 'waiting' | 'invited' | 'converted'
 export type InsightType = 'weekly_summary' | 'recovery_alert' | 'plan_suggestion'

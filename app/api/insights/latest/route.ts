@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { generateWeeklyInsight } from '@/lib/claude/insights'
 import { NextResponse } from 'next/server'
 
-const MODEL = 'claude-sonnet-4-5'
+import { CLAUDE_MODEL } from '@/lib/claude/constants'
 const CACHE_DAYS = 7
 const WINDOW_DAYS = 14
 
@@ -20,7 +20,7 @@ export async function GET() {
     .gte('created_at', new Date(Date.now() - CACHE_DAYS * 86400000).toISOString())
     .order('created_at', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (cached) return NextResponse.json({ insight: cached })
 
@@ -80,7 +80,7 @@ export async function GET() {
       user_id: user.id,
       type: 'weekly_summary',
       content,
-      model_used: MODEL,
+      model_used: CLAUDE_MODEL,
       period_start: periodStart.toISOString().slice(0, 10),
       period_end: periodEnd.toISOString().slice(0, 10),
     })

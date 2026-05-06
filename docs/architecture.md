@@ -20,7 +20,7 @@ graph TB
     end
 
     subgraph External["External Services"]
-        STRAVA[Strava API\nOAuth + Webhook]
+        WHOOP[WHOOP API\nOAuth + REST sync]
         CLAUDE[Claude API\nclaude-sonnet-4-20250514]
         RESEND[Resend\nTransactional email]
     end
@@ -29,12 +29,10 @@ graph TB
     MW -->|session cookie| AUTH
     UI -->|data fetches| API
     API -->|anon / service_role| DB
-    API -->|OAuth exchange| STRAVA
+    API -->|OAuth exchange| WHOOP
     EF -->|service_role| DB
-    EF -->|fetch activities| STRAVA
     EF -->|generate insight| CLAUDE
     EF -->|send email| RESEND
-    STRAVA -->|webhook POST| EF
 ```
 
 ---
@@ -91,64 +89,6 @@ sequenceDiagram
     DBTrigger->>Postgres: UPDATE invite_codes SET uses_count + 1
     DBTrigger->>Postgres: UPDATE waitlist SET status='converted' (if email matches)
     SupabaseAuth-->>User: confirmation email
-```
-
----
-
-## Strava integration flow
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant ConnectRoute as /api/strava/connect
-    participant StravaOAuth as Strava OAuth
-    participant CallbackRoute as /api/strava/callback
-    participant Postgres
-    participant BackfillRoute as /api/strava/backfill
-    participant StravaAPI as Strava API
-
-    User->>ConnectRoute: GET (authenticated)
-    ConnectRoute-->>User: redirect to Strava OAuth
-    User->>StravaOAuth: grant access
-    StravaOAuth-->>CallbackRoute: GET ?code=&state=user_id
-    CallbackRoute->>StravaOAuth: exchange code for tokens
-    StravaOAuth-->>CallbackRoute: access_token, refresh_token, athlete
-    CallbackRoute->>Postgres: UPDATE user_profiles SET strava_* tokens
-    CallbackRoute--)BackfillRoute: POST {user_id} (fire and forget)
-    CallbackRoute-->>User: redirect /dashboard?strava=connected
-
-    BackfillRoute->>Postgres: get token for user
-    BackfillRoute->>StravaAPI: GET /athlete/activities?after=90d
-    StravaAPI-->>BackfillRoute: activities[]
-    BackfillRoute->>Postgres: UPSERT activities (ON CONFLICT strava_id)
-```
-
----
-
-## Real-time activity sync (webhook)
-
-```mermaid
-sequenceDiagram
-    participant Strava
-    participant WebhookFn as Edge Fn: strava-webhook
-    participant Postgres
-    participant StravaAPI as Strava API
-
-    Strava->>WebhookFn: POST {object_type, aspect_type, object_id, owner_id}
-    WebhookFn->>Postgres: SELECT user_profiles WHERE strava_athlete_id = owner_id
-    alt user not found
-        WebhookFn-->>Strava: 200 ok (ignore)
-    end
-    alt token expired
-        WebhookFn->>Strava: POST /oauth/token (refresh)
-        Strava-->>WebhookFn: new tokens
-        WebhookFn->>Postgres: UPDATE user_profiles tokens
-    end
-    WebhookFn->>StravaAPI: GET /activities/{object_id}
-    StravaAPI-->>WebhookFn: full activity
-    WebhookFn->>WebhookFn: normalizeActivity() → category + muscle groups
-    WebhookFn->>Postgres: UPSERT activities
-    WebhookFn-->>Strava: 200 ok
 ```
 
 ---
@@ -216,10 +156,6 @@ erDiagram
         text goal
         int max_hr_bpm
         numeric weight_kg
-        bigint strava_athlete_id
-        text strava_access_token
-        text strava_refresh_token
-        timestamptz strava_token_expires
         text invite_code_used FK
         boolean onboarding_complete
     }
@@ -227,7 +163,6 @@ erDiagram
     activities {
         uuid id PK
         uuid user_id FK
-        bigint strava_id UK
         text source
         text activity_type
         text activity_category
@@ -292,10 +227,6 @@ movu/
 │   │   ├── insights/latest/         GET  most recent insight
 │   │   ├── dashboard/               GET  weekly aggregated stats
 │   │   ├── waitlist/                POST join waitlist (public)
-│   │   ├── strava/
-│   │   │   ├── connect/             GET  start OAuth
-│   │   │   ├── callback/            GET  exchange code + store tokens
-│   │   │   └── backfill/            POST fetch 90 days of history
 │   │   └── auth/callback/           GET  Supabase auth redirect
 │   ├── (auth)/
 │   │   ├── signup/                  Invite-gated signup
@@ -309,9 +240,6 @@ movu/
 │   │   ├── client.ts                Browser client
 │   │   ├── server.ts                Server client (cookie-based)
 │   │   └── admin.ts                 Service-role client
-│   ├── strava/
-│   │   ├── client.ts                Token refresh + API helpers
-│   │   └── normalize.ts             Strava → activities row
 │   └── claude/
 │       ├── prompts.ts               Spanish coaching system prompt
 │       └── insights.ts              Claude API call
@@ -321,7 +249,6 @@ movu/
 │   ├── functions/
 │   │   ├── _shared/                 cors.ts, supabase-admin.ts
 │   │   ├── validate-invite/         Check invite code before signup
-│   │   ├── strava-webhook/          Real-time activity sync
 │   │   ├── generate-insight/        Weekly Claude coaching call
 │   │   ├── create-invite-code/      Admin: generate new codes
 │   │   └── send-waitlist-email/     Resend confirmation email
@@ -342,10 +269,6 @@ movu/
 | `NEXT_PUBLIC_SUPABASE_URL` | Client + Server | Public — safe in browser |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client + Server | Public — RLS enforces access |
 | `SUPABASE_SERVICE_ROLE_KEY` | API routes + Edge Functions | **Never expose client-side** |
-| `STRAVA_CLIENT_ID` | API routes + Edge Functions | Strava developer app |
-| `STRAVA_CLIENT_SECRET` | API routes + Edge Functions | Strava developer app |
-| `STRAVA_WEBHOOK_VERIFY_TOKEN` | Edge Function: strava-webhook | Random string, set once |
-| `NEXT_PUBLIC_STRAVA_REDIRECT_URI` | /api/strava/connect | Must match Strava app settings |
 | `ANTHROPIC_API_KEY` | Edge Function: generate-insight | Claude API |
 | `RESEND_API_KEY` | Edge Function: send-waitlist-email | Optional — emails skip if missing |
 | `ADMIN_USER_IDS` | /admin page | Comma-separated Supabase UUIDs |
