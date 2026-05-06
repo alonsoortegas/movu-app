@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# WHOOP data dump (personal health data — exploration only)
+whoop-data-dump.json

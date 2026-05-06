@@ -33,6 +33,10 @@
     "recentWorkouts": "Últimos entrenamientos",
     "weeklyProgress": "Progreso semanal",
     "muscleGroups": "Grupos musculares",
+    "noActivities": "Aún no hay entrenamientos esta semana.",
+    "noMuscleData": "Registra entrenamientos para ver grupos musculares.",
+    "aiInsightEmpty": "Aún no hay insight generado para esta semana.",
+    "aiGenerate": "Generar →",
     "metrics": {
       "sleep": "Sueño",
       "sleepSub": "Buena calidad",
@@ -99,12 +103,12 @@
     "dateLabel": "Lunes 21 de Abril",
     "classType": "Tipo de clase",
     "classTypes": {
-      "pesas": "Pesas",
+      "weightlifting": "Pesas",
       "cardio": "Cardio",
-      "correr": "Correr",
-      "combinado": "Combinado",
+      "running": "Correr",
+      "combined": "Combinado",
       "bootcamp": "Bootcamp",
-      "taller": "Taller"
+      "workshop": "Taller"
     },
     "className": "Nombre de la clase",
     "classPlaceholder": "ej. Spinning, Barre, HIIT...",

@@ -33,6 +33,10 @@
     "recentWorkouts": "Recent workouts",
     "weeklyProgress": "Weekly progress",
     "muscleGroups": "Muscle groups",
+    "noActivities": "No workouts logged this week yet.",
+    "noMuscleData": "Log workouts to see muscle group data.",
+    "aiInsightEmpty": "No insight generated yet for this week.",
+    "aiGenerate": "Generate →",
     "metrics": {
       "sleep": "Sleep",
       "sleepSub": "Good quality",
@@ -99,12 +103,12 @@
     "dateLabel": "Monday, April 21",
     "classType": "Class type",
     "classTypes": {
-      "pesas": "Weights",
+      "weightlifting": "Weights",
       "cardio": "Cardio",
-      "correr": "Run",
-      "combinado": "Combined",
+      "running": "Run",
+      "combined": "Combined",
       "bootcamp": "Bootcamp",
-      "taller": "Workshop"
+      "workshop": "Workshop"
     },
     "className": "Class name",
     "classPlaceholder": "e.g. Spinning, Barre, HIIT...",

@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useState, useMemo } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import type { WorkoutType } from "@/types";
 
-const CLASS_TYPE_KEYS = ["pesas", "cardio", "correr", "combinado", "bootcamp", "taller"] as const;
-const CLASS_EMOJIS: Record<string, string> = { pesas: "💪", cardio: "🚴", correr: "🏃", combinado: "🔄", bootcamp: "🥊", taller: "📚" };
+const CLASS_TYPE_KEYS: WorkoutType[] = ["weightlifting", "cardio", "running", "combined", "bootcamp", "workshop"];
+const CLASS_EMOJIS: Record<string, string> = { weightlifting: "💪", cardio: "🚴", running: "🏃", combined: "🔄", bootcamp: "🥊", workshop: "📚" };
 
 export default function RegistroPage() {
   const t = useTranslations("registro");
-  const [type, setType] = useState("pesas");
+  const locale = useLocale();
+  const todayLabel = useMemo(() =>
+    new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long" }).format(new Date()),
+    [locale]
+  );
+  const [type, setType] = useState<WorkoutType>("weightlifting");
   const [className, setClassName] = useState("");
   const [studio, setStudio] = useState("");
   const [duration, setDuration] = useState("");
@@ -16,20 +22,54 @@ export default function RegistroPage() {
   const [distance, setDistance] = useState("");
   const [effort, setEffort] = useState(3);
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const showDistance = type === "correr" || type === "cardio";
+  const showDistance = type === "running" || type === "cardio";
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setSaveError(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/activities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type,
+          className,
+          studio,
+          duration_min: duration ? Number(duration) : undefined,
+          calories: calories ? Number(calories) : undefined,
+          rpe: effort,
+          distance_km: distance ? Number(distance) : undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to save");
+      }
+      setType("pesas");
+      setClassName("");
+      setStudio("");
+      setDuration("");
+      setCalories("");
+      setDistance("");
+      setEffort(3);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="p-4 md:p-8 max-w-2xl mx-auto">
       <div className="mb-5 md:mb-8">
         <h1 className="text-xl md:text-2xl font-bold text-[#111]">{t("title")}</h1>
-        <p className="text-xs md:text-sm text-muted mt-0.5">{t("dateLabel")}</p>
+        <p className="text-xs md:text-sm text-muted mt-0.5 capitalize">{todayLabel}</p>
       </div>
       <form onSubmit={handleSave} className="space-y-5 md:space-y-6">
         <div>
@@ -88,16 +128,18 @@ export default function RegistroPage() {
           </div>
         </div>
         <div className="hidden md:block pt-2">
-          <button type="submit"
-            className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${saved ? "bg-[#4caf50] text-white" : "bg-accent hover:bg-accent-dark text-white shadow-sm hover:shadow-md"}`}>
-            {saved ? t("saved") : t("save")}
+          {saveError && <p className="text-sm text-red-500 mb-2">{saveError}</p>}
+          <button type="submit" disabled={loading}
+            className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "bg-accent hover:bg-accent-dark text-white shadow-sm hover:shadow-md"}`}>
+            {loading ? "Saving…" : saved ? t("saved") : t("save")}
           </button>
         </div>
       </form>
       <div className="md:hidden fixed bottom-[72px] left-4 right-4">
-        <button onClick={handleSave}
-          className={`w-full py-3.5 rounded-xl text-sm font-semibold shadow-lg transition-all ${saved ? "bg-[#4caf50] text-white" : "bg-accent text-white"}`}>
-          {saved ? t("savedShort") : t("save")}
+        {saveError && <p className="text-sm text-red-500 mb-2 text-center">{saveError}</p>}
+        <button onClick={handleSave} disabled={loading}
+          className={`w-full py-3.5 rounded-xl text-sm font-semibold shadow-lg transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "bg-accent text-white"}`}>
+          {loading ? "Saving…" : saved ? t("savedShort") : t("save")}
         </button>
       </div>
     </div>

@@ -1,0 +1,6 @@
+.env
+tokens.json
+sync_state.json
+*.jsonl
+__pycache__/
+*.pyc
