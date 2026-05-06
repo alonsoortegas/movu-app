@@ -5,11 +5,17 @@ import { routing } from './i18n/routing'
 
 const intlMiddleware = createMiddleware(routing)
 
-const PUBLIC_PATHS = ['/', '/waitlist', '/login', '/signup', '/api/waitlist']
+// Auth pages live outside [locale] and must never get a locale prefix
+const AUTH_PATHS = ['/login', '/signup']
+const PUBLIC_PATHS = ['/waitlist', '/api/waitlist']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const isPublic = PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith('/api/auth'))
+
+  const isAuthPath = AUTH_PATHS.includes(pathname)
+  const isPublic = isAuthPath
+    || PUBLIC_PATHS.some(p => pathname === p)
+    || pathname.startsWith('/api/auth')
 
   let supabaseResponse = NextResponse.next({ request })
 
@@ -34,10 +40,23 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
+  // Bounce authenticated users away from login/signup
+  if (user && isAuthPath) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${routing.defaultLocale}/dashboard`
+    return NextResponse.redirect(url)
+  }
+
+  // Bounce unauthenticated users to login (skip intl middleware — no locale prefix on /login)
   if (!user && !isPublic) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
+  }
+
+  // Auth pages: serve directly — bypass intl so they stay at /login, /signup
+  if (isAuthPath) {
+    return supabaseResponse
   }
 
   const intlResponse = intlMiddleware(request)
