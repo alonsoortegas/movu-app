@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import type { Database } from '@/types/database'
+
+type ProfileUpdate = Database['public']['Tables']['user_profiles']['Update']
 
 export async function GET() {
   const supabase = await createClient()
@@ -8,7 +11,7 @@ export async function GET() {
 
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('full_name, city, goal, max_hr_bpm, strava_athlete_id, onboarding_complete')
+    .select('full_name, city, goal, max_hr_bpm, strava_athlete_id, onboarding_complete, data_source')
     .eq('id', user.id)
     .single()
 
@@ -35,7 +38,7 @@ export async function PATCH(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
-  const update: Record<string, unknown> = {}
+  const update: ProfileUpdate = {}
   if (body.full_name !== undefined) update.full_name = body.full_name
   if (body.goal !== undefined) update.goal = body.goal
   if (body.max_hr_bpm !== undefined) update.max_hr_bpm = body.max_hr_bpm

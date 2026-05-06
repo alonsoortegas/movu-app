@@ -126,6 +126,11 @@ export type Database = {
           strava_access_token: string | null
           strava_refresh_token: string | null
           strava_token_expires: string | null
+          whoop_user_id: number | null
+          whoop_access_token: string | null
+          whoop_refresh_token: string | null
+          whoop_token_expires: string | null
+          data_source: string | null
           invite_code_used: string | null
           onboarding_complete: boolean
           created_at: string
@@ -141,6 +146,11 @@ export type Database = {
           strava_access_token?: string | null
           strava_refresh_token?: string | null
           strava_token_expires?: string | null
+          whoop_user_id?: number | null
+          whoop_access_token?: string | null
+          whoop_refresh_token?: string | null
+          whoop_token_expires?: string | null
+          data_source?: string | null
           invite_code_used?: string | null
           onboarding_complete?: boolean
           created_at?: string
@@ -156,6 +166,11 @@ export type Database = {
           strava_access_token?: string | null
           strava_refresh_token?: string | null
           strava_token_expires?: string | null
+          whoop_user_id?: number | null
+          whoop_access_token?: string | null
+          whoop_refresh_token?: string | null
+          whoop_token_expires?: string | null
+          data_source?: string | null
           invite_code_used?: string | null
           onboarding_complete?: boolean
           created_at?: string

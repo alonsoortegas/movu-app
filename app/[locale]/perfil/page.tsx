@@ -5,6 +5,12 @@ import { useTranslations } from "next-intl";
 
 const GOAL_KEYS = ["loseGainMuscle", "gainMuscle", "loseWeight", "endurance", "stayActive"] as const;
 
+type WhoopStatus = {
+  connected: boolean;
+  reauth_required: boolean;
+  data_source: string | null;
+};
+
 export default function PerfilPage() {
   const t = useTranslations("perfil");
   const [name, setName] = useState("");
@@ -16,6 +22,10 @@ export default function PerfilPage() {
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<string | null>(null);
+  const [whoopStatus, setWhoopStatus] = useState<WhoopStatus | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncDone, setSyncDone] = useState(false);
 
   const initialBodyComp = useRef<{ muscleMass: string; bodyFat: string } | null>(null);
 
@@ -26,6 +36,7 @@ export default function PerfilPage() {
         if (data.full_name) setName(data.full_name);
         if (data.goal) setGoal(data.goal);
         if (data.max_hr_bpm) setMaxHr(String(data.max_hr_bpm));
+        if (data.data_source) setDataSource(data.data_source);
         if (data.body_comp) {
           const m = String(data.body_comp.muscle_mass_kg ?? "");
           const f = String(data.body_comp.fat_percentage ?? "");
@@ -36,6 +47,31 @@ export default function PerfilPage() {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    fetch("/api/whoop/status")
+      .then((r) => r.json())
+      .then((data: WhoopStatus) => setWhoopStatus(data))
+      .catch(() => {});
+  }, []);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncDone(false);
+    try {
+      await fetch("/api/whoop/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ days: 30 }),
+      });
+      setSyncDone(true);
+      setTimeout(() => setSyncDone(false), 3000);
+    } catch {
+      // silent
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +134,62 @@ export default function PerfilPage() {
           <div className="text-base md:text-lg font-bold text-[#111]">{name}</div>
           <div className="text-xs md:text-sm text-muted">{t(`goals.${goal}`)}</div>
         </div>
+      </div>
+      <div className="mb-6 bg-surface border border-border rounded-xl p-4">
+        <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">Data source</h2>
+        {dataSource === "whoop" && whoopStatus?.connected && (
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-accent-light border border-accent text-accent-dark px-3 py-1 rounded-full">
+              WHOOP connected
+            </span>
+            <button
+              type="button"
+              onClick={handleSync}
+              disabled={syncing}
+              className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60"
+            >
+              {syncing ? "Syncing…" : syncDone ? "Done" : "Sync now"}
+            </button>
+          </div>
+        )}
+        {dataSource === "whoop" && whoopStatus?.reauth_required && (
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-yellow-50 border border-yellow-200 text-yellow-700 px-3 py-1 rounded-full">
+              Reconnect required
+            </span>
+            <a
+              href="/api/whoop/connect"
+              className="text-sm font-medium px-4 py-2 rounded-lg border border-border text-[#444] hover:border-[#bbb] transition-all"
+            >
+              Reconnect WHOOP
+            </a>
+          </div>
+        )}
+        {!dataSource && (
+          <div className="flex gap-3 flex-wrap">
+            <a
+              href="/api/whoop/connect"
+              className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-accent bg-accent-light text-sm font-semibold text-center text-[#333] hover:bg-accent hover:text-white transition-all"
+            >
+              WHOOP
+            </a>
+            <button
+              type="button"
+              disabled
+              className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-muted cursor-not-allowed relative"
+            >
+              Apple Health
+              <span className="ml-2 text-[10px] bg-[#f0f0f0] border border-border px-1.5 py-0.5 rounded-full align-middle">coming soon</span>
+            </button>
+            <button
+              type="button"
+              disabled
+              className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-muted cursor-not-allowed"
+            >
+              Manual
+            </button>
+          </div>
+        )}
       </div>
       <form onSubmit={handleSave} className="space-y-6 md:space-y-8">
         <section>
