@@ -65,9 +65,11 @@ export default async function DashboardPage({
       .order('start_date_utc', { ascending: true }),
     supabase
       .from('sleep_logs')
-      .select('hours, quality')
+      .select('hours, quality, performance_pct')
       .eq('user_id', user!.id)
-      .eq('date', today)
+      .gte('date', new Date(Date.now() - 2 * 86400000).toISOString().split('T')[0])
+      .order('date', { ascending: false })
+      .limit(1)
       .maybeSingle(),
     supabase
       .from('activities')
@@ -179,7 +181,7 @@ export default async function DashboardPage({
           {
             emoji: '💤',
             labelKey: 'metrics.sleep' as const,
-            value: todaySleep?.hours ? `${todaySleep.hours}h` : '—',
+            value: todaySleep?.hours ? `${Math.round(todaySleep.hours * 10) / 10}h` : '—',
             subKey: 'metrics.sleepSub' as const,
           },
           {
