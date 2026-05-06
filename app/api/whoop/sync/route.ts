@@ -156,13 +156,22 @@ export async function POST(request: Request) {
       sleep_needed_strain_h: r.sleep_needed_strain_h,
     }))
 
+  // Deduplicate by (user_id, date) — keep the record with the most hours if multiple per day
+  const sleepByDate = new Map<string, typeof sleepRows[0]>()
+  for (const row of sleepRows) {
+    const key = `${row.user_id}:${row.date}`
+    const existing = sleepByDate.get(key)
+    if (!existing || (row.hours ?? 0) > (existing.hours ?? 0)) sleepByDate.set(key, row)
+  }
+  const dedupedSleepRows = [...sleepByDate.values()]
+
   let sleepCount = 0
-  if (sleepRows.length > 0) {
+  if (dedupedSleepRows.length > 0) {
     const { error } = await admin
       .from('sleep_logs')
-      .upsert(sleepRows, { onConflict: 'user_id,date', ignoreDuplicates: false })
+      .upsert(dedupedSleepRows, { onConflict: 'user_id,date', ignoreDuplicates: false })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    sleepCount = sleepRows.length
+    sleepCount = dedupedSleepRows.length
   }
 
   // Daily metrics: merge cycles + recoveries
@@ -197,13 +206,19 @@ export async function POST(request: Request) {
     metricRows.push(merged)
   }
 
+  const metricsByDate = new Map<string, typeof metricRows[0]>()
+  for (const row of metricRows) {
+    metricsByDate.set(`${row.user_id}:${row.date}`, row)
+  }
+  const dedupedMetricRows = [...metricsByDate.values()]
+
   let metricsCount = 0
-  if (metricRows.length > 0) {
+  if (dedupedMetricRows.length > 0) {
     const { error } = await admin
       .from('daily_metrics')
-      .upsert(metricRows, { onConflict: 'user_id,date', ignoreDuplicates: false })
+      .upsert(dedupedMetricRows, { onConflict: 'user_id,date', ignoreDuplicates: false })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    metricsCount = metricRows.length
+    metricsCount = dedupedMetricRows.length
   }
 
   return NextResponse.json({
