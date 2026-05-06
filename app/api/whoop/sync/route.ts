@@ -31,15 +31,18 @@ async function fetchAllPages<T>(
   token: string,
   path: string,
   windowStart: string,
-  startParam: string
 ): Promise<T[]> {
   const records: T[] = []
   let cursor: string | null = null
 
   while (true) {
-    const params = new URLSearchParams({ limit: '25', [startParam]: windowStart })
+    const params = new URLSearchParams({ limit: '25', start: windowStart })
     if (cursor) params.set('nextToken', cursor)
-    const data = await whoopGet(token, `${path}?${params}`) as { records: T[]; next_token?: string }
+    const data = await whoopGet(token, `${path}?${params}`) as { records?: T[]; next_token?: string }
+    if (!data.records) {
+      console.error(`[whoop/sync] unexpected response for ${path}:`, JSON.stringify(data).slice(0, 300))
+      break
+    }
     records.push(...data.records)
     if (!data.next_token) break
     cursor = data.next_token
@@ -74,12 +77,18 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient()
 
-  const [rawWorkouts, rawSleeps, rawCycles, rawRecoveries] = await Promise.all([
-    fetchAllPages<WhoopWorkout>(token, '/activity/workout', windowStart, 'start'),
-    fetchAllPages<WhoopSleep>(token, '/activity/sleep', windowStart, 'start'),
-    fetchAllPages<WhoopCycle>(token, '/cycle', windowStart, 'start'),
-    fetchAllPages<WhoopRecovery>(token, '/recovery', windowStart, 'cycleStart'),
-  ])
+  let rawWorkouts: WhoopWorkout[], rawSleeps: WhoopSleep[], rawCycles: WhoopCycle[], rawRecoveries: WhoopRecovery[]
+  try {
+    ;[rawWorkouts, rawSleeps, rawCycles, rawRecoveries] = await Promise.all([
+      fetchAllPages<WhoopWorkout>(token, '/activity/workout', windowStart),
+      fetchAllPages<WhoopSleep>(token, '/activity/sleep', windowStart),
+      fetchAllPages<WhoopCycle>(token, '/cycle', windowStart),
+      fetchAllPages<WhoopRecovery>(token, '/recovery', windowStart),
+    ])
+  } catch (err) {
+    console.error('[whoop/sync] WHOOP API fetch failed:', err)
+    return NextResponse.json({ error: 'WHOOP API fetch failed', detail: String(err) }, { status: 500 })
+  }
 
   // Workouts
   const workoutRows: ActivityInsert[] = rawWorkouts
