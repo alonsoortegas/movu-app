@@ -1,6 +1,55 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+const CATEGORY_MAP: Record<string, string> = {
+  pesas: 'strength',
+  cardio: 'ride',
+  correr: 'run',
+  combinado: 'hiit',
+  bootcamp: 'hiit',
+  taller: 'other',
+}
+
+export async function POST(request: Request) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await request.json()
+  const { type, className, studio, duration_min, calories, rpe, distance_km } = body
+
+  if (!type || !duration_min) {
+    return NextResponse.json({ error: 'type and duration_min are required' }, { status: 400 })
+  }
+
+  const row: Record<string, unknown> = {
+    user_id: user.id,
+    source: 'manual',
+    activity_type: type,
+    activity_category: CATEGORY_MAP[type] ?? 'other',
+    name: className ?? null,
+    sport_name: studio ?? null,
+    moving_time_s: Number(duration_min) * 60,
+    calories: calories ? Number(calories) : null,
+    rpe: rpe ? Number(rpe) : null,
+    start_date_utc: new Date().toISOString(),
+  }
+
+  if (distance_km !== undefined && distance_km !== null && distance_km !== '') {
+    row.distance_m = Number(distance_km) * 1000
+  }
+
+  const { data: activity, error } = await supabase
+    .from('activities')
+    .insert(row)
+    .select()
+    .single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  return NextResponse.json({ activity }, { status: 201 })
+}
+
 export async function GET(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

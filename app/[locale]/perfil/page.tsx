@@ -1,23 +1,89 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 
 const GOAL_KEYS = ["loseGainMuscle", "gainMuscle", "loseWeight", "endurance", "stayActive"] as const;
 
 export default function PerfilPage() {
   const t = useTranslations("perfil");
-  const [name, setName] = useState("Ana García");
+  const [name, setName] = useState("");
   const [goal, setGoal] = useState("loseGainMuscle");
-  const [muscleMass, setMuscleMass] = useState("28.4");
-  const [bodyFat, setBodyFat] = useState("22.5");
+  const [muscleMass, setMuscleMass] = useState("");
+  const [bodyFat, setBodyFat] = useState("");
+  const [maxHr, setMaxHr] = useState("");
   const [weeklyGoal, setWeeklyGoal] = useState("5");
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const handleSave = (e: React.FormEvent) => {
+  const initialBodyComp = useRef<{ muscleMass: string; bodyFat: string } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.full_name) setName(data.full_name);
+        if (data.goal) setGoal(data.goal);
+        if (data.max_hr_bpm) setMaxHr(String(data.max_hr_bpm));
+        if (data.body_comp) {
+          const m = String(data.body_comp.muscle_mass_kg ?? "");
+          const f = String(data.body_comp.fat_percentage ?? "");
+          setMuscleMass(m);
+          setBodyFat(f);
+          initialBodyComp.current = { muscleMass: m, bodyFat: f };
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setSaveError(null);
+    setLoading(true);
+    try {
+      const patchRes = await fetch("/api/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: name,
+          goal,
+          max_hr_bpm: maxHr ? parseInt(maxHr) : undefined,
+        }),
+      });
+      if (!patchRes.ok) {
+        const d = await patchRes.json();
+        throw new Error(d.error ?? "Failed to save profile");
+      }
+
+      const bodyCompChanged =
+        initialBodyComp.current === null ||
+        muscleMass !== initialBodyComp.current.muscleMass ||
+        bodyFat !== initialBodyComp.current.bodyFat;
+
+      if (bodyCompChanged && muscleMass && bodyFat) {
+        const measRes = await fetch("/api/body-measurements", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            muscle_mass_kg: parseFloat(muscleMass),
+            fat_percentage: parseFloat(bodyFat),
+          }),
+        });
+        if (!measRes.ok) {
+          const d = await measRes.json();
+          throw new Error(d.error ?? "Failed to save body measurements");
+        }
+        initialBodyComp.current = { muscleMass, bodyFat };
+      }
+
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -48,6 +114,11 @@ export default function PerfilPage() {
                 className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                 {GOAL_KEYS.map((key) => <option key={key} value={key}>{t(`goals.${key}`)}</option>)}
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#444] mb-2">Max HR</label>
+              <input type="number" value={maxHr} onChange={(e) => setMaxHr(e.target.value)} placeholder="e.g. 185" min={100} max={220}
+                className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
             </div>
             <div>
               <label className="block text-sm font-medium text-[#444] mb-2">{t("weeklyGoal")}</label>
@@ -91,8 +162,8 @@ export default function PerfilPage() {
               <span>{t("muscle")} {muscleMass}kg · {t("fat")} {bodyFat}%</span>
             </div>
             <div className="h-3 bg-[#e8e8e8] rounded-full overflow-hidden flex">
-              <div className="h-full bg-accent rounded-l-full" style={{ width: `${(parseFloat(muscleMass) / 60) * 100}%` }} />
-              <div className="h-full bg-[#f07840]" style={{ width: `${parseFloat(bodyFat)}%` }} />
+              <div className="h-full bg-accent rounded-l-full" style={{ width: `${(parseFloat(muscleMass || "0") / 60) * 100}%` }} />
+              <div className="h-full bg-[#f07840]" style={{ width: `${parseFloat(bodyFat || "0")}%` }} />
             </div>
             <div className="flex gap-4 mt-2">
               <div className="flex items-center gap-1.5 text-xs text-muted"><div className="w-2.5 h-2.5 rounded-sm bg-accent" /> {t("muscle")}</div>
@@ -100,15 +171,19 @@ export default function PerfilPage() {
             </div>
           </div>
         </section>
-        <button type="submit"
-          className={`hidden md:block w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${saved ? "bg-[#4caf50] text-white" : "bg-accent hover:bg-accent-dark text-white shadow-sm"}`}>
-          {saved ? t("saved") : t("save")}
-        </button>
+        <div>
+          {saveError && <p className="text-sm text-red-500 mb-2">{saveError}</p>}
+          <button type="submit" disabled={loading}
+            className={`hidden md:block w-full py-3.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "bg-accent hover:bg-accent-dark text-white shadow-sm"}`}>
+            {loading ? "Saving…" : saved ? t("saved") : t("save")}
+          </button>
+        </div>
       </form>
       <div className="md:hidden fixed bottom-[72px] left-4 right-4">
-        <button onClick={handleSave}
-          className={`w-full py-3.5 rounded-xl text-sm font-semibold shadow-lg transition-all ${saved ? "bg-[#4caf50] text-white" : "bg-accent text-white"}`}>
-          {saved ? t("savedShort") : t("save")}
+        {saveError && <p className="text-sm text-red-500 mb-2 text-center">{saveError}</p>}
+        <button onClick={handleSave} disabled={loading}
+          className={`w-full py-3.5 rounded-xl text-sm font-semibold shadow-lg transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "bg-accent text-white"}`}>
+          {loading ? "Saving…" : saved ? t("savedShort") : t("save")}
         </button>
       </div>
     </div>
