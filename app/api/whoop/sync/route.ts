@@ -59,7 +59,7 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json().catch(() => ({}))
-  const days = Math.min(Number(body.days ?? 30), 180)
+  const days = Math.min(Number(body.days ?? 25), 25)
   const windowStart = new Date(Date.now() - days * 86400000).toISOString()
 
   let token: string

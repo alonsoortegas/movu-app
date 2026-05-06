@@ -62,7 +62,7 @@ export default function PerfilPage() {
       await fetch("/api/whoop/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ days: 30 }),
+        body: JSON.stringify({ days: 25 }),
       });
       setSyncDone(true);
       setTimeout(() => setSyncDone(false), 3000);
