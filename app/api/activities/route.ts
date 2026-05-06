@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 const CATEGORY_MAP: Record<string, string> = {
   weightlifting: 'strength',
-  cardio: 'ride',
+  cardio: 'other',
   running: 'run',
   combined: 'hiit',
   bootcamp: 'hiit',
@@ -27,10 +27,9 @@ export async function POST(request: Request) {
     source: 'manual',
     activity_type: type,
     activity_category: CATEGORY_MAP[type] ?? 'other',
-    name: className ?? null,
-    sport_name: studio ?? null,
+    activity_name: [className, studio].filter(Boolean).join(' · ') || null,
     moving_time_s: Number(duration_min) * 60,
-    calories: calories ? Number(calories) : null,
+    calories_kcal: calories ? Number(calories) : null,
     rpe: rpe ? Number(rpe) : null,
     start_date_utc: new Date().toISOString(),
   }
