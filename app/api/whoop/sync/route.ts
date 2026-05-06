@@ -160,7 +160,7 @@ export async function POST(request: Request) {
   if (sleepRows.length > 0) {
     const { error } = await admin
       .from('sleep_logs')
-      .upsert(sleepRows, { onConflict: 'whoop_sleep_id', ignoreDuplicates: false })
+      .upsert(sleepRows, { onConflict: 'user_id,date', ignoreDuplicates: false })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     sleepCount = sleepRows.length
   }
