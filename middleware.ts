@@ -54,8 +54,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Auth pages: serve directly — bypass intl so they stay at /login, /signup
-  if (isAuthPath) {
+  // Auth pages and API routes: serve directly — no locale prefix needed
+  if (isAuthPath || pathname.startsWith('/api/')) {
     return supabaseResponse
   }
 
