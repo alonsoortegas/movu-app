@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import type { Database } from '@/types/database'
+
+type BodyMeasurementInsert = Database['public']['Tables']['body_measurements']['Insert']
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -13,7 +16,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'muscle_mass_kg and fat_percentage are required' }, { status: 400 })
   }
 
-  const row: Record<string, unknown> = {
+  const row: BodyMeasurementInsert = {
     user_id: user.id,
     muscle_mass_kg: Number(muscle_mass_kg),
     fat_percentage: Number(fat_percentage),

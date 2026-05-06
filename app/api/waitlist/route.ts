@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 // Public endpoint — uses anon key, RLS allows insert
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
 export async function POST(request: Request) {

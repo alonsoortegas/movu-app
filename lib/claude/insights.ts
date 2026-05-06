@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { COACHING_SYSTEM_PROMPT } from './prompts'
+import { CLAUDE_MODEL } from './constants'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
@@ -12,7 +13,7 @@ type InsightContext = {
 
 export async function generateWeeklyInsight(context: InsightContext): Promise<string> {
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-5',
+    model: CLAUDE_MODEL,
     max_tokens: 1024,
     system: COACHING_SYSTEM_PROMPT,
     messages: [

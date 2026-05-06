@@ -1,6 +1,3 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
-import * as schema from './schema'
-
-const client = postgres(process.env.DATABASE_URL!, { prepare: false })
-export const db = drizzle(client, { schema })
+// Drizzle schema is used only as a type source for db/schema.ts — no live connection.
+// All queries go through @supabase/supabase-js in lib/supabase/.
+export * from './schema'

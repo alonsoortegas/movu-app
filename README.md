@@ -1,6 +1,6 @@
 # Movu
 
-Fitness intelligence platform for boutique fitness users in CDMX. Aggregates Strava activity data, sleep, and body composition to generate AI-powered weekly coaching insights.
+Fitness intelligence platform for boutique fitness users in CDMX. Aggregates WHOOP activity data, sleep, and body composition to generate AI-powered weekly coaching insights.
 
 ## Stack
 
@@ -10,7 +10,7 @@ Fitness intelligence platform for boutique fitness users in CDMX. Aggregates Str
 | Database | Supabase Postgres with RLS |
 | Auth | Supabase Auth (magic link + Google OAuth) |
 | API / Webhooks | Supabase Edge Functions (Deno) |
-| Activity sync | Strava OAuth + Webhook |
+| Activity sync | WHOOP OAuth + REST sync |
 | AI coaching | Claude API (`claude-sonnet-4-20250514`) |
 | Email | Resend |
 
@@ -25,9 +25,6 @@ app/
     insights/latest/        GET  — most recent coaching insight
     dashboard/              GET  — aggregated weekly stats
     waitlist/               POST — join waitlist (public)
-    strava/connect/         GET  — start Strava OAuth flow
-    strava/callback/        GET  — Strava OAuth callback + token storage
-    strava/backfill/        POST — fetch last 90 days of activities
     auth/callback/          GET  — Supabase auth callback
   (auth)/signup/            Invite-gated signup page
   (auth)/login/             Login page
@@ -38,9 +35,6 @@ lib/
     client.ts               Browser Supabase client
     server.ts               Server-side Supabase client (cookie-based)
     admin.ts                Service-role client (server/Edge Functions only)
-  strava/
-    client.ts               Token refresh + Strava API helpers
-    normalize.ts            Strava activity → activities table row
   claude/
     prompts.ts              Coaching system prompt (Spanish)
     insights.ts             Claude API call + response parsing
@@ -49,7 +43,6 @@ supabase/
   migrations/               SQL migrations (run in order)
   functions/
     validate-invite/        POST — check invite code validity before signup
-    strava-webhook/         GET/POST — Strava webhook handler
     generate-insight/       POST — generate weekly coaching insight via Claude
     create-invite-code/     POST — admin: create a new invite code
     send-waitlist-email/    POST — send confirmation email via Resend
@@ -90,11 +83,6 @@ NEXT_PUBLIC_SUPABASE_URL=         # from Supabase project → Settings → API
 NEXT_PUBLIC_SUPABASE_ANON_KEY=    # from Supabase project → Settings → API
 SUPABASE_SERVICE_ROLE_KEY=        # from Supabase project → Settings → API
 
-STRAVA_CLIENT_ID=233223
-STRAVA_CLIENT_SECRET=             # from strava.com/settings/api
-STRAVA_WEBHOOK_VERIFY_TOKEN=      # any random string you choose
-NEXT_PUBLIC_STRAVA_REDIRECT_URI=http://localhost:3000/api/strava/callback
-
 ANTHROPIC_API_KEY=                # from console.anthropic.com
 RESEND_API_KEY=                   # from resend.com (optional for dev)
 RESEND_FROM_EMAIL=hola@movu.app
@@ -130,12 +118,6 @@ App runs at [http://localhost:3000](http://localhost:3000).
 supabase functions serve validate-invite --env-file supabase/functions/.env
 ```
 
-For Strava webhook testing locally, use [ngrok](https://ngrok.com) to expose your local port:
-
-```bash
-ngrok http 54321   # expose Supabase Edge Functions port
-```
-
 ## Database schema
 
 7 tables, all with RLS enabled:
@@ -144,8 +126,8 @@ ngrok http 54321   # expose Supabase Edge Functions port
 |---|---|
 | `invite_codes` | Admin-generated codes, single or multi-use |
 | `waitlist` | Pre-signup demand capture |
-| `user_profiles` | Extends `auth.users` with Movu-specific data + Strava tokens |
-| `activities` | Normalized workouts from Strava (or manual) |
+| `user_profiles` | Extends `auth.users` with Movu-specific data + WHOOP tokens |
+| `activities` | Normalized workouts from WHOOP or manual entry |
 | `sleep_logs` | Manual sleep entries (Phase 1), HealthKit in Phase 2 |
 | `body_measurements` | InBody snapshots |
 | `insights` | AI-generated coaching outputs, stored for history |
@@ -160,24 +142,6 @@ Signup requires a valid invite code. Flow:
 2. `validate-invite` Edge Function checks code validity (active, not expired, uses remaining)
 3. On Supabase signup: DB trigger creates `user_profiles` row, increments `uses_count`, converts waitlist entry if email matches
 
-## Strava integration
-
-1. User clicks "Connect Strava" → `/api/strava/connect` → Strava OAuth
-2. Callback at `/api/strava/callback` stores tokens in `user_profiles`
-3. Backfill fires immediately: fetches last 90 days of activities
-4. Strava POSTs new activities to the `strava-webhook` Edge Function in real time
-5. Tokens refresh automatically when expired (6h TTL)
-
-**One-time webhook registration** (run after deploying the Edge Function):
-
-```bash
-curl -X POST https://www.strava.com/api/v3/push_subscriptions \
-  -F client_id=$STRAVA_CLIENT_ID \
-  -F client_secret=$STRAVA_CLIENT_SECRET \
-  -F callback_url=https://<project>.supabase.co/functions/v1/strava-webhook \
-  -F verify_token=$STRAVA_WEBHOOK_VERIFY_TOKEN
-```
-
 ## AI coaching insights
 
 Weekly insights are generated by the `generate-insight` Edge Function, scheduled via Supabase's built-in cron (every Monday 07:00 UTC). Each insight receives:
@@ -191,10 +155,6 @@ Output is stored as markdown in the `insights` table and surfaced on the dashboa
 
 You can also trigger manually from the admin panel.
 
-## Strava export tool
-
-The `strava-export/` directory contains a Python script to bulk-export your own Strava history to a JSONL file. Used for initial data analysis and seeding during development. See `strava-export/.env.example` for configuration.
-
 ## Environment variable reference
 
 | Variable | Required | Description |
@@ -202,11 +162,9 @@ The `strava-export/` directory contains a Python script to bulk-export your own 
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anon key (safe for client) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Service role key — server only, never expose |
-| `STRAVA_CLIENT_ID` | Yes | Strava developer app client ID |
-| `STRAVA_CLIENT_SECRET` | Yes | Strava developer app client secret |
-| `STRAVA_WEBHOOK_VERIFY_TOKEN` | Yes | Random string for Strava webhook validation |
-| `NEXT_PUBLIC_STRAVA_REDIRECT_URI` | Yes | OAuth callback URL |
 | `ANTHROPIC_API_KEY` | Yes | Claude API key |
+| `FUNCTION_SECRET` | Yes | Shared secret for calling privileged Edge Functions (`generate-insight`, `create-invite-code`) |
+| `APP_URL` | Yes | App origin for CORS on Edge Functions (e.g. `https://movu.app`) |
 | `RESEND_API_KEY` | No | Resend email API key (emails silently skip if missing) |
 | `RESEND_FROM_EMAIL` | No | From address for transactional emails |
 | `ADMIN_USER_IDS` | No | Comma-separated UUIDs for admin panel access |

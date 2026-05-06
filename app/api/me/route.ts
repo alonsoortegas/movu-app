@@ -11,7 +11,7 @@ export async function GET() {
 
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('full_name, city, goal, max_hr_bpm, strava_athlete_id, onboarding_complete, data_source')
+    .select('full_name, city, goal, max_hr_bpm, onboarding_complete, data_source')
     .eq('id', user.id)
     .single()
 
@@ -21,13 +21,12 @@ export async function GET() {
     .eq('user_id', user.id)
     .order('measured_at', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   return NextResponse.json({
     id: user.id,
     email: user.email,
     ...profile,
-    strava_connected: !!profile?.strava_athlete_id,
     body_comp: measurement ?? null,
   })
 }

@@ -158,7 +158,7 @@ export function normalizeWhoopSleep(raw: WhoopSleep, userId: string): NewSleepLo
 
   return {
     user_id: userId,
-    date: utcDate(raw.start),
+    date: utcDate(raw.end),
     source: 'whoop',
     whoop_sleep_id: raw.id,
     hours: ss.total_in_bed_time_milli / 3_600_000,

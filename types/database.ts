@@ -122,10 +122,6 @@ export type Database = {
           goal: string | null
           max_hr_bpm: number | null
           weight_kg: number | null
-          strava_athlete_id: number | null
-          strava_access_token: string | null
-          strava_refresh_token: string | null
-          strava_token_expires: string | null
           whoop_user_id: number | null
           whoop_access_token: string | null
           whoop_refresh_token: string | null
@@ -142,10 +138,6 @@ export type Database = {
           goal?: string | null
           max_hr_bpm?: number | null
           weight_kg?: number | null
-          strava_athlete_id?: number | null
-          strava_access_token?: string | null
-          strava_refresh_token?: string | null
-          strava_token_expires?: string | null
           whoop_user_id?: number | null
           whoop_access_token?: string | null
           whoop_refresh_token?: string | null
@@ -162,10 +154,6 @@ export type Database = {
           goal?: string | null
           max_hr_bpm?: number | null
           weight_kg?: number | null
-          strava_athlete_id?: number | null
-          strava_access_token?: string | null
-          strava_refresh_token?: string | null
-          strava_token_expires?: string | null
           whoop_user_id?: number | null
           whoop_access_token?: string | null
           whoop_refresh_token?: string | null
@@ -181,7 +169,6 @@ export type Database = {
         Row: {
           id: string
           user_id: string
-          strava_id: number | null
           source: string
           activity_type: string | null
           activity_category: string | null
@@ -209,7 +196,6 @@ export type Database = {
         Insert: {
           id?: string
           user_id: string
-          strava_id?: number | null
           source?: string
           activity_type?: string | null
           activity_category?: string | null
@@ -237,7 +223,6 @@ export type Database = {
         Update: {
           id?: string
           user_id?: string
-          strava_id?: number | null
           source?: string
           activity_type?: string | null
           activity_category?: string | null

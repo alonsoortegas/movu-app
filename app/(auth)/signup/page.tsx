@@ -51,7 +51,7 @@ export default function SignupPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { full_name: fullName, invite_code: inviteCode } },
     });
     setRegisterLoading(false);
     if (error) {

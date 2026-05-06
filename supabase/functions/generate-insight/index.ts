@@ -24,7 +24,25 @@ Reglas:
 - Si faltan RPE de sesiones, menciónalo brevemente
 - Respuesta total de menos de 400 palabras`
 
+const CLAUDE_MODEL = 'claude-sonnet-4-20250514'
+
+const restrictedCorsHeaders = {
+  'Access-Control-Allow-Origin': Deno.env.get('APP_URL') ?? 'https://movu.app',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: restrictedCorsHeaders })
+  }
+
+  // Require Bearer FUNCTION_SECRET — rejects unauthenticated callers before any DB/AI work
+  const authHeader = req.headers.get('Authorization')
+  const expectedSecret = Deno.env.get('FUNCTION_SECRET')
+  if (!expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
+    return new Response('Unauthorized', { status: 401, headers: restrictedCorsHeaders })
+  }
+
   const { user_id, trigger } = await req.json()
   const supabase = createAdminClient()
 
@@ -51,7 +69,7 @@ Deno.serve(async (req) => {
   const succeeded = results.filter(r => r.status === 'fulfilled').length
   return new Response(
     JSON.stringify({ processed: userIds.length, succeeded }),
-    { headers: { 'Content-Type': 'application/json' } }
+    { headers: { ...restrictedCorsHeaders, 'Content-Type': 'application/json' } }
   )
 })
 
@@ -61,6 +79,16 @@ async function generateForUser(
   periodStart: string,
   periodEnd: string
 ) {
+  // Idempotency guard: skip if an insight already exists for this week
+  const { data: existing } = await supabase
+    .from('insights')
+    .select('id')
+    .eq('user_id', userId)
+    .gte('created_at', new Date(Date.now() - 7 * 86400000).toISOString())
+    .maybeSingle()
+
+  if (existing) return
+
   const [{ data: profile }, { data: activities }, { data: sleep }, { data: bodyComp }] =
     await Promise.all([
       supabase
@@ -99,7 +127,7 @@ async function generateForUser(
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: CLAUDE_MODEL,
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [{
@@ -108,6 +136,11 @@ async function generateForUser(
       }],
     }),
   })
+
+  if (!claudeRes.ok) {
+    const errorBody = await claudeRes.text()
+    throw new Error(`Claude API error ${claudeRes.status}: ${errorBody}`)
+  }
 
   const claudeData = await claudeRes.json()
   const content = claudeData.content?.[0]?.text
@@ -119,6 +152,6 @@ async function generateForUser(
     period_end: periodEnd,
     type: 'weekly_summary',
     content,
-    model_used: 'claude-sonnet-4-20250514',
+    model_used: CLAUDE_MODEL,
   })
 }
