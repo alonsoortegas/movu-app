@@ -224,6 +224,7 @@ export default function PerfilPage() {
               type="button"
               onClick={() => appleFileRef.current?.click()}
               disabled={appleImporting}
+              title="Large exports can take 30–60 seconds"
               className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-[#333] hover:border-accent hover:bg-accent-light transition-all disabled:opacity-60"
             >
               {appleImporting ? "Importing…" : appleImportDone ? "Imported!" : "Apple Health"}

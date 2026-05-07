@@ -25,6 +25,15 @@ const MUSCLE_MAP: Record<ActivityCategory, string[]> = {
   other: [],
 }
 
+// Apple Health ISO dates include an offset (e.g. "2024-01-15T22:30:00-06:00").
+// start_date_utc: the true moment in time (UTC).
+// start_date_local: the wall-clock local time stored as a UTC timestamp so callers
+//   can display it without a timezone lookup.
+function localWallClock(iso: string): Date {
+  // Strip the offset and treat the local time as UTC.
+  return new Date(iso.replace(/[+-]\d{2}:\d{2}$/, 'Z'))
+}
+
 export function normalizeWorkouts(workouts: HKWorkout[], userId: string): NewActivity[] {
   return workouts.map((w) => {
     const category: ActivityCategory = HK_CATEGORY_MAP[w.activityType] ?? 'other'
@@ -38,7 +47,7 @@ export function normalizeWorkouts(workouts: HKWorkout[], userId: string): NewAct
       activity_category: category,
       activity_name: w.activityType,
       start_date_utc: new Date(w.startDate),
-      start_date_local: new Date(w.startDate),
+      start_date_local: localWallClock(w.startDate),
       elapsed_time_s,
       moving_time_s: elapsed_time_s,
       calories_kcal: w.totalEnergyBurned,
@@ -87,7 +96,8 @@ export function normalizeSleep(
     }
   }
 
-  const result: NewSleepLog[] = []
+  // Accumulate all candidates, then deduplicate keeping the most-hours record per date.
+  const candidates: NewSleepLog[] = []
 
   for (const [dateKey, recs] of byDate) {
     let rem_hours = 0
@@ -116,7 +126,7 @@ export function normalizeSleep(
     const hours = rem_hours + deep_hours + light_hours
     const respiratory_rate = dailySummaries?.get(dateKey)?.respiratoryRate
 
-    result.push({
+    candidates.push({
       user_id: userId,
       date: dateKey,
       source: 'apple_health',
@@ -141,7 +151,16 @@ export function normalizeSleep(
     } satisfies NewSleepLog)
   }
 
-  return result
+  // Deduplicate by date — keep the record with the most sleep hours.
+  const bestByDate = new Map<string, NewSleepLog>()
+  for (const row of candidates) {
+    const existing = bestByDate.get(row.date as string)
+    if (!existing || (row.hours ?? 0) > (existing.hours ?? 0)) {
+      bestByDate.set(row.date as string, row)
+    }
+  }
+
+  return [...bestByDate.values()]
 }
 
 export function normalizeDailyMetrics(

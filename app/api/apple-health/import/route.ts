@@ -30,6 +30,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing file field' }, { status: 400 })
   }
 
+  const MAX_BYTES = 500 * 1024 * 1024 // 500 MB
+  if (file.size > MAX_BYTES) {
+    return NextResponse.json({ error: 'File too large (max 500 MB)' }, { status: 413 })
+  }
+
   // Write to a temp file so the streaming parser can use a file path.
   const tmpPath = join(tmpdir(), `apple-health-${randomUUID()}.xml`)
   try {
@@ -43,7 +48,6 @@ export async function POST(request: Request) {
   try {
     parsed = await parseAppleHealthExport(tmpPath)
   } catch (err) {
-    await unlink(tmpPath).catch(() => null)
     console.error('[apple-health/import] parse failed:', err)
     return NextResponse.json({ error: 'Failed to parse export file' }, { status: 422 })
   } finally {
@@ -84,16 +88,8 @@ export async function POST(request: Request) {
   }
 
   // ── Sleep ────────────────────────────────────────────────────────────────────
-  const rawSleepRows = normalizeSleep(sleepRecords, user.id, dailySummaries)
-  // Deduplicate by date — keep the record with the most sleep hours.
-  const sleepByDate = new Map<string, typeof rawSleepRows[0]>()
-  for (const row of rawSleepRows) {
-    const existing = sleepByDate.get(row.date as string)
-    if (!existing || (row.hours ?? 0) > (existing.hours ?? 0)) {
-      sleepByDate.set(row.date as string, row)
-    }
-  }
-  const sleepRows = [...sleepByDate.values()] as unknown as SleepInsert[]
+  // normalizeSleep deduplicates by date internally (keeps the most-hours record).
+  const sleepRows = normalizeSleep(sleepRecords, user.id, dailySummaries) as unknown as SleepInsert[]
   let sleepCount = 0
 
   if (sleepRows.length > 0) {
