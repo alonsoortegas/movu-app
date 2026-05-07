@@ -340,6 +340,8 @@ export type Database = {
           daily_max_hr: number | null
           total_calories_kcal: number | null
           active_min: number | null
+          vo2_max: number | null
+          physical_effort: number | null
           source: string
           created_at: string
         }
@@ -358,6 +360,8 @@ export type Database = {
           daily_max_hr?: number | null
           total_calories_kcal?: number | null
           active_min?: number | null
+          vo2_max?: number | null
+          physical_effort?: number | null
           source?: string
           created_at?: string
         }
@@ -376,6 +380,8 @@ export type Database = {
           daily_max_hr?: number | null
           total_calories_kcal?: number | null
           active_min?: number | null
+          vo2_max?: number | null
+          physical_effort?: number | null
           source?: string
           created_at?: string
         }

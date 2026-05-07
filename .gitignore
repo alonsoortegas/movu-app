@@ -19,6 +19,7 @@
 # misc
 .DS_Store
 *.pem
+tmp
 
 # debug
 npm-debug.log*
@@ -37,3 +38,6 @@ next-env.d.ts
 
 # WHOOP data dump (personal health data — exploration only)
 whoop-data-dump.json
+
+# Apple Health exports (large XML files — personal health data)
+*.xml
