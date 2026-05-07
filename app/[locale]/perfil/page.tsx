@@ -26,6 +26,10 @@ export default function PerfilPage() {
   const [whoopStatus, setWhoopStatus] = useState<WhoopStatus | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [syncDone, setSyncDone] = useState(false);
+  const [appleImporting, setAppleImporting] = useState(false);
+  const [appleImportDone, setAppleImportDone] = useState(false);
+  const [appleImportError, setAppleImportError] = useState<string | null>(null);
+  const appleFileRef = useRef<HTMLInputElement>(null);
 
   const initialBodyComp = useRef<{ muscleMass: string; bodyFat: string } | null>(null);
 
@@ -70,6 +74,31 @@ export default function PerfilPage() {
       // silent
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleAppleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+    setAppleImportError(null);
+    setAppleImporting(true);
+    setAppleImportDone(false);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/apple-health/import", { method: "POST", body: form });
+      if (!res.ok) {
+        const d = await res.json();
+        throw new Error(d.error ?? "Import failed");
+      }
+      setAppleImportDone(true);
+      setDataSource("apple_health");
+      setTimeout(() => setAppleImportDone(false), 4000);
+    } catch (err) {
+      setAppleImportError(err instanceof Error ? err.message : "Import failed");
+    } finally {
+      setAppleImporting(false);
     }
   };
 
@@ -165,6 +194,24 @@ export default function PerfilPage() {
             </a>
           </div>
         )}
+        {dataSource === "apple_health" && (
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-accent-light border border-accent text-accent-dark px-3 py-1 rounded-full">
+              Apple Health connected
+            </span>
+            <div className="flex flex-col items-end gap-1">
+              <button
+                type="button"
+                onClick={() => appleFileRef.current?.click()}
+                disabled={appleImporting}
+                className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60"
+              >
+                {appleImporting ? "Importing…" : appleImportDone ? "Imported!" : "Import file"}
+              </button>
+              {appleImportError && <p className="text-xs text-red-500">{appleImportError}</p>}
+            </div>
+          </div>
+        )}
         {!dataSource && (
           <div className="flex gap-3 flex-wrap">
             <a
@@ -175,11 +222,11 @@ export default function PerfilPage() {
             </a>
             <button
               type="button"
-              disabled
-              className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-muted cursor-not-allowed relative"
+              onClick={() => appleFileRef.current?.click()}
+              disabled={appleImporting}
+              className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-[#333] hover:border-accent hover:bg-accent-light transition-all disabled:opacity-60"
             >
-              Apple Health
-              <span className="ml-2 text-[10px] bg-[#f0f0f0] border border-border px-1.5 py-0.5 rounded-full align-middle">coming soon</span>
+              {appleImporting ? "Importing…" : appleImportDone ? "Imported!" : "Apple Health"}
             </button>
             <button
               type="button"
@@ -190,6 +237,16 @@ export default function PerfilPage() {
             </button>
           </div>
         )}
+        {!dataSource && appleImportError && (
+          <p className="text-xs text-red-500 mt-2">{appleImportError}</p>
+        )}
+        <input
+          ref={appleFileRef}
+          type="file"
+          accept=".xml"
+          className="hidden"
+          onChange={handleAppleImport}
+        />
       </div>
       <form onSubmit={handleSave} className="space-y-6 md:space-y-8">
         <section>

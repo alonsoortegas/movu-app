@@ -154,6 +154,8 @@ export const dailyMetrics = pgTable('daily_metrics', {
   daily_max_hr: real('daily_max_hr'),
   total_calories_kcal: real('total_calories_kcal'),
   active_min: integer('active_min'),
+  vo2_max: real('vo2_max'),
+  physical_effort: real('physical_effort'),
   source: text('source').notNull().default('whoop'),
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
