@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 const NAV_KEYS = [
   { key: "dashboard", href: "/dashboard", icon: "⊞" },
+  { key: "trends", href: "/trends", icon: "⌁" },
   { key: "registro", href: "/registro", icon: "✎" },
   { key: "plan", href: "/plan", icon: "☰" },
   { key: "perfil", href: "/perfil", icon: "◉" },

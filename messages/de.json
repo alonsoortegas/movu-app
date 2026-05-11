@@ -1,11 +1,217 @@
 {
   "_i18n_status": "UNTRANSLATED — values are English placeholders.",
-  "metadata": { "title": "Movu — Train smarter", "description": "Fitness intelligence platform for boutique fitness users." },
-  "sidebar": { "tagline": "Train smarter.", "nav": { "dashboard": "Dashboard", "registro": "Log", "plan": "My Plan", "perfil": "Profile" }, "cta": "+ Log today" },
-  "bottomNav": { "dashboard": "Dashboard", "registro": "Log", "plan": "My Plan", "perfil": "Profile" },
+  "metadata": {
+    "title": "Movu — Train smarter",
+    "description": "Fitness intelligence platform for boutique fitness users."
+  },
+  "sidebar": {
+    "tagline": "Train smarter.",
+    "nav": {
+      "dashboard": "Dashboard",
+      "trends": "Trends",
+      "registro": "Log",
+      "plan": "My Plan",
+      "perfil": "Profile"
+    },
+    "cta": "+ Log today"
+  },
+  "bottomNav": {
+    "dashboard": "Dashboard",
+    "trends": "Trends",
+    "registro": "Log",
+    "plan": "My Plan",
+    "perfil": "Profile"
+  },
   "localeSwitcher": { "label": "Language" },
-  "dashboard": { "title": "Dashboard", "greeting": "Hey, Ana 👋", "weekLabel": "Week of Apr 14–20 · 2025", "registerToday": "+ Log today", "registerCta": "+ Log today's workout", "aiLabel": "AI", "aiInsightTitle": "Today's insight", "aiInsight": "Today is a great day for high intensity — you slept well and your weekly load is low. Consider a weights or HIIT session.", "thisWeek": "This week", "recentWorkouts": "Recent workouts", "weeklyProgress": "Weekly progress", "muscleGroups": "Muscle groups", "metrics": { "sleep": "Sleep", "sleepSub": "Good quality", "calories": "Calories", "time": "Time" }, "progress": { "workouts": "Workouts", "activeMinutes": "Active minutes", "calories": "Calories" }, "weekDays": { "mon": { "short": "M", "label": "Mon", "type": "weights" }, "tue": { "short": "T", "label": "Tue", "type": "cardio" }, "wed": { "short": "W", "label": "Wed", "type": "weights" }, "thu": { "short": "T", "label": "Thu", "type": "rest" }, "fri": { "short": "F", "label": "Fri", "type": "run" }, "sat": { "short": "S", "label": "Sat", "type": "combined" }, "sun": { "short": "S", "label": "Sun", "type": "—" } } },
-  "plan": { "title": "My Weekly Plan", "subtitle": "AI-generated · Week Apr 14–20", "regenerateDesktop": "✨ Regenerate plan", "regenerateMobile": "✨ Regenerate", "planLogicTitle": "✨ PLAN LOGIC", "planLogicText": "Based on your history, we prioritize legs and back. Cardio is interspersed for active recovery. Two rest days to prevent overtraining.", "weeklyVolume": "Weekly volume", "weeklyGoalLabel": "Weekly goal", "weeklyGoalDays": "/ 5 days", "muscleGroupsWeek": "Muscle groups this week", "tableHeaders": { "day": "Day", "muscleGroup": "Muscle Group", "type": "Type", "min": "Min" }, "planRows": { "mon": { "day": "Monday", "dayShort": "Mon", "muscle": "Chest + Triceps", "type": "Weights" }, "tue": { "day": "Tuesday", "dayShort": "Tue", "muscle": "Legs", "type": "Weights" }, "wed": { "day": "Wednesday", "dayShort": "Wed", "muscle": "Cardio HIIT", "type": "Cardio" }, "thu": { "day": "Thursday", "dayShort": "Thu", "muscle": "Rest", "type": "—" }, "fri": { "day": "Friday", "dayShort": "Fri", "muscle": "Back + Biceps", "type": "Weights" }, "sat": { "day": "Saturday", "dayShort": "Sat", "muscle": "Full Body", "type": "Combined" }, "sun": { "day": "Sunday", "dayShort": "Sun", "muscle": "Rest", "type": "—" } }, "muscleBadges": { "chest": "Chest", "legs": "Legs", "cardio": "Cardio", "back": "Back" }, "volumeBars": { "chest": "💪 Chest / Triceps", "legs": "🦵 Legs", "back": "🔙 Back / Biceps", "core": "⭕ Core", "cardio": "🏃 Cardio" } },
-  "registro": { "title": "Log workout", "dateLabel": "Monday, April 21", "classType": "Class type", "classTypes": { "weightlifting": "Weights", "cardio": "Cardio", "running": "Run", "combined": "Combined", "bootcamp": "Bootcamp", "workshop": "Workshop" }, "className": "Class name", "classPlaceholder": "e.g. Spinning, Barre, HIIT...", "studio": "Studio or location", "studioPlaceholder": "e.g. Cyclo Studio, Gym Club...", "duration": "Duration (min)", "durationPlaceholder": "e.g. 60", "calories": "Calories", "caloriesPlaceholder": "e.g. 420", "distance": "Distance in km", "distanceOptional": "(optional)", "distancePlaceholder": "e.g. 5.4", "effort": "Perceived effort", "effortSoft": "Easy", "effortMax": "Max", "effortLabels": { "1": "Very easy", "2": "Easy", "3": "Moderate", "4": "Hard", "5": "Max" }, "save": "Save workout", "saved": "✓ Workout saved", "savedShort": "✓ Workout saved" },
-  "perfil": { "title": "Profile", "subtitle": "Your data and training goals", "personalInfo": "Personal information", "nameLabel": "Name", "goalLabel": "Main goal", "weeklyGoal": "Weekly workout goal", "goals": { "loseGainMuscle": "Lose fat and gain muscle", "gainMuscle": "Gain muscle", "loseWeight": "Lose weight", "endurance": "Improve endurance", "stayActive": "Stay active" }, "inbody": "InBody data", "lastMeasurement": "Last: Apr 10", "muscleMass": "Muscle mass", "bodyFat": "Body fat", "bodyComp": "Body composition", "muscle": "Muscle", "fat": "Fat", "save": "Save changes", "saved": "✓ Profile saved", "savedShort": "✓ Saved" }
+  "dashboard": {
+    "title": "Dashboard",
+    "greeting": "Hey, Ana 👋",
+    "weekLabel": "Week of Apr 14–20 · 2025",
+    "registerToday": "+ Log today",
+    "registerCta": "+ Log today's workout",
+    "aiLabel": "AI",
+    "aiInsightTitle": "Today's insight",
+    "aiInsight": "Today is a great day for high intensity — you slept well and your weekly load is low. Consider a weights or HIIT session.",
+    "thisWeek": "This week",
+    "recentWorkouts": "Recent workouts",
+    "weeklyProgress": "Weekly progress",
+    "muscleGroups": "Muscle groups",
+    "noActivities": "No workouts logged this week yet.",
+    "noMuscleData": "Log workouts to see muscle group data.",
+    "aiInsightEmpty": "No insight generated yet for this week.",
+    "aiGenerate": "Generate →",
+    "metrics": {
+      "sleep": "Sleep",
+      "sleepSub": "Good quality",
+      "calories": "Calories",
+      "time": "Time"
+    },
+    "progress": {
+      "workouts": "Workouts",
+      "activeMinutes": "Active minutes",
+      "calories": "Calories"
+    },
+    "weekDays": {
+      "mon": { "short": "M", "label": "Mon", "type": "weights" },
+      "tue": { "short": "T", "label": "Tue", "type": "cardio" },
+      "wed": { "short": "W", "label": "Wed", "type": "weights" },
+      "thu": { "short": "T", "label": "Thu", "type": "rest" },
+      "fri": { "short": "F", "label": "Fri", "type": "run" },
+      "sat": { "short": "S", "label": "Sat", "type": "combined" },
+      "sun": { "short": "S", "label": "Sun", "type": "—" }
+    }
+  },
+  "trends": {
+    "title": "Trends",
+    "subtitle": "Last 30 days · {start} – {end}",
+    "syncCta": "Sync data",
+    "averages": "30-day averages",
+    "metrics": {
+      "recovery": "Recovery",
+      "hrv": "HRV",
+      "rhr": "Resting HR",
+      "strain": "Strain",
+      "sleep": "Sleep",
+      "sleepPerformance": "Sleep perf.",
+      "sleepConsistency": "Consistency",
+      "calories": "Calories"
+    },
+    "sections": {
+      "recoveryScore": "Recovery score",
+      "hrvRhr": "HRV & resting HR",
+      "sleepTrends": "Sleep trends",
+      "avgSleep": "avg {value}h",
+      "latestSleep": "Latest sleep stages",
+      "dailyStrain": "Daily strain",
+      "activeMinutes": "Active minutes",
+      "dailyCalories": "Daily calories",
+      "workoutCount": "Workout count",
+      "totalWorkouts": "{count} total",
+      "categoryMix": "Category mix",
+      "recentWorkouts": "Recent workouts",
+      "bodyComp": "Body composition"
+    },
+    "sleepStages": {
+      "deep": "Deep",
+      "rem": "REM",
+      "light": "Light",
+      "awake": "Awake"
+    },
+    "body": {
+      "weight": "Weight",
+      "muscle": "Muscle",
+      "fat": "Body fat",
+      "date": "Measured"
+    },
+    "empty": {
+      "title": "No 30-day data yet",
+      "body": "Connect WHOOP or import Apple Health data from your profile to see recovery, sleep, and training trends here.",
+      "action": "Open profile",
+      "noSleepStages": "Sleep stage data is not available yet.",
+      "noWorkouts": "No workouts in this period.",
+      "noBody": "No body composition measurement saved yet."
+    }
+  },
+  "plan": {
+    "title": "My Weekly Plan",
+    "subtitle": "AI-generated · Week Apr 14–20",
+    "regenerateDesktop": "✨ Regenerate plan",
+    "regenerateMobile": "✨ Regenerate",
+    "planLogicTitle": "✨ PLAN LOGIC",
+    "planLogicText": "Based on your history, we prioritize legs and back. Cardio is interspersed for active recovery. Two rest days to prevent overtraining.",
+    "weeklyVolume": "Weekly volume",
+    "weeklyGoalLabel": "Weekly goal",
+    "weeklyGoalDays": "/ 5 days",
+    "muscleGroupsWeek": "Muscle groups this week",
+    "tableHeaders": {
+      "day": "Day",
+      "muscleGroup": "Muscle Group",
+      "type": "Type",
+      "min": "Min"
+    },
+    "planRows": {
+      "mon": { "day": "Monday", "dayShort": "Mon", "muscle": "Chest + Triceps", "type": "Weights" },
+      "tue": { "day": "Tuesday", "dayShort": "Tue", "muscle": "Legs", "type": "Weights" },
+      "wed": { "day": "Wednesday", "dayShort": "Wed", "muscle": "Cardio HIIT", "type": "Cardio" },
+      "thu": { "day": "Thursday", "dayShort": "Thu", "muscle": "Rest", "type": "—" },
+      "fri": { "day": "Friday", "dayShort": "Fri", "muscle": "Back + Biceps", "type": "Weights" },
+      "sat": { "day": "Saturday", "dayShort": "Sat", "muscle": "Full Body", "type": "Combined" },
+      "sun": { "day": "Sunday", "dayShort": "Sun", "muscle": "Rest", "type": "—" }
+    },
+    "muscleBadges": {
+      "chest": "Chest",
+      "legs": "Legs",
+      "cardio": "Cardio",
+      "back": "Back"
+    },
+    "volumeBars": {
+      "chest": "💪 Chest / Triceps",
+      "legs": "🦵 Legs",
+      "back": "🔙 Back / Biceps",
+      "core": "⭕ Core",
+      "cardio": "🏃 Cardio"
+    }
+  },
+  "registro": {
+    "title": "Log workout",
+    "dateLabel": "Monday, April 21",
+    "classType": "Class type",
+    "classTypes": {
+      "weightlifting": "Weights",
+      "cardio": "Cardio",
+      "running": "Run",
+      "combined": "Combined",
+      "bootcamp": "Bootcamp",
+      "workshop": "Workshop"
+    },
+    "className": "Class name",
+    "classPlaceholder": "e.g. Spinning, Barre, HIIT...",
+    "studio": "Studio or location",
+    "studioPlaceholder": "e.g. Cyclo Studio, Gym Club...",
+    "duration": "Duration (min)",
+    "durationPlaceholder": "e.g. 60",
+    "calories": "Calories",
+    "caloriesPlaceholder": "e.g. 420",
+    "distance": "Distance in km",
+    "distanceOptional": "(optional)",
+    "distancePlaceholder": "e.g. 5.4",
+    "effort": "Perceived effort",
+    "effortSoft": "Easy",
+    "effortMax": "Max",
+    "effortLabels": {
+      "1": "Very easy",
+      "2": "Easy",
+      "3": "Moderate",
+      "4": "Hard",
+      "5": "Max"
+    },
+    "save": "Save workout",
+    "saved": "✓ Workout saved",
+    "savedShort": "✓ Workout saved"
+  },
+  "perfil": {
+    "title": "Profile",
+    "subtitle": "Your data and training goals",
+    "personalInfo": "Personal information",
+    "nameLabel": "Name",
+    "goalLabel": "Main goal",
+    "weeklyGoal": "Weekly workout goal",
+    "goals": {
+      "loseGainMuscle": "Lose fat and gain muscle",
+      "gainMuscle": "Gain muscle",
+      "loseWeight": "Lose weight",
+      "endurance": "Improve endurance",
+      "stayActive": "Stay active"
+    },
+    "inbody": "InBody data",
+    "lastMeasurement": "Last: Apr 10",
+    "muscleMass": "Muscle mass",
+    "bodyFat": "Body fat",
+    "bodyComp": "Body composition",
+    "muscle": "Muscle",
+    "fat": "Fat",
+    "save": "Save changes",
+    "saved": "✓ Profile saved",
+    "savedShort": "✓ Saved"
+  }
 }

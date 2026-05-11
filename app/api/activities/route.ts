@@ -78,11 +78,11 @@ export async function GET(request: Request) {
     (acc, a) => {
       if (!a.hr_zones) return acc
       const z = a.hr_zones as Record<string, number>
-      acc.z1_s += z.z1_s ?? 0
-      acc.z2_s += z.z2_s ?? 0
-      acc.z3_s += z.z3_s ?? 0
-      acc.z4_s += z.z4_s ?? 0
-      acc.z5_s += z.z5_s ?? 0
+      acc.z1_s += z.z1_s ?? (z.z1_min ?? 0) * 60
+      acc.z2_s += z.z2_s ?? (z.z2_min ?? 0) * 60
+      acc.z3_s += z.z3_s ?? (z.z3_min ?? 0) * 60
+      acc.z4_s += z.z4_s ?? (z.z4_min ?? 0) * 60
+      acc.z5_s += z.z5_s ?? (z.z5_min ?? 0) * 60
       acc.total_moving_time_s += a.moving_time_s ?? 0
       return acc
     },

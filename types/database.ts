@@ -24,11 +24,17 @@ export type {
 
 // HrZones type (used in hr_zones jsonb field)
 export type HrZones = {
-  z1_s: number
-  z2_s: number
-  z3_s: number
-  z4_s: number
-  z5_s: number
+  z0_min?: number
+  z1_min?: number
+  z2_min?: number
+  z3_min?: number
+  z4_min?: number
+  z5_min?: number
+  z1_s?: number
+  z2_s?: number
+  z3_s?: number
+  z4_s?: number
+  z5_s?: number
 }
 
 // Keep Json type for Supabase client generics

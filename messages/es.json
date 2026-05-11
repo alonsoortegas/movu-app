@@ -7,6 +7,7 @@
     "tagline": "Entrena más inteligente.",
     "nav": {
       "dashboard": "Dashboard",
+      "trends": "Tendencias",
       "registro": "Registro",
       "plan": "Mi Plan",
       "perfil": "Perfil"
@@ -15,6 +16,7 @@
   },
   "bottomNav": {
     "dashboard": "Dashboard",
+    "trends": "Tendencias",
     "registro": "Registrar",
     "plan": "Mi Plan",
     "perfil": "Perfil"
@@ -56,6 +58,57 @@
       "fri": { "short": "V", "label": "Vie", "type": "correr" },
       "sat": { "short": "S", "label": "Sáb", "type": "combinado" },
       "sun": { "short": "D", "label": "Dom", "type": "—" }
+    }
+  },
+  "trends": {
+    "title": "Tendencias",
+    "subtitle": "Últimos 30 días · {start} – {end}",
+    "syncCta": "Sincronizar datos",
+    "averages": "Promedios de 30 días",
+    "metrics": {
+      "recovery": "Recuperación",
+      "hrv": "HRV",
+      "rhr": "FC reposo",
+      "strain": "Strain",
+      "sleep": "Sueño",
+      "sleepPerformance": "Sueño perf.",
+      "sleepConsistency": "Consistencia",
+      "calories": "Calorías"
+    },
+    "sections": {
+      "recoveryScore": "Score de recuperación",
+      "hrvRhr": "HRV y FC en reposo",
+      "sleepTrends": "Tendencias de sueño",
+      "avgSleep": "prom {value}h",
+      "latestSleep": "Últimas fases de sueño",
+      "dailyStrain": "Strain diario",
+      "activeMinutes": "Minutos activos",
+      "dailyCalories": "Calorías diarias",
+      "workoutCount": "Entrenamientos",
+      "totalWorkouts": "{count} total",
+      "categoryMix": "Mix de categorías",
+      "recentWorkouts": "Últimos entrenamientos",
+      "bodyComp": "Composición corporal"
+    },
+    "sleepStages": {
+      "deep": "Profundo",
+      "rem": "REM",
+      "light": "Ligero",
+      "awake": "Despierto"
+    },
+    "body": {
+      "weight": "Peso",
+      "muscle": "Músculo",
+      "fat": "Grasa",
+      "date": "Medición"
+    },
+    "empty": {
+      "title": "Aún no hay datos de 30 días",
+      "body": "Conecta WHOOP o importa Apple Health desde tu perfil para ver recuperación, sueño y tendencias de entrenamiento aquí.",
+      "action": "Abrir perfil",
+      "noSleepStages": "Aún no hay datos de fases de sueño.",
+      "noWorkouts": "No hay entrenamientos en este periodo.",
+      "noBody": "Aún no hay medición de composición corporal."
     }
   },
   "plan": {
