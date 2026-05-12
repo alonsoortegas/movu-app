@@ -142,6 +142,9 @@ export default function PerfilPage() {
   const fatDelta = delta(bodyComp.fat_percentage, previousMeasurement?.fat_percentage, true);
   const weightDelta = delta(bodyComp.weight_kg, previousMeasurement?.weight_kg, true);
   const visceralDelta = delta(bodyComp.visceral_fat_level, previousMeasurement?.visceral_fat_level, true);
+  const whoopNeedsReconnect = Boolean(
+    dataSource === "whoop" && (whoopStatus?.reauth_required || syncError === "whoop_reauth_required"),
+  );
 
   const latestScanLabel = useMemo(() => {
     if (!bodyHistory[0]?.measured_at) return t("noMeasurements");
@@ -192,9 +195,14 @@ export default function PerfilPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? "Sync failed");
       setSyncDone(true);
+      setWhoopStatus((current) => current ? { ...current, reauth_required: false } : current);
       setTimeout(() => setSyncDone(false), 3000);
     } catch (err) {
-      setSyncError(err instanceof Error ? err.message : "Sync failed");
+      const message = err instanceof Error ? err.message : "Sync failed";
+      setSyncError(message);
+      if (message === "whoop_reauth_required") {
+        setWhoopStatus((current) => current ? { ...current, reauth_required: true } : current);
+      }
     } finally {
       setSyncing(false);
     }
@@ -323,16 +331,22 @@ export default function PerfilPage() {
         <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">Data source</h2>
         {dataSource === "whoop" && whoopStatus?.connected && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-accent-light border border-accent text-accent-dark px-3 py-1 rounded-full">WHOOP connected</span>
+            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full ${whoopNeedsReconnect ? "bg-red-50 border border-red-200 text-red-600" : "bg-accent-light border border-accent text-accent-dark"}`}>
+              {whoopNeedsReconnect ? "WHOOP reconnect required" : "WHOOP connected"}
+            </span>
             <div className="flex flex-col items-end gap-1">
-              <button type="button" onClick={handleSync} disabled={syncing} className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60">
-                {syncing ? "Syncing…" : syncDone ? "Done" : "Sync now"}
-              </button>
-              {syncError && <p className="text-xs text-red-500">{syncError}</p>}
+              {whoopNeedsReconnect ? (
+                <a href="/api/whoop/connect" className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all">Reconnect WHOOP</a>
+              ) : (
+                <button type="button" onClick={handleSync} disabled={syncing} className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60">
+                  {syncing ? "Syncing…" : syncDone ? "Done" : "Sync now"}
+                </button>
+              )}
+              {syncError && !whoopNeedsReconnect && <p className="text-xs text-red-500">{syncError}</p>}
             </div>
           </div>
         )}
-        {dataSource === "whoop" && whoopStatus?.reauth_required && (
+        {dataSource === "whoop" && !whoopStatus?.connected && whoopStatus?.reauth_required && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-yellow-50 border border-yellow-200 text-yellow-700 px-3 py-1 rounded-full">Reconnect required</span>
             <a href="/api/whoop/connect" className="text-sm font-medium px-4 py-2 rounded-lg border border-border text-[#444] hover:border-[#bbb] transition-all">Reconnect WHOOP</a>
