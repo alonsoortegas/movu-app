@@ -31,12 +31,13 @@ async function fetchAllPages<T>(
   token: string,
   path: string,
   windowStart: string,
+  windowEnd: string,
 ): Promise<T[]> {
   const records: T[] = []
   let cursor: string | null = null
 
   while (true) {
-    const params = new URLSearchParams({ limit: '25', start: windowStart })
+    const params = new URLSearchParams({ limit: '25', start: windowStart, end: windowEnd })
     if (cursor) params.set('nextToken', cursor)
     const data = await whoopGet(token, `${path}?${params}`) as { records?: T[]; next_token?: string }
     if (!data.records) {
@@ -62,8 +63,9 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json().catch(() => ({}))
-  const days = Math.min(Number(body.days ?? 90), 90)
+  const days = Math.min(Number(body.days ?? 30), 90)
   const windowStart = new Date(Date.now() - days * 86400000).toISOString()
+  const windowEnd = new Date().toISOString()
 
   let token: string
   try {
@@ -80,10 +82,10 @@ export async function POST(request: Request) {
   let rawWorkouts: WhoopWorkout[], rawSleeps: WhoopSleep[], rawCycles: WhoopCycle[], rawRecoveries: WhoopRecovery[]
   try {
     ;[rawWorkouts, rawSleeps, rawCycles, rawRecoveries] = await Promise.all([
-      fetchAllPages<WhoopWorkout>(token, '/activity/workout', windowStart),
-      fetchAllPages<WhoopSleep>(token, '/activity/sleep', windowStart),
-      fetchAllPages<WhoopCycle>(token, '/cycle', windowStart),
-      fetchAllPages<WhoopRecovery>(token, '/recovery', windowStart),
+      fetchAllPages<WhoopWorkout>(token, '/activity/workout', windowStart, windowEnd),
+      fetchAllPages<WhoopSleep>(token, '/activity/sleep', windowStart, windowEnd),
+      fetchAllPages<WhoopCycle>(token, '/cycle', windowStart, windowEnd),
+      fetchAllPages<WhoopRecovery>(token, '/recovery', windowStart, windowEnd),
     ])
   } catch (err) {
     console.error('[whoop/sync] WHOOP API fetch failed:', err)
@@ -127,6 +129,16 @@ export async function POST(request: Request) {
       .upsert(workoutRows, { onConflict: 'whoop_activity_id', ignoreDuplicates: false })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     activitiesCount = workoutRows.length
+  }
+
+  const workoutsByDate = new Map<string, { activeMin: number; calories: number }>()
+  for (const row of workoutRows) {
+    if (!row.start_date_utc) continue
+    const date = row.start_date_utc.slice(0, 10)
+    const current = workoutsByDate.get(date) ?? { activeMin: 0, calories: 0 }
+    current.activeMin += Math.round((row.moving_time_s ?? row.elapsed_time_s ?? 0) / 60)
+    current.calories += row.calories_kcal ?? 0
+    workoutsByDate.set(date, current)
   }
 
   // Sleep
@@ -196,7 +208,7 @@ export async function POST(request: Request) {
       total_calories_kcal: base.total_calories_kcal,
       daily_avg_hr: base.daily_avg_hr,
       daily_max_hr: base.daily_max_hr,
-      active_min: base.active_min,
+      active_min: workoutsByDate.get(base.date)?.activeMin ?? base.active_min,
       recovery_score: rec?.score?.recovery_score ?? null,
       hrv_ms: rec?.score?.hrv_rmssd_milli ?? null,
       resting_hr_bpm: rec?.score?.resting_heart_rate ?? null,
@@ -204,6 +216,26 @@ export async function POST(request: Request) {
       skin_temp_c: rec?.score?.skin_temp_celsius ?? null,
     }
     metricRows.push(merged)
+  }
+
+  for (const [date, workoutDay] of workoutsByDate) {
+    if (metricRows.some(row => row.date === date)) continue
+    metricRows.push({
+      user_id: user.id,
+      date,
+      source: 'whoop',
+      whoop_cycle_id: null,
+      daily_strain: null,
+      total_calories_kcal: workoutDay.calories || null,
+      daily_avg_hr: null,
+      daily_max_hr: null,
+      active_min: workoutDay.activeMin,
+      recovery_score: null,
+      hrv_ms: null,
+      resting_hr_bpm: null,
+      spo2_pct: null,
+      skin_temp_c: null,
+    })
   }
 
   const metricsByDate = new Map<string, typeof metricRows[0]>()

@@ -39,11 +39,11 @@ export async function GET() {
     (acc, a) => {
       if (!a.hr_zones) return acc
       const z = a.hr_zones as Record<string, number>
-      acc.z1 += z.z1_s ?? 0
-      acc.z2 += z.z2_s ?? 0
-      acc.z3 += z.z3_s ?? 0
-      acc.z4 += z.z4_s ?? 0
-      acc.z5 += z.z5_s ?? 0
+      acc.z1 += z.z1_s ?? z.z1_min ?? 0
+      acc.z2 += z.z2_s ?? z.z2_min ?? 0
+      acc.z3 += z.z3_s ?? z.z3_min ?? 0
+      acc.z4 += z.z4_s ?? z.z4_min ?? 0
+      acc.z5 += z.z5_s ?? z.z5_min ?? 0
       return acc
     },
     { z1: 0, z2: 0, z3: 0, z4: 0, z5: 0 }

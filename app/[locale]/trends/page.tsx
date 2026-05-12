@@ -257,6 +257,7 @@ export default async function TrendsPage({
   const sleepConsistency = sleepSeries('consistency_pct')
   const workoutCount = activitySeries(acts => acts.length)
   const workoutMinutes = activitySeries(acts => Math.round(sum(acts.map(a => a.moving_time_s)) / 60))
+  const workoutCalories = activitySeries(acts => Math.round(sum(acts.map(a => a.calories_kcal))))
 
   const acts = activities ?? []
   const sleeps = sleepLogs ?? []
@@ -380,7 +381,7 @@ export default async function TrendsPage({
               <BarChart data={activeMin.some(p => p.value) ? activeMin : workoutMinutes} color="#65a30d" />
             </ChartCard>
             <ChartCard title={t('sections.dailyCalories')} right={`${Math.round(totalCalories)} kcal`}>
-              <BarChart data={calories} color="#e11d48" />
+              <BarChart data={calories.some(p => p.value) ? calories : workoutCalories} color="#e11d48" />
             </ChartCard>
           </section>
 

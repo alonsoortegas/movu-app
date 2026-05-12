@@ -130,6 +130,7 @@ export default function PerfilPage() {
   const [whoopStatus, setWhoopStatus] = useState<WhoopStatus | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [syncDone, setSyncDone] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
   const [appleImporting, setAppleImporting] = useState(false);
   const [appleImportDone, setAppleImportDone] = useState(false);
   const [appleImportError, setAppleImportError] = useState<string | null>(null);
@@ -181,14 +182,19 @@ export default function PerfilPage() {
   const handleSync = async () => {
     setSyncing(true);
     setSyncDone(false);
+    setSyncError(null);
     try {
-      await fetch("/api/whoop/sync", {
+      const res = await fetch("/api/whoop/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ days: 25 }),
+        body: JSON.stringify({ days: 30 }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? "Sync failed");
       setSyncDone(true);
       setTimeout(() => setSyncDone(false), 3000);
+    } catch (err) {
+      setSyncError(err instanceof Error ? err.message : "Sync failed");
     } finally {
       setSyncing(false);
     }
@@ -318,9 +324,12 @@ export default function PerfilPage() {
         {dataSource === "whoop" && whoopStatus?.connected && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-accent-light border border-accent text-accent-dark px-3 py-1 rounded-full">WHOOP connected</span>
-            <button type="button" onClick={handleSync} disabled={syncing} className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60">
-              {syncing ? "Syncing…" : syncDone ? "Done" : "Sync now"}
-            </button>
+            <div className="flex flex-col items-end gap-1">
+              <button type="button" onClick={handleSync} disabled={syncing} className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60">
+                {syncing ? "Syncing…" : syncDone ? "Done" : "Sync now"}
+              </button>
+              {syncError && <p className="text-xs text-red-500">{syncError}</p>}
+            </div>
           </div>
         )}
         {dataSource === "whoop" && whoopStatus?.reauth_required && (
