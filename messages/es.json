@@ -66,22 +66,18 @@
     "syncCta": "Sincronizar datos",
     "averages": "Promedios de 30 días",
     "metrics": {
-      "recovery": "Recuperación",
       "hrv": "HRV",
       "rhr": "FC reposo",
-      "strain": "Strain",
       "sleep": "Sueño",
       "sleepPerformance": "Sueño perf.",
       "sleepConsistency": "Consistencia",
       "calories": "Calorías"
     },
     "sections": {
-      "recoveryScore": "Score de recuperación",
       "hrvRhr": "HRV y FC en reposo",
       "sleepTrends": "Tendencias de sueño",
       "avgSleep": "prom {value}h",
       "latestSleep": "Últimas fases de sueño",
-      "dailyStrain": "Strain diario",
       "activeMinutes": "Minutos activos",
       "dailyCalories": "Calorías diarias",
       "workoutCount": "Entrenamientos",
@@ -104,7 +100,7 @@
     },
     "empty": {
       "title": "Aún no hay datos de 30 días",
-      "body": "Conecta WHOOP o importa Apple Health desde tu perfil para ver recuperación, sueño y tendencias de entrenamiento aquí.",
+      "body": "Conecta WHOOP o importa Apple Health desde tu perfil para ver tendencias de sueño, corazón y entrenamiento aquí.",
       "action": "Abrir perfil",
       "noSleepStages": "Aún no hay datos de fases de sueño.",
       "noWorkouts": "No hay entrenamientos en este periodo.",

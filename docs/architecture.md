@@ -257,7 +257,7 @@ movu/
 ├── types/
 │   └── database.ts                  Typed schema for supabase-js generics
 │
-└── middleware.ts                    Session refresh + route gating
+└── proxy.ts                         Session refresh + route gating
 ```
 
 ---

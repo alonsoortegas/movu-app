@@ -49,7 +49,7 @@ supabase/
   seed.sql                  Local dev seed data
 types/
   database.ts               Typed Database schema for @supabase/supabase-js
-middleware.ts               Session refresh + auth gating
+proxy.ts                    Session refresh + auth gating
 ```
 
 ## Local development

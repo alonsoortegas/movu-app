@@ -9,7 +9,7 @@ const intlMiddleware = createMiddleware(routing)
 const AUTH_PATHS = ['/login', '/signup']
 const PUBLIC_PATHS = ['/waitlist', '/api/waitlist', '/api/whoop/callback']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isAuthPath = AUTH_PATHS.includes(pathname)

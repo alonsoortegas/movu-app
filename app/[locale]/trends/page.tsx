@@ -246,10 +246,8 @@ export default async function TrendsPage({
   const activitySeries = (selector: (acts: Activity[]) => number): Point[] =>
     dateKeys.map(date => ({ date, value: selector(activitiesByDate.get(date) ?? []) }))
 
-  const recovery = metricSeries('recovery_score')
   const hrv = metricSeries('hrv_ms')
   const rhr = metricSeries('resting_hr_bpm')
-  const strain = metricSeries('daily_strain')
   const calories = metricSeries('total_calories_kcal')
   const activeMin = metricSeries('active_min')
   const sleepHours = sleepSeries('hours')
@@ -305,20 +303,15 @@ export default async function TrendsPage({
         <div className="space-y-5 md:space-y-6">
           <section>
             <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">{t('averages')}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
-              <MetricCard label={t('metrics.recovery')} value={avg(recovery.map(p => p.value))} unit="%" color="#65a30d" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
               <MetricCard label={t('metrics.hrv')} value={avg(hrv.map(p => p.value), 1)} unit="ms" color="#2563eb" />
               <MetricCard label={t('metrics.rhr')} value={avg(rhr.map(p => p.value))} unit="bpm" color="#f97316" />
-              <MetricCard label={t('metrics.strain')} value={avg(strain.map(p => p.value), 1)} color="#a855f7" />
               <MetricCard label={t('metrics.sleep')} value={avg(sleepHours.map(p => p.value), 1)} unit="h" color="#0891b2" />
               <MetricCard label={t('metrics.calories')} value={avg(calories.map(p => p.value))} unit="kcal" color="#e11d48" />
             </div>
           </section>
 
-          <section className="grid lg:grid-cols-2 gap-4">
-            <ChartCard title={t('sections.recoveryScore')} right={`${firstLabel} – ${lastLabel}`}>
-              <LineChart series={[{ label: t('metrics.recovery'), color: '#65a30d', data: recovery }]} />
-            </ChartCard>
+          <section>
             <ChartCard title={t('sections.hrvRhr')}>
               <LineChart
                 series={[
@@ -373,10 +366,7 @@ export default async function TrendsPage({
             </ChartCard>
           </section>
 
-          <section className="grid lg:grid-cols-3 gap-4">
-            <ChartCard title={t('sections.dailyStrain')}>
-              <BarChart data={strain} color="#a855f7" maxValue={21} />
-            </ChartCard>
+          <section className="grid lg:grid-cols-2 gap-4">
             <ChartCard title={t('sections.activeMinutes')} right={formatDuration(totalTimeS)}>
               <BarChart data={activeMin.some(p => p.value) ? activeMin : workoutMinutes} color="#65a30d" />
             </ChartCard>
@@ -430,7 +420,6 @@ export default async function TrendsPage({
                       </div>
                     </div>
                     <div className="text-right text-xs text-muted flex-shrink-0">
-                      {act.strain != null && <div className="font-semibold text-[#555]">{numberLabel(act.strain, 1)}</div>}
                       {act.calories_kcal != null && <div>{Math.round(act.calories_kcal)} kcal</div>}
                     </div>
                   </div>
