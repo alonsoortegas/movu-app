@@ -179,9 +179,30 @@ export async function POST(request: Request) {
 
   let sleepCount = 0
   if (dedupedSleepRows.length > 0) {
+    const sleepIds = dedupedSleepRows
+      .map(row => row.whoop_sleep_id)
+      .filter((id): id is string => typeof id === 'string')
+    const sleepDates = [...new Set(dedupedSleepRows.map(row => row.date))]
+
+    if (sleepIds.length > 0) {
+      const { error } = await admin
+        .from('sleep_logs')
+        .delete()
+        .in('whoop_sleep_id', sleepIds)
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    const { error: deleteByDateError } = await admin
+      .from('sleep_logs')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('source', 'whoop')
+      .in('date', sleepDates)
+    if (deleteByDateError) return NextResponse.json({ error: deleteByDateError.message }, { status: 500 })
+
     const { error } = await admin
       .from('sleep_logs')
-      .upsert(dedupedSleepRows, { onConflict: 'user_id,date', ignoreDuplicates: false })
+      .insert(dedupedSleepRows)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     sleepCount = dedupedSleepRows.length
   }
