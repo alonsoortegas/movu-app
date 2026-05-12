@@ -22,7 +22,11 @@ export async function GET(request: Request) {
       }),
     })
 
-    if (!tokenRes.ok) throw new Error('token_exchange_failed')
+    if (!tokenRes.ok) {
+      const detail = await tokenRes.text()
+      console.error('[whoop/callback] token exchange failed:', tokenRes.status, detail)
+      throw new Error('token_exchange_failed')
+    }
 
     const tokens = await tokenRes.json()
 
@@ -30,13 +34,17 @@ export async function GET(request: Request) {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     })
 
-    if (!profileRes.ok) throw new Error('profile_fetch_failed')
+    if (!profileRes.ok) {
+      const detail = await profileRes.text()
+      console.error('[whoop/callback] profile fetch failed:', profileRes.status, detail)
+      throw new Error('profile_fetch_failed')
+    }
 
     const profile = await profileRes.json()
 
     const supabase = createAdminClient()
 
-    await supabase
+    const { error } = await supabase
       .from('user_profiles')
       .update({
         whoop_user_id: profile.user_id,
@@ -47,8 +55,14 @@ export async function GET(request: Request) {
       })
       .eq('id', userId)
 
+    if (error) {
+      console.error('[whoop/callback] profile update failed:', error)
+      throw new Error('profile_update_failed')
+    }
+
     return NextResponse.redirect(`${appUrl}/es/perfil?whoop=connected`)
-  } catch {
+  } catch (error) {
+    console.error('[whoop/callback] failed:', error)
     return NextResponse.redirect(`${appUrl}/es/perfil?whoop=error`)
   }
 }

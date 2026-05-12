@@ -7,7 +7,7 @@ const intlMiddleware = createMiddleware(routing)
 
 // Auth pages live outside [locale] and must never get a locale prefix
 const AUTH_PATHS = ['/login', '/signup']
-const PUBLIC_PATHS = ['/waitlist', '/api/waitlist']
+const PUBLIC_PATHS = ['/waitlist', '/api/waitlist', '/api/whoop/callback']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl

@@ -17,7 +17,7 @@ export async function GET() {
 
   const { data: measurement } = await supabase
     .from('body_measurements')
-    .select('muscle_mass_kg, fat_mass_kg, fat_percentage, weight_kg')
+    .select('measured_at, weight_kg, muscle_mass_kg, fat_mass_kg, fat_percentage, visceral_fat_level, bmr_kcal, phase_angle, total_body_water_l, protein_kg, mineral_kg, waist_hip_ratio, muscle_left_arm, muscle_right_arm, muscle_left_leg, muscle_right_leg, muscle_trunk, notes')
     .eq('user_id', user.id)
     .order('measured_at', { ascending: false })
     .limit(1)

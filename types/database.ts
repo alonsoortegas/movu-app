@@ -402,6 +402,13 @@ export type Database = {
           muscle_mass_kg: number | null
           fat_mass_kg: number | null
           fat_percentage: number | null
+          visceral_fat_level: number | null
+          bmr_kcal: number | null
+          phase_angle: number | null
+          total_body_water_l: number | null
+          protein_kg: number | null
+          mineral_kg: number | null
+          waist_hip_ratio: number | null
           muscle_left_arm: number | null
           muscle_right_arm: number | null
           muscle_left_leg: number | null
@@ -418,6 +425,13 @@ export type Database = {
           muscle_mass_kg?: number | null
           fat_mass_kg?: number | null
           fat_percentage?: number | null
+          visceral_fat_level?: number | null
+          bmr_kcal?: number | null
+          phase_angle?: number | null
+          total_body_water_l?: number | null
+          protein_kg?: number | null
+          mineral_kg?: number | null
+          waist_hip_ratio?: number | null
           muscle_left_arm?: number | null
           muscle_right_arm?: number | null
           muscle_left_leg?: number | null
@@ -434,6 +448,13 @@ export type Database = {
           muscle_mass_kg?: number | null
           fat_mass_kg?: number | null
           fat_percentage?: number | null
+          visceral_fat_level?: number | null
+          bmr_kcal?: number | null
+          phase_angle?: number | null
+          total_body_water_l?: number | null
+          protein_kg?: number | null
+          mineral_kg?: number | null
+          waist_hip_ratio?: number | null
           muscle_left_arm?: number | null
           muscle_right_arm?: number | null
           muscle_left_leg?: number | null
