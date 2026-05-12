@@ -2,10 +2,11 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
+  const callbackUrl = new URL(request.url)
+  const { searchParams } = callbackUrl
   const code = searchParams.get('code')
   const userId = searchParams.get('state')
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl = callbackUrl.origin
 
   try {
     if (!code || !userId) throw new Error('missing_params')
