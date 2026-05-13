@@ -57,8 +57,22 @@ function numberLabel(value: number | null | undefined, decimals = 0): string {
   return decimals > 0 ? value.toFixed(decimals) : String(Math.round(value))
 }
 
+function parseDateValue(value: string): Date | null {
+  const trimmed = value.trim()
+  if (!trimmed) return null
+
+  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(trimmed)
+    ? new Date(`${trimmed}T12:00:00Z`)
+    : new Date(trimmed)
+
+  return Number.isNaN(parsed.getTime()) ? null : parsed
+}
+
 function axisLabel(locale: string, date: string): string {
-  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(new Date(`${date}T12:00:00Z`))
+  const parsed = parseDateValue(date)
+  if (!parsed) return '—'
+
+  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(parsed)
 }
 
 function minMax(series: ChartSeries[]): { min: number; max: number } {
