@@ -105,6 +105,11 @@
       "noSleepStages": "Aún no hay datos de fases de sueño.",
       "noWorkouts": "No hay entrenamientos en este periodo.",
       "noBody": "Aún no hay medición de composición corporal."
+    },
+    "error": {
+      "title": "No se pudieron cargar las tendencias",
+      "body": "Hubo un problema leyendo tus datos de fitness. Intenta sincronizar de nuevo desde tu perfil.",
+      "action": "Abrir perfil"
     }
   },
   "plan": {

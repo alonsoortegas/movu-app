@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/types/database'
@@ -174,6 +175,18 @@ function EmptyState({ locale, title, body, action }: { locale: string; title: st
   )
 }
 
+function ErrorState({ locale, title, body, action }: { locale: string; title: string; body: string; action: string }) {
+  return (
+    <div className="bg-red-50 border border-red-200 rounded-xl p-5 md:p-6 text-center">
+      <div className="text-sm font-bold text-red-950 mb-1">{title}</div>
+      <p className="text-sm text-red-900/80 max-w-lg mx-auto mb-4">{body}</p>
+      <Link href={`/${locale}/perfil`} className="inline-flex bg-[#111] hover:bg-[#333] text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
+        {action}
+      </Link>
+    </div>
+  )
+}
+
 export default async function TrendsPage({
   params,
 }: {
@@ -186,6 +199,10 @@ export default async function TrendsPage({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  if (!user) {
+    redirect(`/login?next=/${locale}/trends`)
+  }
+
   const end = new Date()
   end.setUTCHours(23, 59, 59, 999)
   const start = addDays(end, -(WINDOW_DAYS - 1))
@@ -195,10 +212,10 @@ export default async function TrendsPage({
   const dateKeys = Array.from({ length: WINDOW_DAYS }, (_, i) => isoDate(addDays(start, i)))
 
   const [
-    { data: metrics },
-    { data: sleepLogs },
-    { data: activities },
-    { data: latestBody },
+    metricsResult,
+    sleepLogsResult,
+    activitiesResult,
+    latestBodyResult,
   ] = await Promise.all([
     supabase
       .from('daily_metrics')
@@ -229,6 +246,16 @@ export default async function TrendsPage({
       .limit(1)
       .maybeSingle(),
   ])
+
+  const queryError = metricsResult.error ?? sleepLogsResult.error ?? activitiesResult.error ?? latestBodyResult.error
+  if (queryError) {
+    console.error('Failed to load trends data', queryError)
+  }
+
+  const metrics = metricsResult.data
+  const sleepLogs = sleepLogsResult.data
+  const activities = activitiesResult.data
+  const latestBody = latestBodyResult.data
 
   const metricsByDate = new Map((metrics ?? []).map((m: DailyMetric) => [m.date, m]))
   const sleepByDate = new Map((sleepLogs ?? []).map((s: SleepLog) => [s.date, s]))
@@ -298,7 +325,11 @@ export default async function TrendsPage({
       </div>
 
       {!hasData ? (
-        <EmptyState locale={locale} title={t('empty.title')} body={t('empty.body')} action={t('empty.action')} />
+        queryError ? (
+          <ErrorState locale={locale} title={t('error.title')} body={t('error.body')} action={t('error.action')} />
+        ) : (
+          <EmptyState locale={locale} title={t('empty.title')} body={t('empty.body')} action={t('empty.action')} />
+        )
       ) : (
         <div className="space-y-5 md:space-y-6">
           <section>

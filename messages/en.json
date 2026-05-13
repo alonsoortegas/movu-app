@@ -105,6 +105,11 @@
       "noSleepStages": "Sleep stage data is not available yet.",
       "noWorkouts": "No workouts in this period.",
       "noBody": "No body composition measurement saved yet."
+    },
+    "error": {
+      "title": "Trends could not load",
+      "body": "There was a problem reading your fitness data. Try syncing again from your profile.",
+      "action": "Open profile"
     }
   },
   "plan": {
