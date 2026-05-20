@@ -194,6 +194,7 @@ export type Database = {
           inferred_muscle_groups: string[] | null
           hr_zones: Json | null
           trainer: boolean | null
+          coach_name: string | null
           whoop_activity_id: string | null
           strain: number | null
           calories_kcal: number | null
@@ -221,6 +222,7 @@ export type Database = {
           inferred_muscle_groups?: string[] | null
           hr_zones?: Json | null
           trainer?: boolean | null
+          coach_name?: string | null
           whoop_activity_id?: string | null
           strain?: number | null
           calories_kcal?: number | null
@@ -248,6 +250,7 @@ export type Database = {
           inferred_muscle_groups?: string[] | null
           hr_zones?: Json | null
           trainer?: boolean | null
+          coach_name?: string | null
           whoop_activity_id?: string | null
           strain?: number | null
           calories_kcal?: number | null
@@ -346,6 +349,7 @@ export type Database = {
           daily_max_hr: number | null
           total_calories_kcal: number | null
           active_min: number | null
+          steps_count: number | null
           vo2_max: number | null
           physical_effort: number | null
           source: string
@@ -366,6 +370,7 @@ export type Database = {
           daily_max_hr?: number | null
           total_calories_kcal?: number | null
           active_min?: number | null
+          steps_count?: number | null
           vo2_max?: number | null
           physical_effort?: number | null
           source?: string
@@ -386,6 +391,7 @@ export type Database = {
           daily_max_hr?: number | null
           total_calories_kcal?: number | null
           active_min?: number | null
+          steps_count?: number | null
           vo2_max?: number | null
           physical_effort?: number | null
           source?: string

@@ -10,7 +10,7 @@ export async function GET() {
   const { weekStart, weekEnd } = getISOWeekBounds()
   const today = new Date().toISOString().split('T')[0]
 
-  const [{ data: activities }, { data: sleepLogs }, { data: todaySleep }] = await Promise.all([
+  const [{ data: activities }, { data: sleepLogs }, { data: todaySleep }, { data: todayMetric }] = await Promise.all([
     supabase
       .from('activities')
       .select('moving_time_s, distance_m, hr_zones, rpe, activity_category, start_date_utc')
@@ -26,6 +26,12 @@ export async function GET() {
     supabase
       .from('sleep_logs')
       .select('hours, quality, notes')
+      .eq('user_id', user.id)
+      .eq('date', today)
+      .maybeSingle(),
+    supabase
+      .from('daily_metrics')
+      .select('steps_count')
       .eq('user_id', user.id)
       .eq('date', today)
       .maybeSingle(),
@@ -86,6 +92,7 @@ export async function GET() {
     },
     today: {
       sleep_last_night: todaySleep ?? null,
+      steps_count: todayMetric?.steps_count ?? null,
     },
   })
 }

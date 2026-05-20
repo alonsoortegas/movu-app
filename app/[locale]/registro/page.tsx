@@ -44,9 +44,12 @@ export default function RegistroPage() {
   const [type, setType] = useState<WorkoutType>("weightlifting");
   const [className, setClassName] = useState(WORKOUT_SUBTYPES_BY_TYPE.weightlifting[0]);
   const [studio, setStudio] = useState("");
+  const [coachName, setCoachName] = useState("");
   const [duration, setDuration] = useState("");
   const [calories, setCalories] = useState("");
   const [distance, setDistance] = useState("");
+  const [sleepHours, setSleepHours] = useState("");
+  const [steps, setSteps] = useState("");
   const [effort, setEffort] = useState(3);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -72,10 +75,13 @@ export default function RegistroPage() {
           type,
           className,
           studio,
+          coachName,
           duration_min: duration ? Number(duration) : undefined,
           calories: calories ? Number(calories) : undefined,
           rpe: effort,
           distance_km: distance ? Number(distance) : undefined,
+          sleep_hours: sleepHours ? Number(sleepHours) : undefined,
+          steps: steps ? Number(steps) : undefined,
         }),
       });
       if (!res.ok) {
@@ -85,9 +91,12 @@ export default function RegistroPage() {
       setType("weightlifting");
       setClassName(WORKOUT_SUBTYPES_BY_TYPE.weightlifting[0]);
       setStudio("");
+      setCoachName("");
       setDuration("");
       setCalories("");
       setDistance("");
+      setSleepHours("");
+      setSteps("");
       setEffort(3);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -131,6 +140,11 @@ export default function RegistroPage() {
           <input type="text" value={studio} onChange={(e) => setStudio(e.target.value)} placeholder={t("studioPlaceholder")}
             className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-[#444] mb-2">{t("coachName")}</label>
+          <input type="text" value={coachName} onChange={(e) => setCoachName(e.target.value)} placeholder={t("coachPlaceholder")}
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+        </div>
         <div className="grid grid-cols-2 gap-3 md:gap-4">
           <div>
             <label className="block text-sm font-medium text-[#444] mb-2">{t("duration")}</label>
@@ -140,6 +154,18 @@ export default function RegistroPage() {
           <div>
             <label className="block text-sm font-medium text-[#444] mb-2">{t("calories")}</label>
             <input type="number" value={calories} onChange={(e) => setCalories(e.target.value)} placeholder={t("caloriesPlaceholder")} min={0}
+              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:gap-4">
+          <div>
+            <label className="block text-sm font-medium text-[#444] mb-2">{t("sleepHours")}</label>
+            <input type="number" value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder={t("sleepHoursPlaceholder")} step="0.1" min={0} max={24}
+              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#444] mb-2">{t("steps")}</label>
+            <input type="number" value={steps} onChange={(e) => setSteps(e.target.value)} placeholder={t("stepsPlaceholder")} min={0}
               className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
         </div>

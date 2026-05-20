@@ -42,6 +42,7 @@ export default async function DashboardPage({
   const [
     { data: weekActivities },
     { data: todaySleep },
+    { data: todayMetric },
     { data: recentActivities },
     { data: cachedInsight },
   ] = await Promise.all([
@@ -61,8 +62,14 @@ export default async function DashboardPage({
       .limit(1)
       .maybeSingle(),
     supabase
+      .from('daily_metrics')
+      .select('steps_count')
+      .eq('user_id', user!.id)
+      .eq('date', today)
+      .maybeSingle(),
+    supabase
       .from('activities')
-      .select('id, activity_name, activity_category, source, moving_time_s, start_date_utc')
+      .select('id, activity_name, activity_category, source, moving_time_s, start_date_utc, coach_name')
       .eq('user_id', user!.id)
       .order('start_date_utc', { ascending: false })
       .limit(3),
@@ -165,13 +172,19 @@ export default async function DashboardPage({
       </div>
 
       {/* Metric cards */}
-      <div className="grid grid-cols-3 gap-2 md:gap-4 mb-4 md:mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
         {[
           {
             emoji: '💤',
             labelKey: 'metrics.sleep' as const,
             value: todaySleep?.hours ? `${Math.round(todaySleep.hours * 10) / 10}h` : '—',
             subKey: 'metrics.sleepSub' as const,
+          },
+          {
+            emoji: '👣',
+            labelKey: 'metrics.steps' as const,
+            value: todayMetric?.steps_count ? todayMetric.steps_count.toLocaleString(locale) : '—',
+            subKey: null,
           },
           {
             emoji: '🔥',
@@ -215,7 +228,7 @@ export default async function DashboardPage({
                     {w.activity_name ?? w.activity_category ?? w.source}
                   </div>
                   <div className="text-xs text-muted">
-                    {w.source} · {w.moving_time_s ? formatDuration(w.moving_time_s) : '—'}
+                    {[w.source, w.moving_time_s ? formatDuration(w.moving_time_s) : '—', w.coach_name].filter(Boolean).join(' · ')}
                   </div>
                 </div>
                 <span className="text-muted text-sm">›</span>

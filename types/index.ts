@@ -36,6 +36,7 @@ export interface Workout {
   type: WorkoutType;
   className?: string;   // user-provided class name (e.g. "Pesas — Pierna") — not from WHOOP
   studio?: string;      // user-provided studio name — not from WHOOP
+  coachName?: string;   // manual coach/instructor name
   durationMin: number;
   calories: number;
   distanceKm?: number;
@@ -68,6 +69,7 @@ export interface DayMetrics {
   // Calories
   totalCalories: number;       // full-day TDEE — from WHOOP cycle kilojoule or manual
   activeMin: number;
+  stepsCount?: number;
   // Sleep
   sleepHours: number;
   sleepPerformancePct?: number; // 0–100 from WHOOP; replaces the old 3-state enum

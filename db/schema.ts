@@ -85,6 +85,7 @@ export const activities = pgTable('activities', {
   inferred_muscle_groups: text('inferred_muscle_groups').array(),
   hr_zones: jsonb('hr_zones'),
   trainer: boolean('trainer'),
+  coach_name: text('coach_name'),
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
@@ -161,6 +162,7 @@ export const dailyMetrics = pgTable('daily_metrics', {
   daily_max_hr: real('daily_max_hr'),
   total_calories_kcal: real('total_calories_kcal'),
   active_min: integer('active_min'),
+  steps_count: integer('steps_count'),
   vo2_max: real('vo2_max'),
   physical_effort: real('physical_effort'),
   source: text('source').notNull().default('whoop'),
