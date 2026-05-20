@@ -4,8 +4,35 @@ import { useState, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import type { WorkoutType } from "@/types";
 
-const CLASS_TYPE_KEYS: WorkoutType[] = ["weightlifting", "cardio", "running", "combined", "bootcamp", "workshop"];
-const CLASS_EMOJIS: Record<string, string> = { weightlifting: "💪", cardio: "🚴", running: "🏃", combined: "🔄", bootcamp: "🥊", workshop: "📚" };
+const CLASS_TYPE_KEYS: WorkoutType[] = ["weightlifting", "functional-fitness", "bootcamp", "running", "cycling", "cardio", "yoga", "other"];
+const CLASS_EMOJIS: Record<string, string> = {
+  weightlifting: "💪",
+  "functional-fitness": "🏋️",
+  bootcamp: "🥊",
+  running: "🏃",
+  cycling: "🚴",
+  cardio: "⚡",
+  yoga: "🧘",
+  other: "✨",
+};
+const WORKOUT_SUBTYPES_BY_TYPE: Record<string, string[]> = {
+  weightlifting: [
+    "Pesas superior",
+    "Pesas inferior",
+    "Pesas, brazos",
+    "Pesas, hombro",
+    "Pesas, pecho",
+    "Pesas, espalda",
+    "Pesas, pierna y glúteo",
+  ],
+  "functional-fitness": ["Funcional superior", "Funcional inferior", "Hyrox"],
+  bootcamp: ["Bootcamp"],
+  running: ["Correr exterior", "Correr en banda"],
+  cycling: ["Bici indoor", "Bici exterior"],
+  cardio: ["Caminar", "Elíptica", "Escaladora", "Hiking"],
+  yoga: ["Yoga", "Pilates", "Hot pilates", "Barre", "Hot barre", "Danza aérea"],
+  other: ["Pádel"],
+};
 
 export default function RegistroPage() {
   const t = useTranslations("registro");
@@ -15,7 +42,7 @@ export default function RegistroPage() {
     [locale]
   );
   const [type, setType] = useState<WorkoutType>("weightlifting");
-  const [className, setClassName] = useState("");
+  const [className, setClassName] = useState(WORKOUT_SUBTYPES_BY_TYPE.weightlifting[0]);
   const [studio, setStudio] = useState("");
   const [duration, setDuration] = useState("");
   const [calories, setCalories] = useState("");
@@ -25,7 +52,13 @@ export default function RegistroPage() {
   const [loading, setLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  const showDistance = type === "running" || type === "cardio";
+  const subtypeOptions = WORKOUT_SUBTYPES_BY_TYPE[type] ?? [];
+  const showDistance = type === "running" || type === "cycling" || type === "cardio";
+
+  const handleTypeChange = (nextType: WorkoutType) => {
+    setType(nextType);
+    setClassName(WORKOUT_SUBTYPES_BY_TYPE[nextType]?.[0] ?? "");
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +83,7 @@ export default function RegistroPage() {
         throw new Error(data.error ?? "Failed to save");
       }
       setType("weightlifting");
-      setClassName("");
+      setClassName(WORKOUT_SUBTYPES_BY_TYPE.weightlifting[0]);
       setStudio("");
       setDuration("");
       setCalories("");
@@ -74,9 +107,9 @@ export default function RegistroPage() {
       <form onSubmit={handleSave} className="space-y-5 md:space-y-6">
         <div>
           <label className="block text-sm font-medium text-[#444] mb-3">{t("classType")}</label>
-          <div className="grid grid-cols-3 gap-2 md:gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-2.5">
             {CLASS_TYPE_KEYS.map((key) => (
-              <button key={key} type="button" onClick={() => setType(key)}
+              <button key={key} type="button" onClick={() => handleTypeChange(key)}
                 className={`flex flex-col items-center gap-1 md:gap-1.5 py-3 md:py-4 rounded-xl border-2 transition-all ${type === key ? "bg-accent-light border-accent shadow-sm" : "bg-surface border-border hover:border-[#ccc]"}`}>
                 <span className="text-xl md:text-2xl">{CLASS_EMOJIS[key]}</span>
                 <span className={`text-[11px] md:text-xs font-medium ${type === key ? "text-[#444]" : "text-muted"}`}>{t(`classTypes.${key}`)}</span>
@@ -86,8 +119,12 @@ export default function RegistroPage() {
         </div>
         <div>
           <label className="block text-sm font-medium text-[#444] mb-2">{t("className")}</label>
-          <input type="text" value={className} onChange={(e) => setClassName(e.target.value)} placeholder={t("classPlaceholder")}
-            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+          <select value={className} onChange={(e) => setClassName(e.target.value)}
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+            {subtypeOptions.map((subtype) => (
+              <option key={subtype} value={subtype}>{subtype}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm font-medium text-[#444] mb-2">{t("studio")}</label>

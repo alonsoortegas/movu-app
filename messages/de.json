@@ -163,9 +163,13 @@
       "running": "Run",
       "combined": "Combined",
       "bootcamp": "Bootcamp",
-      "workshop": "Workshop"
+      "workshop": "Workshop",
+      "functional-fitness": "Functional",
+      "cycling": "Bike",
+      "yoga": "Mobility",
+      "other": "Other"
     },
-    "className": "Class name",
+    "className": "Workout subtype",
     "classPlaceholder": "e.g. Spinning, Barre, HIIT...",
     "studio": "Studio or location",
     "studioPlaceholder": "e.g. Cyclo Studio, Gym Club...",

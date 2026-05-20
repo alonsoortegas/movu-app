@@ -8,9 +8,13 @@ const CATEGORY_MAP: Record<string, string> = {
   weightlifting: 'strength',
   cardio: 'other',
   running: 'run',
+  cycling: 'ride',
   combined: 'hiit',
   bootcamp: 'hiit',
+  'functional-fitness': 'strength',
+  yoga: 'mobility',
   workshop: 'other',
+  other: 'other',
 }
 
 export async function POST(request: Request) {

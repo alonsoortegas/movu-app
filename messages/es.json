@@ -162,9 +162,13 @@
       "running": "Correr",
       "combined": "Combinado",
       "bootcamp": "Bootcamp",
-      "workshop": "Taller"
+      "workshop": "Taller",
+      "functional-fitness": "Funcional",
+      "cycling": "Bici",
+      "yoga": "Movilidad",
+      "other": "Otro"
     },
-    "className": "Nombre de la clase",
+    "className": "Subtipo de entrenamiento",
     "classPlaceholder": "ej. Spinning, Barre, HIIT...",
     "studio": "Estudio o lugar",
     "studioPlaceholder": "ej. Cyclo Studio, Gym Club, CDMX...",
