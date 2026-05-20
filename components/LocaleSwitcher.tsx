@@ -23,6 +23,7 @@ export default function LocaleSwitcher() {
           <button
             key={l}
             onClick={() => handleSwitch(l)}
+            aria-label={`${l === "es" ? "Español" : "English"}`}
             className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
               locale === l ? "bg-white text-[#111] shadow-sm" : "text-[#888] hover:text-[#333]"
             }`}

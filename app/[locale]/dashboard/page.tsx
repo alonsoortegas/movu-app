@@ -23,6 +23,23 @@ function formatDuration(seconds: number): string {
   return `${m}m`
 }
 
+function getDisplayName(fullName: string | null | undefined, email: string | undefined): string {
+  const name = fullName?.trim()
+  if (name) return name
+  return email?.split('@')[0] || ''
+}
+
+function getInitials(name: string): string {
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+
+  return initials || 'M'
+}
+
 export default async function DashboardPage({
   params,
 }: {
@@ -45,6 +62,7 @@ export default async function DashboardPage({
     { data: todayMetric },
     { data: recentActivities },
     { data: cachedInsight },
+    { data: profile },
   ] = await Promise.all([
     supabase
       .from('activities')
@@ -82,7 +100,14 @@ export default async function DashboardPage({
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from('user_profiles')
+      .select('full_name')
+      .eq('id', user!.id)
+      .maybeSingle(),
   ])
+
+  const displayName = getDisplayName(profile?.full_name, user?.email)
 
   // Map day index (0=Mon) → activities that day
   const activitiesByDay: Record<number, NonNullable<typeof weekActivities>[0][]> = {}
@@ -109,12 +134,14 @@ export default async function DashboardPage({
       {/* Header */}
       <div className="flex items-center justify-between mb-5 md:mb-8">
         <div>
-          <h1 className="text-xl font-bold text-[#111] md:hidden">{t('greeting')}</h1>
+          <h1 className="text-xl font-bold text-[#111] md:hidden">{t('greeting', { name: displayName })}</h1>
           <h1 className="hidden md:block text-2xl font-bold text-[#111]">{t('title')}</h1>
           <p className="text-xs md:text-sm text-muted mt-0.5">{t('weekLabel')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full bg-[#eee] border border-[#e0e0e0] flex items-center justify-center text-base md:hidden">🧑</div>
+          <div className="w-9 h-9 rounded-full bg-[#eee] border border-[#e0e0e0] flex items-center justify-center text-xs font-bold text-[#555] md:hidden">
+            {getInitials(displayName)}
+          </div>
           <Link
             href={`/${locale}/registro`}
             className="hidden md:block bg-accent hover:bg-accent-dark text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors"

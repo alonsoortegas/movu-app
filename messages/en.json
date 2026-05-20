@@ -24,7 +24,7 @@
   "localeSwitcher": { "label": "Language" },
   "dashboard": {
     "title": "Dashboard",
-    "greeting": "Hey, Ana 👋",
+    "greeting": "Hey, {name}",
     "weekLabel": "Week of Apr 14–20 · 2025",
     "registerToday": "+ Log today",
     "registerCta": "+ Log today's workout",
@@ -169,6 +169,7 @@
       "yoga": "Mobility",
       "other": "Other"
     },
+    "workoutDate": "Workout day",
     "className": "Workout subtype",
     "classPlaceholder": "e.g. Spinning, Barre, HIIT...",
     "studio": "Studio or location",
@@ -183,6 +184,9 @@
     "sleepHoursPlaceholder": "e.g. 7.5",
     "steps": "Steps",
     "stepsPlaceholder": "e.g. 8500",
+    "periodQuestion": "Are you on your period?",
+    "yes": "Yes",
+    "no": "No",
     "distance": "Distance in km",
     "distanceOptional": "(optional)",
     "distancePlaceholder": "e.g. 5.4",
@@ -198,13 +202,20 @@
     },
     "save": "Save workout",
     "saved": "✓ Workout saved",
-    "savedShort": "✓ Workout saved"
+    "savedShort": "✓ Workout saved",
+    "dailyLogTitle": "Sleep and steps",
+    "dailyLogSubtitle": "Log daily metrics without creating a workout.",
+    "dailyLogDate": "Log day",
+    "dailyLogSave": "Save sleep and steps",
+    "dailyLogSaved": "✓ Metrics saved"
   },
   "perfil": {
     "title": "Profile",
     "subtitle": "Your data and training goals",
     "personalInfo": "Personal information",
     "nameLabel": "Name",
+    "sexLabel": "Sex",
+    "sexPlaceholder": "Select",
     "goalLabel": "Main goal",
     "weeklyGoal": "Weekly workout goal",
     "goals": {
@@ -213,6 +224,12 @@
       "loseWeight": "Lose weight",
       "endurance": "Improve endurance",
       "stayActive": "Stay active"
+    },
+    "sexOptions": {
+      "female": "Female",
+      "male": "Male",
+      "other": "Other",
+      "prefer_not_to_say": "Prefer not to say"
     },
     "inbody": "InBody scan",
     "inbodySubtitle": "Track scan metrics that affect fueling, strength blocks, recovery, and body composition changes.",

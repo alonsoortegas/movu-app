@@ -24,7 +24,7 @@
   "localeSwitcher": { "label": "Idioma" },
   "dashboard": {
     "title": "Dashboard",
-    "greeting": "Hola, Ana 👋",
+    "greeting": "Hola, {name}",
     "weekLabel": "Semana del 14–20 Abr · 2025",
     "registerToday": "+ Registrar hoy",
     "registerCta": "+ Registrar entrenamiento de hoy",
@@ -169,6 +169,7 @@
       "yoga": "Movilidad",
       "other": "Otro"
     },
+    "workoutDate": "Día del entrenamiento",
     "className": "Subtipo de entrenamiento",
     "classPlaceholder": "ej. Spinning, Barre, HIIT...",
     "studio": "Estudio o lugar",
@@ -183,6 +184,9 @@
     "sleepHoursPlaceholder": "ej. 7.5",
     "steps": "Pasos",
     "stepsPlaceholder": "ej. 8500",
+    "periodQuestion": "¿Estás en tu periodo?",
+    "yes": "Sí",
+    "no": "No",
     "distance": "Distancia en km",
     "distanceOptional": "(opcional)",
     "distancePlaceholder": "ej. 5.4",
@@ -198,13 +202,20 @@
     },
     "save": "Guardar entrenamiento",
     "saved": "✓ Entrenamiento guardado",
-    "savedShort": "✓ Entrenamiento guardado"
+    "savedShort": "✓ Entrenamiento guardado",
+    "dailyLogTitle": "Sueño y pasos",
+    "dailyLogSubtitle": "Registra tus métricas del día sin crear un entrenamiento.",
+    "dailyLogDate": "Día del registro",
+    "dailyLogSave": "Guardar sueño y pasos",
+    "dailyLogSaved": "✓ Métricas guardadas"
   },
   "perfil": {
     "title": "Perfil",
     "subtitle": "Tus datos y metas de entrenamiento",
     "personalInfo": "Información personal",
     "nameLabel": "Nombre",
+    "sexLabel": "Sexo",
+    "sexPlaceholder": "Seleccionar",
     "goalLabel": "Objetivo principal",
     "weeklyGoal": "Meta semanal de entrenamientos",
     "goals": {
@@ -213,6 +224,12 @@
       "loseWeight": "Perder peso",
       "endurance": "Mejorar resistencia",
       "stayActive": "Mantenerme activo/a"
+    },
+    "sexOptions": {
+      "female": "Femenino",
+      "male": "Masculino",
+      "other": "Otro",
+      "prefer_not_to_say": "Prefiero no decir"
     },
     "inbody": "Escaneo InBody",
     "inbodySubtitle": "Registra métricas que afectan nutrición, bloques de fuerza, recuperación y cambios de composición corporal.",

@@ -11,7 +11,7 @@ export async function GET() {
 
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('full_name, city, goal, max_hr_bpm, onboarding_complete, data_source')
+    .select('full_name, city, sex, goal, max_hr_bpm, onboarding_complete, data_source')
     .eq('id', user.id)
     .single()
 
@@ -39,6 +39,9 @@ export async function PATCH(request: Request) {
   const body = await request.json()
   const update: ProfileUpdate = {}
   if (body.full_name !== undefined) update.full_name = body.full_name
+  if (body.sex !== undefined) {
+    update.sex = ['female', 'male', 'other', 'prefer_not_to_say'].includes(body.sex) ? body.sex : null
+  }
   if (body.goal !== undefined) update.goal = body.goal
   if (body.max_hr_bpm !== undefined) update.max_hr_bpm = body.max_hr_bpm
 
@@ -46,7 +49,7 @@ export async function PATCH(request: Request) {
     .from('user_profiles')
     .update(update)
     .eq('id', user.id)
-    .select('full_name, city, goal, max_hr_bpm')
+    .select('full_name, city, sex, goal, max_hr_bpm')
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

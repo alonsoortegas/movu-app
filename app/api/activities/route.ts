@@ -3,8 +3,6 @@ import { NextResponse } from 'next/server'
 import type { Database } from '@/types/database'
 
 type ActivityInsert = Database['public']['Tables']['activities']['Insert']
-type SleepLogInsert = Database['public']['Tables']['sleep_logs']['Insert']
-type DailyMetricInsert = Database['public']['Tables']['daily_metrics']['Insert']
 
 const CATEGORY_MAP: Record<string, string> = {
   weightlifting: 'strength',
@@ -19,13 +17,21 @@ const CATEGORY_MAP: Record<string, string> = {
   other: 'other',
 }
 
+function dateToActivityTimestamp(date: unknown): string {
+  if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return new Date().toISOString()
+  }
+
+  return `${date}T12:00:00.000Z`
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
-  const { type, className, studio, coachName, duration_min, calories, rpe, distance_km, sleep_hours, steps } = body
+  const { type, date, className, studio, coachName, duration_min, calories, rpe, distance_km } = body
 
   if (!type || !duration_min) {
     return NextResponse.json({ error: 'type and duration_min are required' }, { status: 400 })
@@ -41,7 +47,7 @@ export async function POST(request: Request) {
     moving_time_s: Number(duration_min) * 60,
     calories_kcal: calories ? Number(calories) : null,
     rpe: rpe ? Number(rpe) : null,
-    start_date_utc: new Date().toISOString(),
+    start_date_utc: dateToActivityTimestamp(date),
   }
 
   if (distance_km !== undefined && distance_km !== null && distance_km !== '') {
@@ -55,44 +61,6 @@ export async function POST(request: Request) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  const today = new Date().toISOString().split('T')[0]
-  const writes: PromiseLike<unknown>[] = []
-
-  if (sleep_hours !== undefined && sleep_hours !== null && sleep_hours !== '') {
-    const sleepRow: SleepLogInsert = {
-      user_id: user.id,
-      date: today,
-      hours: Number(sleep_hours),
-    }
-    writes.push(
-      supabase
-        .from('sleep_logs')
-        .upsert(sleepRow, { onConflict: 'user_id,date' })
-        .throwOnError()
-    )
-  }
-
-  if (steps !== undefined && steps !== null && steps !== '') {
-    const metricRow: DailyMetricInsert = {
-      user_id: user.id,
-      date: today,
-      steps_count: Number(steps),
-    }
-    writes.push(
-      supabase
-        .from('daily_metrics')
-        .upsert(metricRow, { onConflict: 'user_id,date' })
-        .throwOnError()
-    )
-  }
-
-  try {
-    await Promise.all(writes)
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Failed to save daily metrics'
-    return NextResponse.json({ error: message }, { status: 500 })
-  }
 
   return NextResponse.json({ activity }, { status: 201 })
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import type { WorkoutType } from "@/types";
 
@@ -34,6 +34,12 @@ const WORKOUT_SUBTYPES_BY_TYPE: Record<string, string[]> = {
   other: ["Pádel"],
 };
 
+function localDateValue(date = new Date()): string {
+  const local = new Date(date);
+  local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
+  return local.toISOString().slice(0, 10);
+}
+
 export default function RegistroPage() {
   const t = useTranslations("registro");
   const locale = useLocale();
@@ -41,22 +47,38 @@ export default function RegistroPage() {
     new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long" }).format(new Date()),
     [locale]
   );
+  const todayValue = useMemo(() => localDateValue(), []);
   const [type, setType] = useState<WorkoutType>("weightlifting");
+  const [workoutDate, setWorkoutDate] = useState(todayValue);
   const [className, setClassName] = useState(WORKOUT_SUBTYPES_BY_TYPE.weightlifting[0]);
   const [studio, setStudio] = useState("");
   const [coachName, setCoachName] = useState("");
   const [duration, setDuration] = useState("");
   const [calories, setCalories] = useState("");
   const [distance, setDistance] = useState("");
+  const [dailyDate, setDailyDate] = useState(todayValue);
   const [sleepHours, setSleepHours] = useState("");
   const [steps, setSteps] = useState("");
+  const [profileSex, setProfileSex] = useState<string | null>(null);
+  const [isOnPeriod, setIsOnPeriod] = useState<boolean | null>(null);
   const [effort, setEffort] = useState(3);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [dailySaved, setDailySaved] = useState(false);
+  const [dailyLoading, setDailyLoading] = useState(false);
+  const [dailyError, setDailyError] = useState<string | null>(null);
 
   const subtypeOptions = WORKOUT_SUBTYPES_BY_TYPE[type] ?? [];
   const showDistance = type === "running" || type === "cycling" || type === "cardio";
+  const showPeriodQuestion = profileSex === "female";
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((profile) => setProfileSex(profile.sex ?? null))
+      .catch(() => {});
+  }, []);
 
   const handleTypeChange = (nextType: WorkoutType) => {
     setType(nextType);
@@ -73,6 +95,7 @@ export default function RegistroPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type,
+          date: workoutDate,
           className,
           studio,
           coachName,
@@ -80,8 +103,6 @@ export default function RegistroPage() {
           calories: calories ? Number(calories) : undefined,
           rpe: effort,
           distance_km: distance ? Number(distance) : undefined,
-          sleep_hours: sleepHours ? Number(sleepHours) : undefined,
-          steps: steps ? Number(steps) : undefined,
         }),
       });
       if (!res.ok) {
@@ -89,14 +110,13 @@ export default function RegistroPage() {
         throw new Error(data.error ?? "Failed to save");
       }
       setType("weightlifting");
+      setWorkoutDate(todayValue);
       setClassName(WORKOUT_SUBTYPES_BY_TYPE.weightlifting[0]);
       setStudio("");
       setCoachName("");
       setDuration("");
       setCalories("");
       setDistance("");
-      setSleepHours("");
-      setSteps("");
       setEffort(3);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -107,6 +127,38 @@ export default function RegistroPage() {
     }
   };
 
+  const handleDailySave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setDailyError(null);
+    setDailyLoading(true);
+    try {
+      const res = await fetch("/api/daily-log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date: dailyDate,
+          sleep_hours: sleepHours ? Number(sleepHours) : undefined,
+          steps: steps ? Number(steps) : undefined,
+          is_on_period: showPeriodQuestion && isOnPeriod !== null ? isOnPeriod : undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to save");
+      }
+      setSleepHours("");
+      setSteps("");
+      setIsOnPeriod(null);
+      setDailyDate(todayValue);
+      setDailySaved(true);
+      setTimeout(() => setDailySaved(false), 3000);
+    } catch (err) {
+      setDailyError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setDailyLoading(false);
+    }
+  };
+
   return (
     <div className="p-4 md:p-8 max-w-2xl mx-auto">
       <div className="mb-5 md:mb-8">
@@ -114,6 +166,11 @@ export default function RegistroPage() {
         <p className="text-xs md:text-sm text-muted mt-0.5 capitalize">{todayLabel}</p>
       </div>
       <form onSubmit={handleSave} className="space-y-5 md:space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-[#444] mb-2">{t("workoutDate")}</label>
+          <input type="date" value={workoutDate} onChange={(e) => setWorkoutDate(e.target.value)}
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+        </div>
         <div>
           <label className="block text-sm font-medium text-[#444] mb-3">{t("classType")}</label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-2.5">
@@ -157,18 +214,6 @@ export default function RegistroPage() {
               className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3 md:gap-4">
-          <div>
-            <label className="block text-sm font-medium text-[#444] mb-2">{t("sleepHours")}</label>
-            <input type="number" value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder={t("sleepHoursPlaceholder")} step="0.1" min={0} max={24}
-              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-[#444] mb-2">{t("steps")}</label>
-            <input type="number" value={steps} onChange={(e) => setSteps(e.target.value)} placeholder={t("stepsPlaceholder")} min={0}
-              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
-          </div>
-        </div>
         <div className={`transition-all duration-300 overflow-hidden ${showDistance ? "max-h-24 opacity-100" : "max-h-0 opacity-0"}`}>
           <label className="block text-sm font-medium text-[#444] mb-2">
             {t("distance")} <span className="text-muted font-normal text-xs">{t("distanceOptional")}</span>
@@ -205,6 +250,58 @@ export default function RegistroPage() {
           {loading ? "Saving…" : saved ? t("savedShort") : t("save")}
         </button>
       </div>
+      <form onSubmit={handleDailySave} className="mt-6 md:mt-8 bg-surface border border-border rounded-xl p-4 md:p-5 space-y-4">
+        <div>
+          <h2 className="text-sm font-semibold text-[#111]">{t("dailyLogTitle")}</h2>
+          <p className="text-xs text-muted mt-0.5">{t("dailyLogSubtitle")}</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-[#444] mb-2">{t("dailyLogDate")}</label>
+          <input type="date" value={dailyDate} onChange={(e) => setDailyDate(e.target.value)}
+            className="w-full bg-white border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:gap-4">
+          <div>
+            <label className="block text-sm font-medium text-[#444] mb-2">{t("sleepHours")}</label>
+            <input type="number" value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder={t("sleepHoursPlaceholder")} step="0.1" min={0} max={24}
+              className="w-full bg-white border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#444] mb-2">{t("steps")}</label>
+            <input type="number" value={steps} onChange={(e) => setSteps(e.target.value)} placeholder={t("stepsPlaceholder")} min={0}
+              className="w-full bg-white border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+          </div>
+        </div>
+        {showPeriodQuestion && (
+          <div>
+            <label className="block text-sm font-medium text-[#444] mb-2">{t("periodQuestion")}</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { value: true, label: t("yes") },
+                { value: false, label: t("no") },
+              ].map((option) => (
+                <button
+                  key={String(option.value)}
+                  type="button"
+                  onClick={() => setIsOnPeriod(option.value)}
+                  className={`py-3 rounded-lg border-2 text-sm font-semibold transition-all ${
+                    isOnPeriod === option.value
+                      ? "bg-accent-light border-accent text-[#333]"
+                      : "bg-white border-border text-muted hover:border-[#ccc]"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {dailyError && <p className="text-sm text-red-500">{dailyError}</p>}
+        <button type="submit" disabled={dailyLoading}
+          className={`w-full py-3 rounded-xl text-sm font-semibold transition-all disabled:opacity-60 ${dailySaved ? "bg-[#4caf50] text-white" : "bg-[#111] hover:bg-[#333] text-white"}`}>
+          {dailyLoading ? "Saving…" : dailySaved ? t("dailyLogSaved") : t("dailyLogSave")}
+        </button>
+      </form>
     </div>
   );
 }

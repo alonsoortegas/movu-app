@@ -125,6 +125,7 @@ export type Database = {
           id: string
           full_name: string | null
           city: string | null
+          sex: string | null
           goal: string | null
           max_hr_bpm: number | null
           weight_kg: number | null
@@ -141,6 +142,7 @@ export type Database = {
           id: string
           full_name?: string | null
           city?: string | null
+          sex?: string | null
           goal?: string | null
           max_hr_bpm?: number | null
           weight_kg?: number | null
@@ -157,6 +159,7 @@ export type Database = {
           id?: string
           full_name?: string | null
           city?: string | null
+          sex?: string | null
           goal?: string | null
           max_hr_bpm?: number | null
           weight_kg?: number | null
@@ -350,6 +353,7 @@ export type Database = {
           total_calories_kcal: number | null
           active_min: number | null
           steps_count: number | null
+          is_on_period: boolean | null
           vo2_max: number | null
           physical_effort: number | null
           source: string
@@ -371,6 +375,7 @@ export type Database = {
           total_calories_kcal?: number | null
           active_min?: number | null
           steps_count?: number | null
+          is_on_period?: boolean | null
           vo2_max?: number | null
           physical_effort?: number | null
           source?: string
@@ -392,6 +397,7 @@ export type Database = {
           total_calories_kcal?: number | null
           active_min?: number | null
           steps_count?: number | null
+          is_on_period?: boolean | null
           vo2_max?: number | null
           physical_effort?: number | null
           source?: string

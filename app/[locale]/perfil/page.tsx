@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 
 const GOAL_KEYS = ["loseGainMuscle", "gainMuscle", "loseWeight", "endurance", "stayActive"] as const;
+const SEX_KEYS = ["female", "male", "other", "prefer_not_to_say"] as const;
 
 const BODY_FIELD_KEYS = [
   "weight_kg",
@@ -118,6 +119,7 @@ function bodyCompSignature(form: BodyCompForm) {
 export default function PerfilPage() {
   const t = useTranslations("perfil");
   const [name, setName] = useState("");
+  const [sex, setSex] = useState("");
   const [goal, setGoal] = useState("loseGainMuscle");
   const [maxHr, setMaxHr] = useState("");
   const [weeklyGoal, setWeeklyGoal] = useState("5");
@@ -158,6 +160,7 @@ export default function PerfilPage() {
     ])
       .then(([profile, measurements]) => {
         if (profile.full_name) setName(profile.full_name);
+        if (profile.sex) setSex(profile.sex);
         if (profile.goal) setGoal(profile.goal);
         if (profile.max_hr_bpm) setMaxHr(String(profile.max_hr_bpm));
         if (profile.data_source) setDataSource(profile.data_source);
@@ -243,6 +246,7 @@ export default function PerfilPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           full_name: name,
+          sex: sex || null,
           goal,
           max_hr_bpm: maxHr ? parseInt(maxHr) : undefined,
         }),
@@ -388,6 +392,13 @@ export default function PerfilPage() {
               <label className="block text-sm font-medium text-[#444] mb-2">{t("goalLabel")}</label>
               <select value={goal} onChange={(e) => setGoal(e.target.value)} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                 {GOAL_KEYS.map((key) => <option key={key} value={key}>{t(`goals.${key}`)}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#444] mb-2">{t("sexLabel")}</label>
+              <select value={sex} onChange={(e) => setSex(e.target.value)} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+                <option value="">{t("sexPlaceholder")}</option>
+                {SEX_KEYS.map((key) => <option key={key} value={key}>{t(`sexOptions.${key}`)}</option>)}
               </select>
             </div>
             <div>
