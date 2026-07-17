@@ -155,6 +155,7 @@
   },
   "registro": {
     "title": "Registrar entrenamiento",
+    "subtitle": "Registra el entrenamiento de hoy",
     "dateLabel": "Lunes 21 de Abril",
     "classType": "Tipo de clase",
     "classTypes": {

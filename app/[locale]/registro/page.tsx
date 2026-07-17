@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import type { WorkoutType } from "@/types";
+import MobilePageIntro from "@/components/mobile/MobilePageIntro";
 
 const CLASS_TYPE_KEYS: WorkoutType[] = ["weightlifting", "functional-fitness", "bootcamp", "running", "cycling", "cardio", "yoga", "other"];
 const CLASS_EMOJIS: Record<string, string> = {
@@ -160,12 +161,13 @@ export default function RegistroPage() {
   };
 
   return (
-    <div className="boot p-4 md:p-8 max-w-2xl mx-auto">
-      <div className="mb-5 md:mb-8">
-        <h1 className="display text-xl font-bold text-[var(--text)] md:text-2xl">{t("title")}</h1>
-        <p className="text-xs md:text-sm text-muted mt-0.5 capitalize">{todayLabel}</p>
+    <div className="boot mx-auto max-w-2xl p-4 md:p-8">
+      <MobilePageIntro title={t("title")} eyebrow={t("subtitle")} />
+      <div className="mb-8 hidden md:block">
+        <h1 className="display text-2xl font-bold text-[var(--text)]">{t("title")}</h1>
+        <p className="mt-0.5 text-sm capitalize text-muted">{todayLabel}</p>
       </div>
-      <form onSubmit={handleSave} className="panel space-y-5 rounded-2xl p-4 md:space-y-6 md:p-6">
+      <form onSubmit={handleSave} className="panel mobile-sheet space-y-5 rounded-[1.6rem] p-4 md:space-y-6 md:rounded-2xl md:p-6">
         <div>
           <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("workoutDate")}</label>
           <input type="date" value={workoutDate} onChange={(e) => setWorkoutDate(e.target.value)}
@@ -243,17 +245,17 @@ export default function RegistroPage() {
           </button>
         </div>
       </form>
-      <div className="fixed left-4 right-4 z-40 md:hidden" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}>
+      <div className="fixed left-4 right-4 z-40 md:hidden" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 96px)" }}>
         {saveError && <p className="text-sm text-red-500 mb-2 text-center">{saveError}</p>}
         <button onClick={handleSave} disabled={loading}
           className={`w-full rounded-2xl py-3.5 text-sm font-semibold transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "btn-accent"}`}>
           {loading ? "Saving…" : saved ? t("savedShort") : t("save")}
         </button>
       </div>
-      <form onSubmit={handleDailySave} className="mt-6 md:mt-8 panel rounded-2xl p-4 md:p-5 space-y-4">
+      <form onSubmit={handleDailySave} className="panel mobile-sheet mt-6 space-y-4 rounded-[1.6rem] p-4 md:mt-8 md:rounded-2xl md:p-5">
         <div>
-          <h2 className="text-sm font-semibold text-[var(--text)]">{t("dailyLogTitle")}</h2>
-          <p className="text-xs text-muted mt-0.5">{t("dailyLogSubtitle")}</p>
+          <h2 className="display text-lg font-semibold text-[var(--text)]">{t("dailyLogTitle")}</h2>
+          <p className="data mt-1 text-[10px] uppercase tracking-[0.14em] text-muted">{t("dailyLogSubtitle")}</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("dailyLogDate")}</label>

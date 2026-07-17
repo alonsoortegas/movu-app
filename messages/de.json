@@ -156,6 +156,7 @@
   },
   "registro": {
     "title": "Log workout",
+    "subtitle": "Heutiges Training erfassen",
     "dateLabel": "Monday, April 21",
     "classType": "Class type",
     "classTypes": {
