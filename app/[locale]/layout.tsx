@@ -5,6 +5,7 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { routing } from "@/i18n/routing";
 import Sidebar from "@/components/Sidebar";
 import BottomNav from "@/components/BottomNav";
+import MobileHeader from "@/components/MobileHeader";
 import { geistMono, geistSans } from "@/app/fonts";
 import { getThemeInitScript } from "@/lib/theme";
 import "../globals.css";
@@ -62,9 +63,10 @@ export default async function LocaleLayout({
       </head>
       <body className="bg-background text-foreground antialiased">
         <NextIntlClientProvider messages={messages}>
+          <MobileHeader />
           <div className="flex min-h-screen">
             <Sidebar />
-            <main className="flex-1 overflow-y-auto min-h-screen pb-20 md:pb-0">
+            <main className="app-main flex-1 overflow-y-auto min-h-screen">
               {children}
             </main>
           </div>
