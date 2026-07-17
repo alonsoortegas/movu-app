@@ -214,6 +214,29 @@
   "perfil": {
     "title": "Profile",
     "subtitle": "Your data and training goals",
+    "dataSource": "Data source",
+    "healthkit": {
+      "title": "Apple Health",
+      "description": "Sync workouts, sleep, recovery metrics, steps, and weight from HealthKit when the iOS app opens.",
+      "connect": "Connect",
+      "syncNow": "Sync now",
+      "lastSynced": "Last synced: {date}",
+      "neverSynced": "Never",
+      "syncing": "Syncing...",
+      "error": "Apple Health sync failed",
+      "unavailable": "Apple Health is not available on this device",
+      "syncTitle": "Syncing health data",
+      "completeTitle": "Sync complete",
+      "errorTitle": "Sync needs attention",
+      "keepOpen": "Keep Movu open while your Health data finishes syncing.",
+      "stages": {
+        "checking": "Checking last sync",
+        "reading": "Reading Apple Health",
+        "uploading": "Saving to Movu",
+        "complete": "Finished",
+        "error": "Sync interrupted"
+      }
+    },
     "personalInfo": "Personal information",
     "nameLabel": "Name",
     "sexLabel": "Sex",

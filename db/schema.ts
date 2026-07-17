@@ -36,6 +36,8 @@ export const userProfiles = pgTable('user_profiles', {
   max_hr_bpm: integer('max_hr_bpm'),
   weight_kg: real('weight_kg'),
   height_m: real('height_m'),
+  data_source: text('data_source'),
+  healthkit_last_sync_at: timestamp('healthkit_last_sync_at', { withTimezone: true }),
   whoop_user_id: bigint('whoop_user_id', { mode: 'number' }),
   whoop_access_token: text('whoop_access_token'),
   whoop_refresh_token: text('whoop_refresh_token'),

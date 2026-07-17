@@ -1,4 +1,5 @@
 import type { NewActivity, NewSleepLog, NewDailyMetric, ActivityCategory } from '@/db/schema'
+import { formatActivityDisplayName } from '@/lib/activities/display-name'
 
 // Raw WHOOP API types (v2)
 export type WhoopWorkout = {
@@ -121,7 +122,10 @@ export function normalizeWhoopWorkout(raw: WhoopWorkout, userId: string): NewAct
     source: 'whoop',
     activity_type: raw.sport_name,
     activity_category: category,
-    activity_name: raw.sport_name,
+    activity_name: formatActivityDisplayName({
+      activity_type: raw.sport_name,
+      activity_category: category,
+    }),
     start_date_utc: new Date(raw.start),
     start_date_local: new Date(localIso(raw.start, raw.timezone_offset)),
     timezone: raw.timezone_offset,

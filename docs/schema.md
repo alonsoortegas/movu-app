@@ -252,6 +252,7 @@ WHOOP sport_name → WorkoutType mapping (WHOOP_SPORT_MAP)
 
   [M]   Manual input only — never populated from WHOOP
   [W]   WHOOP only — populated automatically via sync
+  [AH]  Apple Health / HealthKit — populated by XML import or native iOS sync
   [M/W] Either source — field present regardless of origin
         source field indicates which
 ```
@@ -266,16 +267,17 @@ Workout
   ■ type          [M/W]  via WHOOP_SPORT_MAP when source=whoop
   ■ durationMin   [M/W]  WHOOP: end - start
   ■ calories      [M/W]  WHOOP: kilojoule / 4.184
-  ■ source        [M/W]
+  ■ source        [M/W/AH]
   □ className     [M]
   □ studio        [M]
   □ effort        [M]    RPE 1–10
-  □ distanceKm    [M/W]  WHOOP: distance_meter / 1000 (runs only)
+  □ distanceKm    [M/W/AH]  WHOOP: distance_meter / 1000 (runs only); Apple Health: metres from workout statistics
   □ whoopId       [W]
   □ strain        [W]    0–21
   □ avgHeartRate  [W]
   □ maxHeartRate  [W]
   □ heartRateZones[W]
+  □ appleHealthNaturalKey [AH] userId + startDateUtc + activityType, unique only where source=apple_health
 
 DayMetrics
   ■ userId              [M/W]  Supabase auth UUID — composite PK with date
@@ -283,7 +285,8 @@ DayMetrics
   ■ totalCalories       [M/W]  WHOOP: cycle.kilojoule / 4.184
   ■ activeMin           [M/W]  WHOOP: sum of workout durations
   ■ sleepHours          [M/W]  WHOOP: total_in_bed_time_milli
-  ■ source              [M/W]
+  ■ source              [M/W/AH]
+  □ stepsCount          [M/AH] Manual daily log or HealthKit stepCount
   □ sleepPerformancePct [W]
   □ sleepConsistencyPct [W]
   □ sleepEfficiencyPct  [W]
@@ -307,6 +310,8 @@ UserProfile
   □ muscleMassKg  [M]    InBody
   □ bodyFatPct    [M]    InBody — not available via WHOOP API
   □ heightM       [W]    WHOOP: /v2/user/measurement/body
-  □ weightKg      [W]    WHOOP: /v2/user/measurement/body
+  □ weightKg      [W/AH] WHOOP: /v2/user/measurement/body; HealthKit: newest bodyMass sample
   □ maxHeartRate  [W]    WHOOP: /v2/user/measurement/body
+  □ dataSource    [M/W/AH] Active preferred data source; HealthKit sync only sets this from null/manual
+  □ healthkitLastSyncAt [AH] Server-side incremental sync anchor
 ```

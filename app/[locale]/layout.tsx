@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import Sidebar from "@/components/Sidebar";
 import BottomNav from "@/components/BottomNav";
 import MobileHeader from "@/components/MobileHeader";
+import HealthKitSyncManager from "@/components/HealthKitSyncManager";
 import { geistMono, geistSans } from "@/app/fonts";
 import { getThemeInitScript } from "@/lib/theme";
 import "../globals.css";
@@ -67,6 +68,7 @@ export default async function LocaleLayout({
           <div className="flex min-h-screen">
             <Sidebar />
             <main className="app-main flex-1 overflow-y-auto min-h-screen">
+              <HealthKitSyncManager />
               {children}
             </main>
           </div>

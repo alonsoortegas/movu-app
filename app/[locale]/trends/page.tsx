@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/types/database'
 import MobilePageIntro from '@/components/mobile/MobilePageIntro'
+import { formatActivityDisplayName } from '@/lib/activities/display-name'
 
 type DailyMetric = Database['public']['Tables']['daily_metrics']['Row']
 type SleepLog = Database['public']['Tables']['sleep_logs']['Row']
@@ -469,7 +470,7 @@ export default async function TrendsPage({
                   <div key={act.id} className={`flex items-center gap-3 px-4 md:px-5 py-3 ${i < Math.min(acts.length, 8) - 1 ? 'border-b border-dashed border-border' : ''}`}>
                     <div className="w-2.5 h-10 rounded-full flex-shrink-0" style={{ background: CATEGORY_COLORS[act.activity_category ?? 'other'] ?? CATEGORY_COLORS.other }} />
                     <div className="flex-1 min-w-0">
-                      <div className="truncate text-sm font-semibold text-[var(--text)]">{act.activity_name ?? act.activity_category ?? act.source}</div>
+                      <div className="truncate text-sm font-semibold text-[var(--text)]">{formatActivityDisplayName(act)}</div>
                       <div className="text-xs text-muted">
                         {act.start_date_utc ? axisLabel(locale, act.start_date_utc.slice(0, 10)) : '—'} · {act.moving_time_s ? formatDuration(act.moving_time_s) : '—'}
                       </div>
