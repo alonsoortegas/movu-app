@@ -149,7 +149,7 @@ export default function BottomNav() {
               >
                 {item.icon}
               </span>
-              <span className={`display text-[9px] font-semibold leading-none transition-colors ${active ? "text-[var(--text)]" : "text-[var(--text-faint)]"}`}>
+              <span className={`display whitespace-nowrap text-[9px] font-semibold leading-none transition-colors ${active ? "text-[var(--text)]" : "text-[var(--text-faint)]"}`}>
                 {t(item.key)}
               </span>
             </Link>
