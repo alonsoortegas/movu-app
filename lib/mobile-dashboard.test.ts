@@ -18,4 +18,8 @@ describe('weeklyActivityProgress', () => {
     expect(weeklyActivityProgress(3)).toBeNull()
     expect(weeklyActivityProgress(3, 0)).toBeNull()
   })
+
+  it('represents the existing Dashboard five-workout goal', () => {
+    expect(weeklyActivityProgress(4, 5)).toBe(80)
+  })
 })
