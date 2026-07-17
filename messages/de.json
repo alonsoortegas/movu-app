@@ -217,78 +217,49 @@
     }
   },
   "plan": {
-    "title": "My Weekly Plan",
-    "subtitle": "AI-generated · Week Apr 14–20",
-    "regenerateDesktop": "✨ Regenerate plan",
-    "regenerateMobile": "✨ Regenerate",
-    "planLogicTitle": "✨ PLAN LOGIC",
-    "planLogicText": "Based on your history, we prioritize legs and back. Cardio is interspersed for active recovery. Two rest days to prevent overtraining.",
-    "weeklyVolume": "Weekly volume",
-    "weeklyGoalLabel": "Weekly goal",
-    "weeklyGoalDays": "/ 5 days",
-    "muscleGroupsWeek": "Muscle groups this week",
-    "tableHeaders": {
-      "day": "Day",
-      "muscleGroup": "Muscle Group",
-      "type": "Type",
-      "min": "Min"
+    "title": "Mein Plan",
+    "subtitle": "Dein wöchentlicher Trainingsplan",
+    "editPlan": "Plan bearbeiten",
+    "weekLabel": "Woche {week}",
+    "restDay": "Ruhetag",
+    "restDaySub": "Keine Einheit für diesen Tag geplant.",
+    "days": {
+      "monday": "MO",
+      "tuesday": "DI",
+      "wednesday": "MI",
+      "thursday": "DO",
+      "friday": "FR",
+      "saturday": "SA",
+      "sunday": "SO"
     },
-    "planRows": {
-      "mon": {
-        "day": "Monday",
-        "dayShort": "Mon",
-        "muscle": "Chest + Triceps",
-        "type": "Weights"
-      },
-      "tue": {
-        "day": "Tuesday",
-        "dayShort": "Tue",
-        "muscle": "Legs",
-        "type": "Weights"
-      },
-      "wed": {
-        "day": "Wednesday",
-        "dayShort": "Wed",
-        "muscle": "Cardio HIIT",
-        "type": "Cardio"
-      },
-      "thu": {
-        "day": "Thursday",
-        "dayShort": "Thu",
-        "muscle": "Rest",
-        "type": "—"
-      },
-      "fri": {
-        "day": "Friday",
-        "dayShort": "Fri",
-        "muscle": "Back + Biceps",
-        "type": "Weights"
-      },
-      "sat": {
-        "day": "Saturday",
-        "dayShort": "Sat",
-        "muscle": "Full Body",
-        "type": "Combined"
-      },
-      "sun": {
-        "day": "Sunday",
-        "dayShort": "Sun",
-        "muscle": "Rest",
-        "type": "—"
-      }
-    },
-    "muscleBadges": {
-      "chest": "Chest",
-      "legs": "Legs",
+    "sessionType": {
+      "strength": "Kraft",
+      "activation": "Aktivierung",
       "cardio": "Cardio",
-      "back": "Back"
+      "other": "Sonstiges"
     },
-    "volumeBars": {
-      "chest": "💪 Chest / Triceps",
-      "legs": "🦵 Legs",
-      "back": "🔙 Back / Biceps",
-      "core": "⭕ Core",
-      "cardio": "🏃 Cardio"
+    "logger": {
+      "weight": "Gewicht",
+      "reps": "Wdh",
+      "logSet": "Satz {set} loggen",
+      "setRow": "Satz {set}",
+      "lastSet": "Letztes Mal: {weight} kg × {reps}",
+      "applySuggestion": "{weight} kg übernehmen",
+      "progressionHint": "Vorschlag: erhöhe auf {weight} kg",
+      "invalidWeight": "Ungültiges Gewicht",
+      "logFailed": "Satz konnte nicht geloggt werden",
+      "rest": "Pause"
+    },
+    "empty": {
+      "title": "Noch kein Plan",
+      "body": "Erstelle deinen Trainingsplan: Wochen, Einheiten und Übungen mit Sätzen, Wiederholungen und Gewicht.",
+      "action": "Plan erstellen"
+    },
+    "inactive": {
+      "notStartedTitle": "Dein Plan startet am {date}",
+      "notStartedBody": "Sobald das Startdatum erreicht ist, siehst du hier die aktuelle Woche.",
+      "expiredTitle": "Dein Plan ist beendet",
+      "expiredBody": "Erstelle einen neuen Plan oder verlängere den aktuellen im Editor."
     }
   },
   "registro": {

@@ -216,78 +216,49 @@
     }
   },
   "plan": {
-    "title": "Mi Plan Semanal",
-    "subtitle": "Generado por IA · Semana 14–20 Abr",
-    "regenerateDesktop": "✨ Regenerar plan",
-    "regenerateMobile": "✨ Regenerar",
-    "planLogicTitle": "✨ LÓGICA DEL PLAN",
-    "planLogicText": "Basado en tu historial, priorizamos pierna y espalda. Cardio intercalado para recuperación activa. Dos días de descanso para evitar sobreentrenamiento.",
-    "weeklyVolume": "Volumen semanal",
-    "weeklyGoalLabel": "Meta semanal",
-    "weeklyGoalDays": "/ 5 días",
-    "muscleGroupsWeek": "Grupos musculares esta semana",
-    "tableHeaders": {
-      "day": "Día",
-      "muscleGroup": "Grupo Muscular",
-      "type": "Tipo",
-      "min": "Min"
+    "title": "Mi Plan",
+    "subtitle": "Tu plan de entrenamiento semanal",
+    "editPlan": "Editar plan",
+    "weekLabel": "Semana {week}",
+    "restDay": "Día de descanso",
+    "restDaySub": "Sin sesión programada para este día.",
+    "days": {
+      "monday": "LUN",
+      "tuesday": "MAR",
+      "wednesday": "MIÉ",
+      "thursday": "JUE",
+      "friday": "VIE",
+      "saturday": "SÁB",
+      "sunday": "DOM"
     },
-    "planRows": {
-      "mon": {
-        "day": "Lunes",
-        "dayShort": "Lun",
-        "muscle": "Pecho + Tríceps",
-        "type": "Pesas"
-      },
-      "tue": {
-        "day": "Martes",
-        "dayShort": "Mar",
-        "muscle": "Pierna",
-        "type": "Pesas"
-      },
-      "wed": {
-        "day": "Miércoles",
-        "dayShort": "Mié",
-        "muscle": "Cardio HIIT",
-        "type": "Cardio"
-      },
-      "thu": {
-        "day": "Jueves",
-        "dayShort": "Jue",
-        "muscle": "Descanso",
-        "type": "—"
-      },
-      "fri": {
-        "day": "Viernes",
-        "dayShort": "Vie",
-        "muscle": "Espalda + Bícep",
-        "type": "Pesas"
-      },
-      "sat": {
-        "day": "Sábado",
-        "dayShort": "Sáb",
-        "muscle": "Full Body",
-        "type": "Combinado"
-      },
-      "sun": {
-        "day": "Domingo",
-        "dayShort": "Dom",
-        "muscle": "Descanso",
-        "type": "—"
-      }
-    },
-    "muscleBadges": {
-      "chest": "Pecho",
-      "legs": "Pierna",
+    "sessionType": {
+      "strength": "Fuerza",
+      "activation": "Activación",
       "cardio": "Cardio",
-      "back": "Espalda"
+      "other": "Otro"
     },
-    "volumeBars": {
-      "chest": "💪 Pecho / Tríceps",
-      "legs": "🦵 Pierna",
-      "back": "🔙 Espalda / Bícep",
-      "core": "⭕ Core",
-      "cardio": "🏃 Cardio"
+    "logger": {
+      "weight": "Peso",
+      "reps": "Reps",
+      "logSet": "Registrar serie {set}",
+      "setRow": "Serie {set}",
+      "lastSet": "Última vez: {weight} kg × {reps}",
+      "applySuggestion": "Usar {weight} kg",
+      "progressionHint": "Sugerencia: sube a {weight} kg",
+      "invalidWeight": "Peso inválido",
+      "logFailed": "No se pudo registrar la serie",
+      "rest": "Descanso"
+    },
+    "empty": {
+      "title": "Aún no tienes un plan",
+      "body": "Crea tu plan de entrenamiento: semanas, sesiones y ejercicios con series, reps y peso.",
+      "action": "Crear mi plan"
+    },
+    "inactive": {
+      "notStartedTitle": "Tu plan empieza el {date}",
+      "notStartedBody": "Cuando llegue la fecha de inicio verás aquí la semana en curso.",
+      "expiredTitle": "Tu plan terminó",
+      "expiredBody": "Crea un nuevo plan o extiende las semanas del actual desde el editor."
     }
   },
   "registro": {
