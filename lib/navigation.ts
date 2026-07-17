@@ -24,3 +24,7 @@ export function positionFromPointer(
   const position = (clientX - left - padding) / segment - 0.5
   return Math.min(count - 1, Math.max(0, position))
 }
+
+export function nearestNavigationIndex(position: number, count: number): number {
+  return Math.min(count - 1, Math.max(0, Math.round(position)))
+}
