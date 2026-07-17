@@ -1,65 +1,38 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { parseAppleHealthExport } from '@/lib/apple-health/parser'
 import { normalizeWorkouts, normalizeSleep, normalizeDailyMetrics } from '@/lib/apple-health/normalize'
 import { NextResponse } from 'next/server'
-import { writeFile, unlink } from 'fs/promises'
-import { tmpdir } from 'os'
-import { join } from 'path'
-import { randomUUID } from 'crypto'
+import type { HKWorkout, HKSleepRecord, HKDailyRecord } from '@/lib/apple-health/parser'
 import type { Database } from '@/types/database'
 
 type ActivityInsert = Database['public']['Tables']['activities']['Insert']
 type SleepInsert = Database['public']['Tables']['sleep_logs']['Insert']
 type MetricInsert = Database['public']['Tables']['daily_metrics']['Insert']
 
+interface ImportBody {
+  workouts: HKWorkout[]
+  sleepRecords: HKSleepRecord[]
+  dailySummaries: Record<string, HKDailyRecord>
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  let formData: FormData
+  let body: ImportBody
   try {
-    formData = await request.formData()
+    body = await request.json()
   } catch {
-    return NextResponse.json({ error: 'Expected multipart/form-data' }, { status: 400 })
+    return NextResponse.json({ error: 'Expected JSON body' }, { status: 400 })
   }
 
-  const file = formData.get('file')
-  if (!(file instanceof Blob)) {
-    return NextResponse.json({ error: 'Missing file field' }, { status: 400 })
-  }
+  const { workouts = [], sleepRecords = [], dailySummaries = {} } = body
+  const dailySummariesMap = new Map(Object.entries(dailySummaries))
 
-  const MAX_BYTES = 500 * 1024 * 1024 // 500 MB
-  if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: 'File too large (max 500 MB)' }, { status: 413 })
-  }
-
-  // Write to a temp file so the streaming parser can use a file path.
-  const tmpPath = join(tmpdir(), `apple-health-${randomUUID()}.xml`)
-  try {
-    const buffer = Buffer.from(await file.arrayBuffer())
-    await writeFile(tmpPath, buffer)
-  } catch {
-    return NextResponse.json({ error: 'Failed to stage upload' }, { status: 500 })
-  }
-
-  let parsed
-  try {
-    parsed = await parseAppleHealthExport(tmpPath)
-  } catch (err) {
-    console.error('[apple-health/import] parse failed:', err)
-    return NextResponse.json({ error: 'Failed to parse export file' }, { status: 422 })
-  } finally {
-    await unlink(tmpPath).catch(() => null)
-  }
-
-  const { workouts, sleepRecords, dailySummaries } = parsed
   const admin = createAdminClient()
 
   // ── Activities ───────────────────────────────────────────────────────────────
-  // No unique key for Apple Health activities — delete then re-insert to avoid
-  // duplicates on repeated uploads of overlapping exports.
   const activityRows = normalizeWorkouts(workouts, user.id).map(r => ({
     ...r,
     start_date_utc: r.start_date_utc instanceof Date ? r.start_date_utc.toISOString() : r.start_date_utc,
@@ -88,8 +61,7 @@ export async function POST(request: Request) {
   }
 
   // ── Sleep ────────────────────────────────────────────────────────────────────
-  // normalizeSleep deduplicates by date internally (keeps the most-hours record).
-  const sleepRows = normalizeSleep(sleepRecords, user.id, dailySummaries) as unknown as SleepInsert[]
+  const sleepRows = normalizeSleep(sleepRecords, user.id, dailySummariesMap) as unknown as SleepInsert[]
   let sleepCount = 0
 
   if (sleepRows.length > 0) {
@@ -101,7 +73,7 @@ export async function POST(request: Request) {
   }
 
   // ── Daily metrics ────────────────────────────────────────────────────────────
-  const metricRows = normalizeDailyMetrics(dailySummaries, user.id) as unknown as MetricInsert[]
+  const metricRows = normalizeDailyMetrics(dailySummariesMap, user.id) as unknown as MetricInsert[]
   let metricsCount = 0
 
   if (metricRows.length > 0) {

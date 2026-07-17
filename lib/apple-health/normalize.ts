@@ -1,4 +1,5 @@
 import type { NewActivity, NewSleepLog, NewDailyMetric, ActivityCategory } from '@/db/schema'
+import { formatActivityDisplayName } from '@/lib/activities/display-name'
 import type { HKWorkout, HKSleepRecord, HKDailyRecord } from './parser'
 
 const HK_CATEGORY_MAP: Record<string, ActivityCategory> = {
@@ -45,7 +46,10 @@ export function normalizeWorkouts(workouts: HKWorkout[], userId: string): NewAct
       source: 'apple_health',
       activity_type: w.activityType,
       activity_category: category,
-      activity_name: w.activityType,
+      activity_name: formatActivityDisplayName({
+        activity_type: w.activityType,
+        activity_category: category,
+      }),
       start_date_utc: new Date(w.startDate),
       start_date_local: localWallClock(w.startDate),
       elapsed_time_s,
@@ -183,6 +187,7 @@ export function normalizeDailyMetrics(
       hrv_ms: s.hrv,
       total_calories_kcal,
       active_min: s.exerciseMinutes !== undefined ? Math.round(s.exerciseMinutes) : undefined,
+      steps_count: s.steps !== undefined ? Math.round(s.steps) : undefined,
       vo2_max: s.vo2Max,
       physical_effort: s.physicalEffort,
       // Fields not produced by Apple Health passive export

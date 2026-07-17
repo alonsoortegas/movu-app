@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { getISOWeekBounds } from '@/lib/dates'
+import { formatActivityDisplayName } from '@/lib/activities/display-name'
 
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
@@ -87,7 +88,7 @@ export default async function DashboardPage({
       .maybeSingle(),
     supabase
       .from('activities')
-      .select('id, activity_name, activity_category, source, moving_time_s, start_date_utc, coach_name')
+      .select('id, activity_name, activity_type, activity_category, source, moving_time_s, start_date_utc, coach_name')
       .eq('user_id', user!.id)
       .order('start_date_utc', { ascending: false })
       .limit(3),
@@ -252,7 +253,7 @@ export default async function DashboardPage({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold text-[#111] truncate">
-                    {w.activity_name ?? w.activity_category ?? w.source}
+                    {formatActivityDisplayName(w)}
                   </div>
                   <div className="text-xs text-muted">
                     {[w.source, w.moving_time_s ? formatDuration(w.moving_time_s) : '—', w.coach_name].filter(Boolean).join(' · ')}

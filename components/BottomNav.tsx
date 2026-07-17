@@ -21,7 +21,7 @@ export default function BottomNav() {
       <div className="fixed right-3 bottom-[132px] z-50 md:hidden">
         <LocaleSwitcher />
       </div>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#e8e8e8] flex safe-bottom md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#e8e8e8] flex safe-bottom pb-[env(safe-area-inset-bottom)] md:hidden">
         {NAV_KEYS.map(({ key, href, icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (

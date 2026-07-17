@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
+import { parseAppleHealthFile } from "@/lib/apple-health/parser-browser";
+import { Capacitor } from "@capacitor/core";
 import { useTranslations } from "next-intl";
+import { MovuHealthKit } from "@/lib/healthkit/plugin";
+import { isHealthKitEnabled, runHealthKitSync, setHealthKitEnabled } from "@/lib/healthkit/sync";
 
 const GOAL_KEYS = ["loseGainMuscle", "gainMuscle", "loseWeight", "endurance", "stayActive"] as const;
 const SEX_KEYS = ["female", "male", "other", "prefer_not_to_say"] as const;
@@ -136,6 +140,11 @@ export default function PerfilPage() {
   const [appleImporting, setAppleImporting] = useState(false);
   const [appleImportDone, setAppleImportDone] = useState(false);
   const [appleImportError, setAppleImportError] = useState<string | null>(null);
+  const [isNativeIos, setIsNativeIos] = useState(false);
+  const [healthKitConnected, setHealthKitConnected] = useState(false);
+  const [healthKitSyncing, setHealthKitSyncing] = useState(false);
+  const [healthKitError, setHealthKitError] = useState<string | null>(null);
+  const [healthKitLastSynced, setHealthKitLastSynced] = useState<string | null>(null);
   const appleFileRef = useRef<HTMLInputElement>(null);
   const initialBodyComp = useRef(bodyCompSignature(emptyBodyCompForm()));
 
@@ -152,6 +161,16 @@ export default function PerfilPage() {
     if (!bodyHistory[0]?.measured_at) return t("noMeasurements");
     return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date(bodyHistory[0].measured_at));
   }, [bodyHistory, t]);
+
+  const healthKitLastSyncedLabel = useMemo(() => {
+    if (!healthKitLastSynced) return t("healthkit.neverSynced");
+    return new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(healthKitLastSynced));
+  }, [healthKitLastSynced, t]);
 
   useEffect(() => {
     Promise.all([
@@ -178,6 +197,20 @@ export default function PerfilPage() {
     fetch("/api/whoop/status")
       .then((r) => r.json())
       .then((data: WhoopStatus) => setWhoopStatus(data))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const nativeIos = Capacitor.isNativePlatform() && Capacitor.getPlatform() === "ios";
+    setIsNativeIos(nativeIos);
+    if (!nativeIos) return;
+
+    setHealthKitConnected(isHealthKitEnabled());
+    fetch("/api/healthkit/sync")
+      .then((r) => r.json())
+      .then((data: { lastSyncAt?: string | null }) => {
+        if (data.lastSyncAt) setHealthKitLastSynced(data.lastSyncAt);
+      })
       .catch(() => {});
   }, []);
 
@@ -219,12 +252,16 @@ export default function PerfilPage() {
     setAppleImporting(true);
     setAppleImportDone(false);
     try {
-      const form = new FormData();
-      form.append("file", file);
-      const res = await fetch("/api/apple-health/import", { method: "POST", body: form });
+      const parsed = await parseAppleHealthFile(file);
+      const res = await fetch("/api/apple-health/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed),
+      });
       if (!res.ok) {
-        const d = await res.json();
-        throw new Error(d.error ?? "Import failed");
+        let message = "Import failed";
+        try { const d = await res.json(); message = d.error ?? message; } catch { /* non-JSON error */ }
+        throw new Error(message);
       }
       setAppleImportDone(true);
       setDataSource("apple_health");
@@ -233,6 +270,38 @@ export default function PerfilPage() {
       setAppleImportError(err instanceof Error ? err.message : "Import failed");
     } finally {
       setAppleImporting(false);
+    }
+  };
+
+  const handleHealthKitSync = async (force = false) => {
+    setHealthKitSyncing(true);
+    setHealthKitError(null);
+    try {
+      const result = await runHealthKitSync({ force });
+      if ("skipped" in result) return;
+      setHealthKitLastSynced(result.lastSyncAt);
+      setHealthKitConnected(true);
+      setDataSource((current) => (!current || current === "manual" ? "apple_health" : current));
+    } catch (err) {
+      setHealthKitError(err instanceof Error ? err.message : t("healthkit.error"));
+    } finally {
+      setHealthKitSyncing(false);
+    }
+  };
+
+  const handleHealthKitConnect = async () => {
+    setHealthKitSyncing(true);
+    setHealthKitError(null);
+    try {
+      const availability = await MovuHealthKit.isAvailable();
+      if (!availability.available) throw new Error(t("healthkit.unavailable"));
+      await MovuHealthKit.requestAuthorization();
+      setHealthKitEnabled(true);
+      setHealthKitConnected(true);
+      await handleHealthKitSync(true);
+    } catch (err) {
+      setHealthKitError(err instanceof Error ? err.message : t("healthkit.error"));
+      setHealthKitSyncing(false);
     }
   };
 
@@ -332,7 +401,33 @@ export default function PerfilPage() {
       </div>
 
       <div className="mb-6 bg-surface border border-border rounded-xl p-4">
-        <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">Data source</h2>
+        <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">{t("dataSource")}</h2>
+        {isNativeIos && (
+          <div className="mb-4 rounded-xl border border-border bg-white p-4">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg leading-none">♡</span>
+                  <h3 className="text-sm font-semibold text-[#333]">{t("healthkit.title")}</h3>
+                </div>
+                <p className="text-xs text-muted mt-1 max-w-xl">{t("healthkit.description")}</p>
+                <p className="text-[11px] text-muted mt-2">{t("healthkit.lastSynced", { date: healthKitLastSyncedLabel })}</p>
+              </div>
+              <div className="flex flex-col items-end gap-1">
+                {healthKitConnected ? (
+                  <button type="button" onClick={() => handleHealthKitSync(true)} disabled={healthKitSyncing} className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60">
+                    {healthKitSyncing ? t("healthkit.syncing") : t("healthkit.syncNow")}
+                  </button>
+                ) : (
+                  <button type="button" onClick={handleHealthKitConnect} disabled={healthKitSyncing} className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60">
+                    {healthKitSyncing ? t("healthkit.syncing") : t("healthkit.connect")}
+                  </button>
+                )}
+                {healthKitError && <p className="text-xs text-red-500 max-w-64 text-right">{healthKitError}</p>}
+              </div>
+            </div>
+          </div>
+        )}
         {dataSource === "whoop" && whoopStatus?.connected && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full ${whoopNeedsReconnect ? "bg-red-50 border border-red-200 text-red-600" : "bg-accent-light border border-accent text-accent-dark"}`}>
@@ -356,7 +451,7 @@ export default function PerfilPage() {
             <a href="/api/whoop/connect" className="text-sm font-medium px-4 py-2 rounded-lg border border-border text-[#444] hover:border-[#bbb] transition-all">Reconnect WHOOP</a>
           </div>
         )}
-        {dataSource === "apple_health" && (
+        {!isNativeIos && dataSource === "apple_health" && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-accent-light border border-accent text-accent-dark px-3 py-1 rounded-full">Apple Health connected</span>
             <div className="flex flex-col items-end gap-1">
@@ -370,13 +465,15 @@ export default function PerfilPage() {
         {!dataSource && (
           <div className="flex gap-3 flex-wrap">
             <a href="/api/whoop/connect" className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-accent bg-accent-light text-sm font-semibold text-center text-[#333] hover:bg-accent hover:text-white transition-all">WHOOP</a>
-            <button type="button" onClick={() => appleFileRef.current?.click()} disabled={appleImporting} title="Large exports can take 30–60 seconds" className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-[#333] hover:border-accent hover:bg-accent-light transition-all disabled:opacity-60">
-              {appleImporting ? "Importing…" : appleImportDone ? "Imported!" : "Apple Health"}
-            </button>
+            {!isNativeIos && (
+              <button type="button" onClick={() => appleFileRef.current?.click()} disabled={appleImporting} title="Large exports can take 30–60 seconds" className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-[#333] hover:border-accent hover:bg-accent-light transition-all disabled:opacity-60">
+                {appleImporting ? "Importing…" : appleImportDone ? "Imported!" : "Apple Health"}
+              </button>
+            )}
             <button type="button" disabled className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-muted cursor-not-allowed">Manual</button>
           </div>
         )}
-        {!dataSource && appleImportError && <p className="text-xs text-red-500 mt-2">{appleImportError}</p>}
+        {!isNativeIos && !dataSource && appleImportError && <p className="text-xs text-red-500 mt-2">{appleImportError}</p>}
         <input ref={appleFileRef} type="file" accept=".xml" className="hidden" onChange={handleAppleImport} />
       </div>
 

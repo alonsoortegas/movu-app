@@ -1,15 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import Sidebar from "@/components/Sidebar";
 import BottomNav from "@/components/BottomNav";
+import HealthKitSyncManager from "@/components/HealthKitSyncManager";
 import "../globals.css";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
 
 export async function generateMetadata({
   params,
@@ -47,6 +52,7 @@ export default async function LocaleLayout({
           <div className="flex min-h-screen">
             <Sidebar />
             <main className="flex-1 overflow-y-auto min-h-screen pb-20 md:pb-0">
+              <HealthKitSyncManager />
               {children}
             </main>
           </div>

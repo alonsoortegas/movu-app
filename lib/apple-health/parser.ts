@@ -27,6 +27,7 @@ export interface HKDailyRecord {
   exerciseMinutes?: number    // sum
   vo2Max?: number             // mL/kg/min — last value seen for the day
   physicalEffort?: number     // MET — daily average
+  steps?: number              // daily sum
 }
 
 export interface AppleHealthExport {

@@ -129,11 +129,13 @@ export type Database = {
           goal: string | null
           max_hr_bpm: number | null
           weight_kg: number | null
+          height_m: number | null
           whoop_user_id: number | null
           whoop_access_token: string | null
           whoop_refresh_token: string | null
           whoop_token_expires: string | null
           data_source: string | null
+          healthkit_last_sync_at: string | null
           invite_code_used: string | null
           onboarding_complete: boolean
           created_at: string
@@ -146,11 +148,13 @@ export type Database = {
           goal?: string | null
           max_hr_bpm?: number | null
           weight_kg?: number | null
+          height_m?: number | null
           whoop_user_id?: number | null
           whoop_access_token?: string | null
           whoop_refresh_token?: string | null
           whoop_token_expires?: string | null
           data_source?: string | null
+          healthkit_last_sync_at?: string | null
           invite_code_used?: string | null
           onboarding_complete?: boolean
           created_at?: string
@@ -163,11 +167,13 @@ export type Database = {
           goal?: string | null
           max_hr_bpm?: number | null
           weight_kg?: number | null
+          height_m?: number | null
           whoop_user_id?: number | null
           whoop_access_token?: string | null
           whoop_refresh_token?: string | null
           whoop_token_expires?: string | null
           data_source?: string | null
+          healthkit_last_sync_at?: string | null
           invite_code_used?: string | null
           onboarding_complete?: boolean
           created_at?: string
@@ -512,7 +518,12 @@ export type Database = {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      upsert_apple_health_activities: {
+        Args: { p_rows: Json }
+        Returns: number
+      }
+    }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>
   }

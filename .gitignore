@@ -44,3 +44,10 @@ whoop-data-dump.json
 
 # Apple Health exports (large XML files — personal health data)
 *.xml
+
+# Capacitor / iOS
+ios/App/Pods/
+ios/App/App/public/
+ios/App/output/
+ios/**/xcuserdata/
+ios/DerivedData/
