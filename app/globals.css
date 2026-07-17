@@ -196,6 +196,79 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+.mobile-panel {
+  --channel: var(--accent);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(circle at 86% 12%, color-mix(in srgb, var(--channel) 12%, transparent), transparent 42%),
+    var(--panel-bg);
+  box-shadow: var(--panel-shadow), inset 0 1px 0 var(--ink-02);
+}
+
+[data-channel='lime'] { --channel: var(--accent); }
+[data-channel='cyan'] { --channel: var(--cyan); }
+[data-channel='violet'] { --channel: var(--violet); }
+[data-channel='coral'] { --channel: var(--coral); }
+[data-channel='amber'] { --channel: var(--amber); }
+[data-channel='neutral'] { --channel: var(--text-faint); }
+
+.progress-ring-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+}
+
+.progress-ring {
+  position: relative;
+  width: min(36vw, 148px);
+  aspect-ratio: 1;
+}
+
+.progress-ring svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+  fill: none;
+  stroke-width: 8;
+}
+
+.progress-ring-track { stroke: var(--ring-track); }
+
+.progress-ring-value {
+  stroke: var(--channel);
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 9px color-mix(in srgb, var(--channel) 52%, transparent));
+}
+
+.progress-ring-number {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  font-size: clamp(1.8rem, 8vw, 2.75rem);
+  font-weight: 750;
+}
+
+.metric-tile {
+  min-height: 144px;
+  border-radius: 1.6rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-panel,
+  .progress-ring-wrap,
+  .mobile-page-intro {
+    display: none;
+  }
+}
+
 .btn-accent {
   color: #10210b;
   background: linear-gradient(180deg, #8fed69, #6be040 56%, #55c030);
