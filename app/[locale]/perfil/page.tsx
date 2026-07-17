@@ -317,32 +317,32 @@ export default function PerfilPage() {
   ] as const;
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto">
+    <div className="boot p-4 md:p-8 max-w-5xl mx-auto">
       <div className="mb-5 md:mb-8">
-        <h1 className="text-xl md:text-2xl font-bold text-[#111]">{t("title")}</h1>
+        <h1 className="display text-xl font-bold text-[var(--text)] md:text-2xl">{t("title")}</h1>
         <p className="text-xs md:text-sm text-muted mt-0.5">{t("subtitle")}</p>
       </div>
 
-      <div className="flex items-center gap-4 mb-6 p-4 md:p-6 bg-surface border border-border rounded-xl">
+      <div className="flex items-center gap-4 mb-6 p-4 md:p-6 panel rounded-2xl">
         <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-accent-light border-2 border-accent flex items-center justify-center text-2xl md:text-3xl flex-shrink-0">🏋️</div>
         <div>
-          <div className="text-base md:text-lg font-bold text-[#111]">{name}</div>
+          <div className="text-base md:text-lg font-bold text-[var(--text)]">{name}</div>
           <div className="text-xs md:text-sm text-muted">{t(`goals.${goal}`)}</div>
         </div>
       </div>
 
-      <div className="mb-6 bg-surface border border-border rounded-xl p-4">
+      <div className="glass ticks mb-6 rounded-2xl border border-[var(--border-hi)] p-4">
         <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">Data source</h2>
         {dataSource === "whoop" && whoopStatus?.connected && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full ${whoopNeedsReconnect ? "bg-red-50 border border-red-200 text-red-600" : "bg-accent-light border border-accent text-accent-dark"}`}>
+            <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${whoopNeedsReconnect ? "border-[rgba(251,113,133,0.35)] bg-[rgba(251,113,133,0.12)] text-[var(--coral)]" : "border-accent bg-accent-light text-accent-dark"}`}>
               {whoopNeedsReconnect ? "WHOOP reconnect required" : "WHOOP connected"}
             </span>
             <div className="flex flex-col items-end gap-1">
               {whoopNeedsReconnect ? (
-                <a href="/api/whoop/connect" className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all">Reconnect WHOOP</a>
+                <a href="/api/whoop/connect" className="btn-accent rounded-xl px-4 py-2 text-sm font-semibold">Reconnect WHOOP</a>
               ) : (
-                <button type="button" onClick={handleSync} disabled={syncing} className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60">
+                <button type="button" onClick={handleSync} disabled={syncing} className="btn-accent rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-60">
                   {syncing ? "Syncing…" : syncDone ? "Done" : "Sync now"}
                 </button>
               )}
@@ -352,15 +352,15 @@ export default function PerfilPage() {
         )}
         {dataSource === "whoop" && !whoopStatus?.connected && whoopStatus?.reauth_required && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-yellow-50 border border-yellow-200 text-yellow-700 px-3 py-1 rounded-full">Reconnect required</span>
-            <a href="/api/whoop/connect" className="text-sm font-medium px-4 py-2 rounded-lg border border-border text-[#444] hover:border-[#bbb] transition-all">Reconnect WHOOP</a>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(251,191,36,0.35)] bg-[rgba(251,191,36,0.12)] px-3 py-1 text-xs font-semibold text-[var(--amber)]">Reconnect required</span>
+            <a href="/api/whoop/connect" className="text-sm font-medium px-4 py-2 rounded-lg border border-border text-[var(--text-dim)] hover:border-[var(--border-hi)] transition-all">Reconnect WHOOP</a>
           </div>
         )}
         {dataSource === "apple_health" && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-accent-light border border-accent text-accent-dark px-3 py-1 rounded-full">Apple Health connected</span>
             <div className="flex flex-col items-end gap-1">
-              <button type="button" onClick={() => appleFileRef.current?.click()} disabled={appleImporting} className="text-sm font-medium px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent-dark transition-all disabled:opacity-60">
+              <button type="button" onClick={() => appleFileRef.current?.click()} disabled={appleImporting} className="btn-accent rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-60">
                 {appleImporting ? "Importing…" : appleImportDone ? "Imported!" : "Import file"}
               </button>
               {appleImportError && <p className="text-xs text-red-500">{appleImportError}</p>}
@@ -369,8 +369,8 @@ export default function PerfilPage() {
         )}
         {!dataSource && (
           <div className="flex gap-3 flex-wrap">
-            <a href="/api/whoop/connect" className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-accent bg-accent-light text-sm font-semibold text-center text-[#333] hover:bg-accent hover:text-white transition-all">WHOOP</a>
-            <button type="button" onClick={() => appleFileRef.current?.click()} disabled={appleImporting} title="Large exports can take 30–60 seconds" className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-[#333] hover:border-accent hover:bg-accent-light transition-all disabled:opacity-60">
+            <a href="/api/whoop/connect" className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-accent bg-accent-light text-sm font-semibold text-center text-[var(--text)] hover:bg-accent hover:text-white transition-all">WHOOP</a>
+            <button type="button" onClick={() => appleFileRef.current?.click()} disabled={appleImporting} title="Large exports can take 30–60 seconds" className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-[var(--text)] hover:border-accent hover:bg-accent-light transition-all disabled:opacity-60">
               {appleImporting ? "Importing…" : appleImportDone ? "Imported!" : "Apple Health"}
             </button>
             <button type="button" disabled className="flex-1 min-w-[120px] py-2.5 rounded-lg border-2 border-border text-sm font-semibold text-muted cursor-not-allowed">Manual</button>
@@ -381,35 +381,35 @@ export default function PerfilPage() {
       </div>
 
       <form onSubmit={handleSave} className="space-y-6 md:space-y-8">
-        <section>
+        <section className="panel rounded-2xl p-4 md:p-5">
           <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">{t("personalInfo")}</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#444] mb-2">{t("nameLabel")}</label>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("nameLabel")}</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#444] mb-2">{t("goalLabel")}</label>
-              <select value={goal} onChange={(e) => setGoal(e.target.value)} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+              <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("goalLabel")}</label>
+              <select value={goal} onChange={(e) => setGoal(e.target.value)} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                 {GOAL_KEYS.map((key) => <option key={key} value={key}>{t(`goals.${key}`)}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#444] mb-2">{t("sexLabel")}</label>
-              <select value={sex} onChange={(e) => setSex(e.target.value)} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+              <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("sexLabel")}</label>
+              <select value={sex} onChange={(e) => setSex(e.target.value)} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                 <option value="">{t("sexPlaceholder")}</option>
                 {SEX_KEYS.map((key) => <option key={key} value={key}>{t(`sexOptions.${key}`)}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#444] mb-2">Max HR</label>
-              <input type="number" value={maxHr} onChange={(e) => setMaxHr(e.target.value)} placeholder="e.g. 185" min={100} max={220} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">Max HR</label>
+              <input type="number" value={maxHr} onChange={(e) => setMaxHr(e.target.value)} placeholder="e.g. 185" min={100} max={220} className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#444] mb-2">{t("weeklyGoal")}</label>
+              <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("weeklyGoal")}</label>
               <div className="flex gap-2">
                 {[3, 4, 5, 6].map((n) => (
-                  <button key={n} type="button" onClick={() => setWeeklyGoal(String(n))} className={`flex-1 py-3 rounded-lg border-2 text-sm font-semibold transition-all ${weeklyGoal === String(n) ? "bg-accent-light border-accent text-[#333]" : "bg-surface border-border text-muted hover:border-[#ccc]"}`}>
+                  <button key={n} type="button" onClick={() => setWeeklyGoal(String(n))} className={`flex-1 py-3 rounded-lg border-2 text-sm font-semibold transition-all ${weeklyGoal === String(n) ? "bg-accent-light border-accent text-[var(--text)]" : "bg-surface border-border text-muted hover:border-[var(--border-hi)]"}`}>
                     {n}d
                   </button>
                 ))}
@@ -427,24 +427,24 @@ export default function PerfilPage() {
             <span className="text-[10px] bg-accent-light text-accent-dark border border-accent px-2 py-0.5 rounded-full font-medium">{t("lastMeasurement", { date: latestScanLabel })}</span>
           </div>
 
-          <div className="bg-surface border border-border rounded-xl p-4 md:p-5">
-            <label className="block text-sm font-medium text-[#444] mb-2">{t("fields.scanDate")}</label>
-            <input type="date" value={bodyComp.measured_at} onChange={(e) => updateBodyComp("measured_at", e.target.value)} className="w-full md:w-56 bg-white border border-border rounded-lg px-4 py-3 h-11 text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+          <div className="panel rounded-2xl p-4 md:p-5">
+            <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("fields.scanDate")}</label>
+            <input type="date" value={bodyComp.measured_at} onChange={(e) => updateBodyComp("measured_at", e.target.value)} className="w-full md:w-56 bg-[var(--surface)] border border-border rounded-lg px-4 py-3 h-11 text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             {metricCards.map((field) => (
-              <div key={field.key} className="bg-surface border border-border rounded-xl p-4 md:p-5">
+              <div key={field.key} className="panel rounded-2xl p-4 md:p-5">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <label className="text-xs text-muted">{field.label}</label>
                   {field.change && (
-                    <span className={`text-[11px] font-semibold ${field.change.good ? "text-accent-dark" : "text-[#d95c25]"}`}>
+                    <span className={`text-[11px] font-semibold ${field.change.good ? "text-accent-dark" : "text-[var(--coral)]"}`}>
                       {field.change.label}
                     </span>
                   )}
                 </div>
                 <div className="flex items-end gap-1">
-                  <input type="number" value={bodyComp[field.key]} onChange={(e) => updateBodyComp(field.key, e.target.value)} step="0.1" className="text-xl md:text-2xl font-bold text-[#111] w-full min-w-0 bg-transparent outline-none border-b-2 border-transparent focus:border-accent" />
+                  <input type="number" value={bodyComp[field.key]} onChange={(e) => updateBodyComp(field.key, e.target.value)} step="0.1" className="text-xl md:text-2xl font-bold text-[var(--text)] w-full min-w-0 bg-transparent outline-none border-b-2 border-transparent focus:border-accent" />
                   <span className="text-sm text-muted mb-0.5">{field.unit}</span>
                 </div>
               </div>
@@ -452,17 +452,17 @@ export default function PerfilPage() {
           </div>
 
           <div className="grid lg:grid-cols-[1.25fr_0.75fr] gap-4">
-            <div className="bg-surface border border-border rounded-xl p-4 md:p-5">
-              <h3 className="text-sm font-semibold text-[#333] mb-3">{t("trainingMarkers")}</h3>
+            <div className="panel rounded-2xl p-4 md:p-5">
+              <h3 className="text-sm font-semibold text-[var(--text)] mb-3">{t("trainingMarkers")}</h3>
               <div className="grid md:grid-cols-2 gap-3">
                 {trainingFields.map((field) => (
                   <label key={field.key} className="block">
                     <span className="flex items-center justify-between text-xs text-muted mb-1.5">
                       {field.label}
-                      {field.change && <span className={`font-semibold ${field.change.good ? "text-accent-dark" : "text-[#d95c25]"}`}>{field.change.label}</span>}
+                      {field.change && <span className={`font-semibold ${field.change.good ? "text-accent-dark" : "text-[var(--coral)]"}`}>{field.change.label}</span>}
                     </span>
-                    <div className="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-2 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20 transition-all">
-                      <input type="number" value={bodyComp[field.key]} onChange={(e) => updateBodyComp(field.key, e.target.value)} step="0.1" placeholder={field.placeholder} className="w-full min-w-0 bg-transparent outline-none text-sm text-[#111]" />
+                    <div className="flex items-center gap-2 bg-[var(--surface)] border border-border rounded-lg px-3 py-2 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20 transition-all">
+                      <input type="number" value={bodyComp[field.key]} onChange={(e) => updateBodyComp(field.key, e.target.value)} step="0.1" placeholder={field.placeholder} className="w-full min-w-0 bg-transparent outline-none text-sm text-[var(--text)]" />
                       {field.unit && <span className="text-xs text-muted">{field.unit}</span>}
                     </div>
                   </label>
@@ -470,14 +470,14 @@ export default function PerfilPage() {
               </div>
             </div>
 
-            <div className="bg-surface border border-border rounded-xl p-4 md:p-5">
-              <h3 className="text-sm font-semibold text-[#333] mb-3">{t("segmentalMuscle")}</h3>
+            <div className="panel rounded-2xl p-4 md:p-5">
+              <h3 className="text-sm font-semibold text-[var(--text)] mb-3">{t("segmentalMuscle")}</h3>
               <div className="space-y-3">
                 {segmentFields.map((field) => (
                   <label key={field.key} className="flex items-center justify-between gap-3">
                     <span className="text-xs text-muted">{field.label}</span>
-                    <div className="flex items-center gap-2 w-28 bg-white border border-border rounded-lg px-3 py-2 focus-within:border-accent transition-all">
-                      <input type="number" value={bodyComp[field.key]} onChange={(e) => updateBodyComp(field.key, e.target.value)} step="0.1" className="w-full min-w-0 bg-transparent outline-none text-sm text-[#111]" />
+                    <div className="flex items-center gap-2 w-28 bg-[var(--surface)] border border-border rounded-lg px-3 py-2 focus-within:border-accent transition-all">
+                      <input type="number" value={bodyComp[field.key]} onChange={(e) => updateBodyComp(field.key, e.target.value)} step="0.1" className="w-full min-w-0 bg-transparent outline-none text-sm text-[var(--text)]" />
                       <span className="text-xs text-muted">kg</span>
                     </div>
                   </label>
@@ -486,31 +486,31 @@ export default function PerfilPage() {
             </div>
           </div>
 
-          <div className="bg-surface border border-border rounded-xl p-4 md:p-5">
+          <div className="panel rounded-2xl p-4 md:p-5">
             <div className="flex justify-between text-xs text-muted mb-2">
               <span>{t("bodyComp")}</span>
               <span>{t("muscle")} {bodyComp.muscle_mass_kg || "—"}kg · {t("fat")} {bodyComp.fat_percentage || "—"}%</span>
             </div>
-            <div className="h-3 bg-[#e8e8e8] rounded-full overflow-hidden flex">
+            <div className="h-3 bg-[var(--ring-track)] rounded-full overflow-hidden flex">
               <div className="h-full bg-accent rounded-l-full" style={{ width: `${Math.min((parseFloat(bodyComp.muscle_mass_kg || "0") / 60) * 100, 100)}%` }} />
-              <div className="h-full bg-[#f07840]" style={{ width: `${Math.min(parseFloat(bodyComp.fat_percentage || "0"), 100)}%` }} />
+              <div className="h-full bg-[var(--coral)]" style={{ width: `${Math.min(parseFloat(bodyComp.fat_percentage || "0"), 100)}%` }} />
             </div>
-            <textarea value={bodyComp.notes} onChange={(e) => updateBodyComp("notes", e.target.value)} placeholder={t("notesPlaceholder")} className="mt-4 w-full min-h-20 bg-white border border-border rounded-lg px-4 py-3 text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none" />
+            <textarea value={bodyComp.notes} onChange={(e) => updateBodyComp("notes", e.target.value)} placeholder={t("notesPlaceholder")} className="mt-4 w-full min-h-20 bg-[var(--surface)] border border-border rounded-lg px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none" />
           </div>
 
           {bodyHistory.length > 0 && (
-            <div className="bg-surface border border-border rounded-xl overflow-hidden">
+            <div className="panel rounded-2xl overflow-hidden">
               <div className="px-4 md:px-5 py-3 border-b border-border flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-[#333]">{t("recentScans")}</h3>
+                <h3 className="text-sm font-semibold text-[var(--text)]">{t("recentScans")}</h3>
                 <span className="text-xs text-muted">{bodyHistory.length}</span>
               </div>
               <div className="divide-y divide-border">
                 {bodyHistory.map((scan) => (
                   <div key={scan.id} className="grid grid-cols-4 gap-3 px-4 md:px-5 py-3 text-xs">
-                    <div className="font-medium text-[#333]">{new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date(scan.measured_at))}</div>
-                    <div><span className="text-muted">{t("fields.weight")}</span> <span className="font-semibold text-[#333]">{display(scan.weight_kg)}kg</span></div>
-                    <div><span className="text-muted">{t("fields.muscleMass")}</span> <span className="font-semibold text-[#333]">{display(scan.muscle_mass_kg)}kg</span></div>
-                    <div><span className="text-muted">{t("fields.bodyFat")}</span> <span className="font-semibold text-[#333]">{display(scan.fat_percentage)}%</span></div>
+                    <div className="font-medium text-[var(--text)]">{new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date(scan.measured_at))}</div>
+                    <div><span className="text-muted">{t("fields.weight")}</span> <span className="font-semibold text-[var(--text)]">{display(scan.weight_kg)}kg</span></div>
+                    <div><span className="text-muted">{t("fields.muscleMass")}</span> <span className="font-semibold text-[var(--text)]">{display(scan.muscle_mass_kg)}kg</span></div>
+                    <div><span className="text-muted">{t("fields.bodyFat")}</span> <span className="font-semibold text-[var(--text)]">{display(scan.fat_percentage)}%</span></div>
                   </div>
                 ))}
               </div>
@@ -520,15 +520,15 @@ export default function PerfilPage() {
 
         <div>
           {saveError && <p className="text-sm text-red-500 mb-2">{saveError}</p>}
-          <button type="submit" disabled={loading} className={`hidden md:block w-full py-3.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "bg-accent hover:bg-accent-dark text-white shadow-sm"}`}>
+          <button type="submit" disabled={loading} className={`hidden w-full rounded-xl py-3.5 text-sm font-semibold transition-all disabled:opacity-60 md:block ${saved ? "bg-[#4caf50] text-white" : "btn-accent"}`}>
             {loading ? "Saving…" : saved ? t("saved") : t("save")}
           </button>
         </div>
       </form>
 
-      <div className="md:hidden fixed bottom-[72px] left-4 right-4">
+      <div className="fixed left-4 right-4 z-40 md:hidden" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}>
         {saveError && <p className="text-sm text-red-500 mb-2 text-center">{saveError}</p>}
-        <button onClick={handleSave} disabled={loading} className={`w-full py-3.5 rounded-xl text-sm font-semibold shadow-lg transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "bg-accent text-white"}`}>
+        <button onClick={handleSave} disabled={loading} className={`w-full rounded-2xl py-3.5 text-sm font-semibold transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "btn-accent"}`}>
           {loading ? "Saving…" : saved ? t("savedShort") : t("save")}
         </button>
       </div>

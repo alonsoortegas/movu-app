@@ -160,121 +160,121 @@ export default function RegistroPage() {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-2xl mx-auto">
+    <div className="boot p-4 md:p-8 max-w-2xl mx-auto">
       <div className="mb-5 md:mb-8">
-        <h1 className="text-xl md:text-2xl font-bold text-[#111]">{t("title")}</h1>
+        <h1 className="display text-xl font-bold text-[var(--text)] md:text-2xl">{t("title")}</h1>
         <p className="text-xs md:text-sm text-muted mt-0.5 capitalize">{todayLabel}</p>
       </div>
-      <form onSubmit={handleSave} className="space-y-5 md:space-y-6">
+      <form onSubmit={handleSave} className="panel space-y-5 rounded-2xl p-4 md:space-y-6 md:p-6">
         <div>
-          <label className="block text-sm font-medium text-[#444] mb-2">{t("workoutDate")}</label>
+          <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("workoutDate")}</label>
           <input type="date" value={workoutDate} onChange={(e) => setWorkoutDate(e.target.value)}
-            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#444] mb-3">{t("classType")}</label>
+          <label className="block text-sm font-medium text-[var(--text-dim)] mb-3">{t("classType")}</label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-2.5">
             {CLASS_TYPE_KEYS.map((key) => (
               <button key={key} type="button" onClick={() => handleTypeChange(key)}
-                className={`flex flex-col items-center gap-1 md:gap-1.5 py-3 md:py-4 rounded-xl border-2 transition-all ${type === key ? "bg-accent-light border-accent shadow-sm" : "bg-surface border-border hover:border-[#ccc]"}`}>
+                className={`flex flex-col items-center gap-1 md:gap-1.5 py-3 md:py-4 rounded-xl border-2 transition-all ${type === key ? "bg-accent-light border-accent shadow-sm" : "bg-surface border-border hover:border-[var(--border-hi)]"}`}>
                 <span className="text-xl md:text-2xl">{CLASS_EMOJIS[key]}</span>
-                <span className={`text-[11px] md:text-xs font-medium ${type === key ? "text-[#444]" : "text-muted"}`}>{t(`classTypes.${key}`)}</span>
+                <span className={`text-[11px] md:text-xs font-medium ${type === key ? "text-[var(--text-dim)]" : "text-muted"}`}>{t(`classTypes.${key}`)}</span>
               </button>
             ))}
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#444] mb-2">{t("className")}</label>
+          <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("className")}</label>
           <select value={className} onChange={(e) => setClassName(e.target.value)}
-            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
             {subtypeOptions.map((subtype) => (
               <option key={subtype} value={subtype}>{subtype}</option>
             ))}
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#444] mb-2">{t("studio")}</label>
+          <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("studio")}</label>
           <input type="text" value={studio} onChange={(e) => setStudio(e.target.value)} placeholder={t("studioPlaceholder")}
-            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#444] mb-2">{t("coachName")}</label>
+          <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("coachName")}</label>
           <input type="text" value={coachName} onChange={(e) => setCoachName(e.target.value)} placeholder={t("coachPlaceholder")}
-            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+            className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
         </div>
         <div className="grid grid-cols-2 gap-3 md:gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#444] mb-2">{t("duration")}</label>
+            <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("duration")}</label>
             <input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder={t("durationPlaceholder")} min={0} max={300}
-              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#444] mb-2">{t("calories")}</label>
+            <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("calories")}</label>
             <input type="number" value={calories} onChange={(e) => setCalories(e.target.value)} placeholder={t("caloriesPlaceholder")} min={0}
-              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full bg-surface border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
         </div>
         <div className={`transition-all duration-300 overflow-hidden ${showDistance ? "max-h-24 opacity-100" : "max-h-0 opacity-0"}`}>
-          <label className="block text-sm font-medium text-[#444] mb-2">
+          <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">
             {t("distance")} <span className="text-muted font-normal text-xs">{t("distanceOptional")}</span>
           </label>
           <input type="number" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder={t("distancePlaceholder")} step="0.1" min={0}
-            className="w-full bg-accent-light border-2 border-dashed border-accent rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-[#999] outline-none focus:ring-2 focus:ring-accent/20 transition-all" />
+            className="w-full bg-accent-light border-2 border-dashed border-accent rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] placeholder-[var(--text-faint)] outline-none focus:ring-2 focus:ring-accent/20 transition-all" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#444] mb-3">{t("effort")}</label>
+          <label className="block text-sm font-medium text-[var(--text-dim)] mb-3">{t("effort")}</label>
           <div className="flex gap-2 mb-2">
             {[1, 2, 3, 4, 5].map((n) => (
               <button key={n} type="button" onClick={() => setEffort(n)}
-                className={`flex-1 h-6 md:h-8 rounded-md border-2 transition-all ${n <= effort ? "bg-accent-light border-accent" : "bg-surface border-border hover:border-[#ccc]"}`} />
+                className={`flex-1 h-6 md:h-8 rounded-md border-2 transition-all ${n <= effort ? "bg-accent-light border-accent" : "bg-surface border-border hover:border-[var(--border-hi)]"}`} />
             ))}
           </div>
           <div className="flex justify-between text-xs text-muted">
             <span>{t("effortSoft")}</span>
-            <span className="text-[#555] font-medium">{t(`effortLabels.${effort}`)}</span>
+            <span className="text-[var(--text-dim)] font-medium">{t(`effortLabels.${effort}`)}</span>
             <span>{t("effortMax")}</span>
           </div>
         </div>
         <div className="hidden md:block pt-2">
           {saveError && <p className="text-sm text-red-500 mb-2">{saveError}</p>}
           <button type="submit" disabled={loading}
-            className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "bg-accent hover:bg-accent-dark text-white shadow-sm hover:shadow-md"}`}>
+            className={`w-full rounded-xl py-3.5 text-sm font-semibold transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "btn-accent"}`}>
             {loading ? "Saving…" : saved ? t("saved") : t("save")}
           </button>
         </div>
       </form>
-      <div className="md:hidden fixed bottom-[72px] left-4 right-4">
+      <div className="fixed left-4 right-4 z-40 md:hidden" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}>
         {saveError && <p className="text-sm text-red-500 mb-2 text-center">{saveError}</p>}
         <button onClick={handleSave} disabled={loading}
-          className={`w-full py-3.5 rounded-xl text-sm font-semibold shadow-lg transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "bg-accent text-white"}`}>
+          className={`w-full rounded-2xl py-3.5 text-sm font-semibold transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "btn-accent"}`}>
           {loading ? "Saving…" : saved ? t("savedShort") : t("save")}
         </button>
       </div>
-      <form onSubmit={handleDailySave} className="mt-6 md:mt-8 bg-surface border border-border rounded-xl p-4 md:p-5 space-y-4">
+      <form onSubmit={handleDailySave} className="mt-6 md:mt-8 panel rounded-2xl p-4 md:p-5 space-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-[#111]">{t("dailyLogTitle")}</h2>
+          <h2 className="text-sm font-semibold text-[var(--text)]">{t("dailyLogTitle")}</h2>
           <p className="text-xs text-muted mt-0.5">{t("dailyLogSubtitle")}</p>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#444] mb-2">{t("dailyLogDate")}</label>
+          <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("dailyLogDate")}</label>
           <input type="date" value={dailyDate} onChange={(e) => setDailyDate(e.target.value)}
-            className="w-full bg-white border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+            className="w-full bg-[var(--surface)] border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
         </div>
         <div className="grid grid-cols-2 gap-3 md:gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#444] mb-2">{t("sleepHours")}</label>
+            <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("sleepHours")}</label>
             <input type="number" value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder={t("sleepHoursPlaceholder")} step="0.1" min={0} max={24}
-              className="w-full bg-white border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full bg-[var(--surface)] border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#444] mb-2">{t("steps")}</label>
+            <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("steps")}</label>
             <input type="number" value={steps} onChange={(e) => setSteps(e.target.value)} placeholder={t("stepsPlaceholder")} min={0}
-              className="w-full bg-white border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[#111] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
+              className="w-full bg-[var(--surface)] border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
         </div>
         {showPeriodQuestion && (
           <div>
-            <label className="block text-sm font-medium text-[#444] mb-2">{t("periodQuestion")}</label>
+            <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("periodQuestion")}</label>
             <div className="grid grid-cols-2 gap-2">
               {[
                 { value: true, label: t("yes") },
@@ -286,8 +286,8 @@ export default function RegistroPage() {
                   onClick={() => setIsOnPeriod(option.value)}
                   className={`py-3 rounded-lg border-2 text-sm font-semibold transition-all ${
                     isOnPeriod === option.value
-                      ? "bg-accent-light border-accent text-[#333]"
-                      : "bg-white border-border text-muted hover:border-[#ccc]"
+                      ? "bg-accent-light border-accent text-[var(--text)]"
+                      : "bg-[var(--surface)] border-border text-muted hover:border-[var(--border-hi)]"
                   }`}
                 >
                   {option.label}
@@ -298,7 +298,7 @@ export default function RegistroPage() {
         )}
         {dailyError && <p className="text-sm text-red-500">{dailyError}</p>}
         <button type="submit" disabled={dailyLoading}
-          className={`w-full py-3 rounded-xl text-sm font-semibold transition-all disabled:opacity-60 ${dailySaved ? "bg-[#4caf50] text-white" : "bg-[#111] hover:bg-[#333] text-white"}`}>
+          className={`w-full rounded-xl py-3 text-sm font-semibold transition-all disabled:opacity-60 ${dailySaved ? "bg-[#4caf50] text-white" : "glass border border-[var(--border-hi)] text-[var(--text)]"}`}>
           {dailyLoading ? "Saving…" : dailySaved ? t("dailyLogSaved") : t("dailyLogSave")}
         </button>
       </form>
