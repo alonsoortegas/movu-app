@@ -399,5 +399,57 @@
     "save": "Save changes",
     "saved": "✓ Profile saved",
     "savedShort": "✓ Saved"
+  },
+  "planEditor": {
+    "title": "Plan-Editor",
+    "subtitle": "Erstelle und passe deinen Trainingsplan an",
+    "newPlan": "Neuer Plan",
+    "editMeta": "Details bearbeiten",
+    "createPlan": "Plan erstellen",
+    "savePlan": "Änderungen speichern",
+    "weekChip": "W{week}",
+    "copyWeek": "Woche kopieren nach",
+    "copyPlaceholder": "z.B. 2,3,4",
+    "copyCta": "Kopieren",
+    "addSession": "Einheit hinzufügen",
+    "addExercise": "Übung hinzufügen",
+    "saveExercise": "Übung speichern",
+    "cancel": "Abbrechen",
+    "backToPlan": "Zurück zum Plan",
+    "days": {
+      "monday": "Montag",
+      "tuesday": "Dienstag",
+      "wednesday": "Mittwoch",
+      "thursday": "Donnerstag",
+      "friday": "Freitag",
+      "saturday": "Samstag",
+      "sunday": "Sonntag"
+    },
+    "sessionType": {
+      "strength": "Kraft",
+      "activation": "Aktivierung",
+      "cardio": "Cardio",
+      "other": "Sonstiges"
+    },
+    "fields": {
+      "name": "Planname",
+      "weeks": "Wochen",
+      "active": "Aktiv",
+      "sessionTitle": "Titel der Einheit",
+      "exerciseName": "Übungsname",
+      "sets": "Sätze",
+      "reps": "Wdh",
+      "rest": "Pause s",
+      "superset": "Supersatz",
+      "notes": "Notizen"
+    },
+    "errors": {
+      "savePlan": "Plan konnte nicht gespeichert werden",
+      "saveSession": "Einheit konnte nicht gespeichert werden",
+      "saveExercise": "Übung konnte nicht gespeichert werden",
+      "delete": "Löschen fehlgeschlagen",
+      "copyTargets": "Ungültige Zielwochen",
+      "copyFailed": "Woche konnte nicht kopiert werden"
+    }
   }
 }

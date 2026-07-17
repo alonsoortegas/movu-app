@@ -398,5 +398,57 @@
     "save": "Save changes",
     "saved": "✓ Profile saved",
     "savedShort": "✓ Saved"
+  },
+  "planEditor": {
+    "title": "Plan editor",
+    "subtitle": "Build and adjust your training plan",
+    "newPlan": "New plan",
+    "editMeta": "Edit details",
+    "createPlan": "Create plan",
+    "savePlan": "Save changes",
+    "weekChip": "W{week}",
+    "copyWeek": "Copy week to",
+    "copyPlaceholder": "e.g. 2,3,4",
+    "copyCta": "Copy",
+    "addSession": "Add session",
+    "addExercise": "Add exercise",
+    "saveExercise": "Save exercise",
+    "cancel": "Cancel",
+    "backToPlan": "Back to my plan",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "sessionType": {
+      "strength": "Strength",
+      "activation": "Activation",
+      "cardio": "Cardio",
+      "other": "Other"
+    },
+    "fields": {
+      "name": "Plan name",
+      "weeks": "Weeks",
+      "active": "Active",
+      "sessionTitle": "Session title",
+      "exerciseName": "Exercise name",
+      "sets": "Sets",
+      "reps": "Reps",
+      "rest": "Rest s",
+      "superset": "Superset",
+      "notes": "Notes"
+    },
+    "errors": {
+      "savePlan": "Could not save the plan",
+      "saveSession": "Could not save the session",
+      "saveExercise": "Could not save the exercise",
+      "delete": "Could not delete",
+      "copyTargets": "Invalid target weeks",
+      "copyFailed": "Could not copy the week"
+    }
   }
 }
