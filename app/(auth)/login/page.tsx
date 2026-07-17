@@ -30,32 +30,32 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-[#444] mb-2">Email</label>
+        <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">Email</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           placeholder="you@example.com"
-          className="w-full bg-[#f9f9f9] border border-[#e8e8e8] rounded-lg px-4 py-3 text-sm text-[#111] placeholder-[#aaa] outline-none focus:border-[#6be040] focus:ring-2 focus:ring-[#6be040]/20 transition-all"
+          className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm text-[var(--text)] placeholder-[var(--text-faint)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-[#444] mb-2">Password</label>
+        <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">Password</label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           placeholder="••••••••"
-          className="w-full bg-[#f9f9f9] border border-[#e8e8e8] rounded-lg px-4 py-3 text-sm text-[#111] placeholder-[#aaa] outline-none focus:border-[#6be040] focus:ring-2 focus:ring-[#6be040]/20 transition-all"
+          className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm text-[var(--text)] placeholder-[var(--text-faint)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
         />
       </div>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-[var(--coral)]">{error}</p>}
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3 rounded-xl text-sm font-semibold bg-[#6be040] text-white hover:opacity-90 transition-all disabled:opacity-60"
+        className="btn-accent w-full rounded-xl py-3 text-sm font-bold disabled:opacity-60"
       >
         {loading ? "Signing in…" : "Sign in"}
       </button>
@@ -65,19 +65,19 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="w-full max-w-sm">
-      <div className="bg-white border border-[#e8e8e8] rounded-2xl p-8 shadow-sm">
+    <div className="flicker w-full max-w-sm">
+      <div className="glass-thick ticks rounded-3xl border border-[var(--border-hi)] p-8">
         <div className="text-center mb-8">
-          <span className="text-2xl font-bold" style={{ color: "var(--accent)" }}>movu</span>
+          <span className="display text-2xl font-bold text-[var(--text)]">mov<span className="text-accent">u</span></span>
         </div>
-        <h1 className="text-xl font-bold text-[#111] mb-1">Welcome back</h1>
-        <p className="text-sm text-[#aaa] mb-6">Sign in to your account</p>
+        <h1 className="display mb-1 text-xl font-bold text-[var(--text)]">Welcome back</h1>
+        <p className="text-sm text-[var(--text-faint)] mb-6">Sign in to your account</p>
         <Suspense>
           <LoginForm />
         </Suspense>
-        <p className="text-center text-sm text-[#aaa] mt-6">
+        <p className="text-center text-sm text-[var(--text-faint)] mt-6">
           Don&apos;t have an account?{" "}
-          <a href="/signup" className="text-[#6be040] font-medium hover:underline">Sign up</a>
+          <a href="/signup" className="text-accent font-medium hover:underline">Sign up</a>
         </p>
       </div>
     </div>
