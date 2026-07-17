@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
+import MobilePageIntro from "@/components/mobile/MobilePageIntro";
 
 const GOAL_KEYS = ["loseGainMuscle", "gainMuscle", "loseWeight", "endurance", "stayActive"] as const;
 const SEX_KEYS = ["female", "male", "other", "prefer_not_to_say"] as const;
@@ -317,22 +318,23 @@ export default function PerfilPage() {
   ] as const;
 
   return (
-    <div className="boot p-4 md:p-8 max-w-5xl mx-auto">
-      <div className="mb-5 md:mb-8">
-        <h1 className="display text-xl font-bold text-[var(--text)] md:text-2xl">{t("title")}</h1>
-        <p className="text-xs md:text-sm text-muted mt-0.5">{t("subtitle")}</p>
+    <div className="boot mx-auto max-w-5xl p-4 md:p-8">
+      <MobilePageIntro title={t("title")} eyebrow={t("subtitle")} />
+      <div className="mb-8 hidden md:block">
+        <h1 className="display text-2xl font-bold text-[var(--text)]">{t("title")}</h1>
+        <p className="mt-0.5 text-sm text-muted">{t("subtitle")}</p>
       </div>
 
-      <div className="flex items-center gap-4 mb-6 p-4 md:p-6 panel rounded-2xl">
-        <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-accent-light border-2 border-accent flex items-center justify-center text-2xl md:text-3xl flex-shrink-0">🏋️</div>
+      <div className="panel mobile-sheet mb-6 flex items-center gap-4 rounded-[1.6rem] p-4 md:rounded-2xl md:p-6">
+        <div className="mobile-brand-mark h-14 w-14 rounded-2xl text-xl md:h-16 md:w-16 md:text-2xl">M</div>
         <div>
-          <div className="text-base md:text-lg font-bold text-[var(--text)]">{name}</div>
-          <div className="text-xs md:text-sm text-muted">{t(`goals.${goal}`)}</div>
+          <div className="display text-lg font-bold text-[var(--text)]">{name}</div>
+          <div className="data mt-1 text-[10px] uppercase tracking-[0.14em] text-muted md:text-sm md:normal-case md:tracking-normal">{t(`goals.${goal}`)}</div>
         </div>
       </div>
 
-      <div className="glass ticks mb-6 rounded-2xl border border-[var(--border-hi)] p-4">
-        <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">Data source</h2>
+      <div className="glass ticks mb-6 rounded-[1.7rem] border border-[var(--border-hi)] p-5 md:rounded-2xl md:p-4">
+        <h2 className="data mb-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted md:text-xs">Data source</h2>
         {dataSource === "whoop" && whoopStatus?.connected && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${whoopNeedsReconnect ? "border-[rgba(251,113,133,0.35)] bg-[rgba(251,113,133,0.12)] text-[var(--coral)]" : "border-accent bg-accent-light text-accent-dark"}`}>
@@ -381,7 +383,7 @@ export default function PerfilPage() {
       </div>
 
       <form onSubmit={handleSave} className="space-y-6 md:space-y-8">
-        <section className="panel rounded-2xl p-4 md:p-5">
+        <section className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
           <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">{t("personalInfo")}</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
@@ -427,14 +429,14 @@ export default function PerfilPage() {
             <span className="text-[10px] bg-accent-light text-accent-dark border border-accent px-2 py-0.5 rounded-full font-medium">{t("lastMeasurement", { date: latestScanLabel })}</span>
           </div>
 
-          <div className="panel rounded-2xl p-4 md:p-5">
+          <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
             <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("fields.scanDate")}</label>
             <input type="date" value={bodyComp.measured_at} onChange={(e) => updateBodyComp("measured_at", e.target.value)} className="w-full md:w-56 bg-[var(--surface)] border border-border rounded-lg px-4 py-3 h-11 text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             {metricCards.map((field) => (
-              <div key={field.key} className="panel rounded-2xl p-4 md:p-5">
+              <div key={field.key} className="panel mobile-sheet rounded-[1.45rem] p-4 md:rounded-2xl md:p-5">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <label className="text-xs text-muted">{field.label}</label>
                   {field.change && (
@@ -452,7 +454,7 @@ export default function PerfilPage() {
           </div>
 
           <div className="grid lg:grid-cols-[1.25fr_0.75fr] gap-4">
-            <div className="panel rounded-2xl p-4 md:p-5">
+            <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
               <h3 className="text-sm font-semibold text-[var(--text)] mb-3">{t("trainingMarkers")}</h3>
               <div className="grid md:grid-cols-2 gap-3">
                 {trainingFields.map((field) => (
@@ -470,7 +472,7 @@ export default function PerfilPage() {
               </div>
             </div>
 
-            <div className="panel rounded-2xl p-4 md:p-5">
+            <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
               <h3 className="text-sm font-semibold text-[var(--text)] mb-3">{t("segmentalMuscle")}</h3>
               <div className="space-y-3">
                 {segmentFields.map((field) => (
@@ -486,7 +488,7 @@ export default function PerfilPage() {
             </div>
           </div>
 
-          <div className="panel rounded-2xl p-4 md:p-5">
+          <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
             <div className="flex justify-between text-xs text-muted mb-2">
               <span>{t("bodyComp")}</span>
               <span>{t("muscle")} {bodyComp.muscle_mass_kg || "—"}kg · {t("fat")} {bodyComp.fat_percentage || "—"}%</span>
@@ -499,7 +501,7 @@ export default function PerfilPage() {
           </div>
 
           {bodyHistory.length > 0 && (
-            <div className="panel rounded-2xl overflow-hidden">
+            <div className="panel mobile-sheet overflow-hidden rounded-[1.6rem] md:rounded-2xl">
               <div className="px-4 md:px-5 py-3 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-[var(--text)]">{t("recentScans")}</h3>
                 <span className="text-xs text-muted">{bodyHistory.length}</span>
@@ -526,7 +528,7 @@ export default function PerfilPage() {
         </div>
       </form>
 
-      <div className="fixed left-4 right-4 z-40 md:hidden" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}>
+      <div className="fixed left-4 right-4 z-40 md:hidden" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 96px)" }}>
         {saveError && <p className="text-sm text-red-500 mb-2 text-center">{saveError}</p>}
         <button onClick={handleSave} disabled={loading} className={`w-full rounded-2xl py-3.5 text-sm font-semibold transition-all disabled:opacity-60 ${saved ? "bg-[#4caf50] text-white" : "btn-accent"}`}>
           {loading ? "Saving…" : saved ? t("savedShort") : t("save")}

@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/types/database'
+import MobilePageIntro from '@/components/mobile/MobilePageIntro'
 
 type DailyMetric = Database['public']['Tables']['daily_metrics']['Row']
 type SleepLog = Database['public']['Tables']['sleep_logs']['Row']
@@ -139,10 +140,10 @@ function BarChart({ data, color = '#6be040', maxValue }: { data: Point[]; color?
 
 function MetricCard({ label, value, unit, color }: { label: string; value: string; unit?: string; color: string }) {
   return (
-    <div className="panel relative overflow-hidden rounded-2xl p-3 md:p-4">
-      <div className="text-[10px] md:text-xs text-muted uppercase tracking-wide mb-1">{label}</div>
+    <div className="panel mobile-sheet relative overflow-hidden rounded-[1.45rem] p-4 md:rounded-2xl">
+      <div className="data mb-2 text-[10px] uppercase tracking-[0.16em] text-muted md:text-xs">{label}</div>
       <div className="flex items-baseline gap-1">
-        <span className="data text-xl font-bold md:text-2xl" style={{ color }}>{value}</span>
+        <span className="data text-2xl font-bold" style={{ color }}>{value}</span>
         {unit && <span className="text-xs text-muted">{unit}</span>}
       </div>
     </div>
@@ -151,9 +152,9 @@ function MetricCard({ label, value, unit, color }: { label: string; value: strin
 
 function ChartCard({ title, right, children }: { title: string; right?: string; children: React.ReactNode }) {
   return (
-    <div className="panel rounded-2xl p-4 md:p-5">
+    <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
       <div className="flex items-baseline justify-between gap-3 mb-3">
-        <h3 className="text-xs font-semibold text-muted uppercase tracking-wide">{title}</h3>
+        <h3 className="data text-[10px] font-semibold uppercase tracking-[0.18em] text-muted md:text-xs">{title}</h3>
         {right && <span className="data text-xs font-semibold text-[var(--text-dim)]">{right}</span>}
       </div>
       {children}
@@ -327,13 +328,22 @@ export default async function TrendsPage({
   const sleepStageTotal = sum(sleepStages.map(s => s.value))
 
   return (
-    <div className="boot p-4 md:p-8 max-w-6xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5 md:mb-8">
+    <div className="boot mx-auto max-w-6xl p-4 md:p-8">
+      <MobilePageIntro
+        title={t('title')}
+        eyebrow={t('subtitle', { start: firstLabel, end: lastLabel })}
+        aside={
+          <Link href={`/${locale}/perfil`} className="glass grid min-h-11 min-w-11 place-items-center rounded-full border border-[var(--border)] text-base text-accent">
+            ↻<span className="sr-only">{t('syncCta')}</span>
+          </Link>
+        }
+      />
+      <div className="mb-8 hidden items-end justify-between gap-3 md:flex">
         <div>
-          <h1 className="display text-xl font-bold text-[var(--text)] md:text-2xl">{t('title')}</h1>
-          <p className="text-xs md:text-sm text-muted mt-0.5">{t('subtitle', { start: firstLabel, end: lastLabel })}</p>
+          <h1 className="display text-2xl font-bold text-[var(--text)]">{t('title')}</h1>
+          <p className="mt-0.5 text-sm text-muted">{t('subtitle', { start: firstLabel, end: lastLabel })}</p>
         </div>
-        <Link href={`/${locale}/perfil`} className="glass self-start rounded-xl border border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text-dim)] transition-colors hover:border-accent hover:text-[var(--text)] md:self-auto">
+        <Link href={`/${locale}/perfil`} className="glass rounded-xl border border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text-dim)] transition-colors hover:border-accent hover:text-[var(--text)]">
           {t('syncCta')}
         </Link>
       </div>
@@ -424,8 +434,8 @@ export default async function TrendsPage({
             <ChartCard title={t('sections.workoutCount')} right={t('sections.totalWorkouts', { count: acts.length })}>
               <BarChart data={workoutCount} color="#f97316" />
             </ChartCard>
-            <div className="panel rounded-2xl p-4 md:p-5">
-              <h3 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">{t('sections.categoryMix')}</h3>
+            <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
+              <h3 className="data mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted md:text-xs">{t('sections.categoryMix')}</h3>
               {topCategories.length > 0 ? (
                 <div className="space-y-3">
                   {topCategories.map(([category, count]) => {
@@ -450,7 +460,7 @@ export default async function TrendsPage({
           </section>
 
           <section className="grid lg:grid-cols-[1.2fr_0.8fr] gap-4">
-            <div className="panel overflow-hidden rounded-2xl">
+            <div className="panel mobile-sheet overflow-hidden rounded-[1.6rem] md:rounded-2xl">
               <div className="px-4 md:px-5 py-4 border-b border-border">
                 <h3 className="text-xs font-semibold text-muted uppercase tracking-wide">{t('sections.recentWorkouts')}</h3>
               </div>
@@ -474,8 +484,8 @@ export default async function TrendsPage({
               )}
             </div>
 
-            <div className="panel rounded-2xl p-4 md:p-5">
-              <h3 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">{t('sections.bodyComp')}</h3>
+            <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
+              <h3 className="data mb-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted md:text-xs">{t('sections.bodyComp')}</h3>
               {body ? (
                 <div className="grid grid-cols-2 gap-3">
                   {[
