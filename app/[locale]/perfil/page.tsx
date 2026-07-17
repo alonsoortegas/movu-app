@@ -1,5 +1,8 @@
 "use client";
 
+/* OAuth must use a full document navigation so the external provider redirect is followed. */
+/* eslint-disable @next/next/no-html-link-for-pages */
+
 import { useState, useEffect, useMemo, useRef } from "react";
 import { parseAppleHealthFile } from "@/lib/apple-health/parser-browser";
 import { Capacitor } from "@capacitor/core";

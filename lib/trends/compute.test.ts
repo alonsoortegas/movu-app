@@ -4,10 +4,12 @@ import {
   computeFuelTrends,
   computeLoadTrends,
   computeStrengthTrends,
+  dayRangeUtc,
   dateKey,
   epley1RM,
   linearSlopePerDay,
   rollingAverage,
+  selectActivePhase,
   weekStartKey,
   type FuelDay,
   type StrengthLogRow,
@@ -27,11 +29,43 @@ describe('dateKey', () => {
   })
 })
 
+describe('dayRangeUtc', () => {
+  it('returns Mexico City midnight boundaries as UTC instants', () => {
+    expect(dayRangeUtc('2026-07-17')).toEqual({
+      start: '2026-07-17T06:00:00.000Z',
+      end: '2026-07-18T06:00:00.000Z',
+    })
+  })
+
+  it('supports an explicit timezone', () => {
+    expect(dayRangeUtc('2026-07-17', 'Europe/Berlin')).toEqual({
+      start: '2026-07-16T22:00:00.000Z',
+      end: '2026-07-17T22:00:00.000Z',
+    })
+  })
+})
+
 describe('weekStartKey', () => {
   it('maps Wednesday to its Monday', () => expect(weekStartKey('2026-07-08')).toBe('2026-07-06'))
   it('maps Monday to itself', () => expect(weekStartKey('2026-07-06')).toBe('2026-07-06'))
   it('maps Sunday to the preceding Monday', () => expect(weekStartKey('2026-07-12')).toBe('2026-07-06'))
   it('crosses month boundaries', () => expect(weekStartKey('2026-08-01')).toBe('2026-07-27'))
+})
+
+describe('selectActivePhase', () => {
+  const phases = [
+    { id: 'future', start_date: '2026-08-01', end_date: null },
+    { id: 'current', start_date: '2026-07-01', end_date: null },
+    { id: 'past', start_date: '2026-06-01', end_date: '2026-06-30' },
+  ]
+
+  it('ignores future and ended phases', () => {
+    expect(selectActivePhase(phases, '2026-07-17')?.id).toBe('current')
+  })
+
+  it('returns null when no phase contains today', () => {
+    expect(selectActivePhase(phases, '2026-05-01')).toBeNull()
+  })
 })
 
 describe('rollingAverage', () => {

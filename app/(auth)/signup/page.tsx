@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 type Step = "invite" | "register" | "done";
@@ -160,7 +161,7 @@ export default function SignupPage() {
         {step !== "done" && (
           <p className="text-center text-sm text-[var(--text-faint)] mt-6">
             Already have an account?{" "}
-            <a href="/login" className="text-accent font-medium hover:underline">Sign in</a>
+            <Link href="/login" className="text-accent font-medium hover:underline">Sign in</Link>
           </p>
         )}
       </div>

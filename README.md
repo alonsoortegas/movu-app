@@ -6,10 +6,10 @@ Fitness intelligence platform for boutique fitness users in CDMX. Aggregates WHO
 
 | Layer | Choice |
 |---|---|
-| Frontend | Next.js 14 (App Router) + TypeScript + Tailwind CSS |
+| Frontend | Next.js 16 (App Router) + TypeScript + Tailwind CSS |
 | Database | Supabase Postgres with RLS |
 | Auth | Supabase Auth (magic link + Google OAuth) |
-| API / Webhooks | Supabase Edge Functions (Deno) |
+| API / Webhooks | Next.js route handlers + Supabase Edge Functions (Deno) |
 | Activity sync | WHOOP OAuth + REST sync |
 | AI coaching | Claude API (`claude-sonnet-4-20250514`) |
 | Email | Resend |
@@ -24,11 +24,20 @@ app/
     activities/[id]/rpe/    POST — submit RPE for a session
     insights/latest/        GET  — most recent coaching insight
     dashboard/              GET  — aggregated weekly stats
+    plan/                   CRUD — workout plans, sessions, exercises, week copy
+    set-logs/               GET/POST — exercise history and set logging
+    nutrition/              CRUD — foods, targets, meals, portions, swap groups
+    phases/                 CRUD — bulk/cut/maintenance phases
+    whoop/                  OAuth, status, sync, and callback routes
     waitlist/               POST — join waitlist (public)
     auth/callback/          GET  — Supabase auth callback
   (auth)/signup/            Invite-gated signup page
   (auth)/login/             Login page
   dashboard/                Weekly training view + AI insight card
+  trends/                   Body, strength, load, fuel, and recovery trends
+  plan/                     Active workout week, set logger, and plan editor
+  nutricion/                Daily nutrition logger and catalog editor
+  perfil/                   Goals, body composition, and data-source controls
   admin/                    Waitlist management + invite code generation
 lib/
   supabase/
@@ -39,6 +48,9 @@ lib/
     prompts.ts              Coaching system prompt (Spanish)
     insights.ts             Claude API call + response parsing
   admin.ts                  Admin user ID check
+  nutrition/                Macro, portion, catalog, and logging rules
+  trends/                   Date bucketing and trend computations
+  workout/                  Plan-week, progression, and set-log rules
 supabase/
   migrations/               SQL migrations (run in order)
   functions/
@@ -120,7 +132,7 @@ supabase functions serve validate-invite --env-file supabase/functions/.env
 
 ## Database schema
 
-7 tables, all with RLS enabled:
+21 tables, all with RLS enabled:
 
 | Table | Description |
 |---|---|
@@ -131,6 +143,20 @@ supabase functions serve validate-invite --env-file supabase/functions/.env
 | `sleep_logs` | Manual sleep entries (Phase 1), HealthKit in Phase 2 |
 | `body_measurements` | InBody snapshots |
 | `insights` | AI-generated coaching outputs, stored for history |
+| `daily_metrics` | Daily recovery, strain, heart-rate, and activity aggregates |
+| `workout_plans` | User-authored multi-week workout plans |
+| `workout_plan_sessions` | Sessions assigned to plan weeks and weekdays |
+| `workout_plan_exercises` | Ordered exercise prescriptions |
+| `workout_set_logs` | Per-set kg, reps, RPE, and history |
+| `food_items` | Personal food and macro catalog |
+| `saved_food_portions` | Reusable custom portions |
+| `food_substitution_groups` | Macro-equivalent food groups |
+| `food_substitution_group_items` | Portion entries inside substitution groups |
+| `nutrition_targets` | Hard/moderate/rest-day targets |
+| `nutrition_days` | Selected day type by date |
+| `meal_logs` | Meals by date and meal slot |
+| `meal_log_items` | Denormalized item macros at log time |
+| `training_phases` | Bulk, cut, and maintenance periods |
 
 Users can only read/write their own rows. Admin access uses the `service_role` key, only in Edge Functions and server-side API routes — never client-side.
 

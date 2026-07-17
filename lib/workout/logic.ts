@@ -1,6 +1,8 @@
 // Pure workout-plan logic ported from lifeos (WorkoutTab helpers + lib/workout.ts),
 // generalized from hardcoded training blocks to per-user plan rows.
 
+import { APP_TIMEZONE, dateKey } from '@/lib/trends/compute'
+
 export const DAY_ORDER = [
   'monday',
   'tuesday',
@@ -15,8 +17,9 @@ export type DayKey = (typeof DAY_ORDER)[number]
 
 export const RPE_OPTIONS = [6, 7, 7.5, 8, 8.5, 9, 9.5, 10]
 
-export function getTodayKey(reference = new Date()): DayKey {
-  const day = reference.getDay()
+export function getTodayKey(reference = new Date(), timeZone = APP_TIMEZONE): DayKey {
+  const localDate = dateKey(reference.toISOString(), timeZone)
+  const day = new Date(`${localDate}T12:00:00Z`).getUTCDay()
   return DAY_ORDER[day === 0 ? 6 : day - 1] ?? 'monday'
 }
 
@@ -26,15 +29,18 @@ export interface PlanWeekStatus {
   reason: 'not_started' | 'active' | 'expired'
 }
 
-// "Week N" of a plan, counted from its start date (local midnight).
+// "Week N" of a plan, counted in the product's calendar timezone.
 export function getPlanWeek(
   plan: { start_date: string; weeks: number },
   reference = new Date(),
+  timeZone = APP_TIMEZONE,
 ): PlanWeekStatus {
-  const start = new Date(`${plan.start_date}T00:00:00`)
-  const elapsed = reference.getTime() - start.getTime()
-  if (elapsed < 0) return { active: false, week: null, reason: 'not_started' }
-  const week = Math.floor(elapsed / (7 * 24 * 60 * 60 * 1000)) + 1
+  const startDay = Math.floor(Date.parse(`${plan.start_date}T00:00:00Z`) / 86400000)
+  const today = dateKey(reference.toISOString(), timeZone)
+  const todayDay = Math.floor(Date.parse(`${today}T00:00:00Z`) / 86400000)
+  const elapsedDays = todayDay - startDay
+  if (elapsedDays < 0) return { active: false, week: null, reason: 'not_started' }
+  const week = Math.floor(elapsedDays / 7) + 1
   if (week <= plan.weeks) return { active: true, week, reason: 'active' }
   return { active: false, week: null, reason: 'expired' }
 }

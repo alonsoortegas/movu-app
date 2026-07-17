@@ -11,6 +11,7 @@
       "trends": "Trends",
       "registro": "Log",
       "plan": "My Plan",
+      "nutricion": "Ernährung",
       "perfil": "Profile"
     },
     "cta": "+ Log today"
@@ -20,6 +21,7 @@
     "trends": "Trends",
     "registro": "Log",
     "plan": "My Plan",
+    "nutricion": "Ernährung",
     "perfil": "Profile"
   },
   "localeSwitcher": {
@@ -160,6 +162,7 @@
     },
     "charts": {
       "weight": "Körpergewicht",
+      "phaseBands": "Trainingsphasen im Zeitraum",
       "weighIns": "Wiegungen",
       "rolling7": "7T-Schnitt",
       "avgRate": "Ø Rate",
@@ -204,7 +207,17 @@
     },
     "whoop": {
       "connectBody": "Verbinde WHOOP oder synchronisiere Apple Health, um Erholung, HRV und Strain zu sehen.",
-      "connectCta": "Im Profil verbinden"
+      "connectCta": "WHOOP verbinden",
+      "notConnected": "WHOOP nicht verbunden",
+      "connected": "WHOOP verbunden",
+      "connectedBody": "Synchronisiere jederzeit die letzten 30 Tage, um deine Trends zu aktualisieren.",
+      "reauthRequired": "WHOOP muss neu verbunden werden",
+      "reauthBody": "Die Sitzung ist abgelaufen und kann nicht automatisch erneuert werden.",
+      "reconnectCta": "Neu verbinden",
+      "syncCta": "Jetzt synchronisieren",
+      "syncing": "Synchronisieren…",
+      "synced": "Daten aktualisiert",
+      "syncFailed": "Synchronisierung fehlgeschlagen"
     },
     "emptyV2": {
       "noWeight": "Noch nicht genug Wiegungen — erfasse dein Gewicht im Profil.",
@@ -244,6 +257,7 @@
       "logSet": "Satz {set} loggen",
       "setRow": "Satz {set}",
       "lastSet": "Letztes Mal: {weight} kg × {reps}",
+      "recentHistory": "Letzte Einträge",
       "applySuggestion": "{weight} kg übernehmen",
       "progressionHint": "Vorschlag: erhöhe auf {weight} kg",
       "invalidWeight": "Ungültiges Gewicht",
@@ -412,6 +426,8 @@
     "copyPlaceholder": "z.B. 2,3,4",
     "copyCta": "Kopieren",
     "addSession": "Einheit hinzufügen",
+    "editSession": "Bearbeiten",
+    "saveSession": "Einheit speichern",
     "addExercise": "Übung hinzufügen",
     "saveExercise": "Übung speichern",
     "cancel": "Abbrechen",
@@ -435,12 +451,15 @@
       "name": "Planname",
       "weeks": "Wochen",
       "active": "Aktiv",
+      "planNotes": "Notizen zum Plan",
       "sessionTitle": "Titel der Einheit",
+      "sessionNotes": "Notizen zur Einheit",
       "exerciseName": "Übungsname",
       "sets": "Sätze",
       "reps": "Wdh",
       "rest": "Pause s",
       "superset": "Supersatz",
+      "isometric": "Isometrisch",
       "notes": "Notizen"
     },
     "errors": {
@@ -450,6 +469,159 @@
       "delete": "Löschen fehlgeschlagen",
       "copyTargets": "Ungültige Zielwochen",
       "copyFailed": "Woche konnte nicht kopiert werden"
+    }
+  },
+  "nutrition": {
+    "title": "Ernährung",
+    "subtitle": "Heutige Ziele, Mahlzeiten und Alternativen",
+    "dayType": {
+      "hard": "Intensiver Tag",
+      "moderate": "Moderater Tag",
+      "rest": "Ruhetag"
+    },
+    "noTargets": {
+      "title": "Ziele festlegen",
+      "body": "Lege Kalorien und Makros für intensive, moderate und Ruhetage fest, bevor du Mahlzeiten erfasst.",
+      "action": "Ziele festlegen"
+    },
+    "macros": {
+      "protein": "Protein",
+      "carbs": "Kohlenhydrate",
+      "fat": "Fett"
+    },
+    "remaining": "Noch {kcal} kcal und {protein} g Protein",
+    "overTarget": "{kcal} kcal über dem Ziel",
+    "openCatalog": "Katalog und Ziele bearbeiten",
+    "logger": {
+      "title": "Mahlzeit erfassen",
+      "meals": {
+        "breakfast": "Frühstück",
+        "midday": "Mittagessen",
+        "pre_workout": "Vor dem Training",
+        "post_workout": "Nach dem Training",
+        "dinner": "Abendessen",
+        "snack": "Snack"
+      },
+      "mode": {
+        "catalog": "Katalog",
+        "custom": "Freier Eintrag"
+      },
+      "emptyCatalog": "Dein Katalog ist leer. Füge Lebensmittel hinzu oder nutze einen freien Eintrag.",
+      "pickFood": "Lebensmittel oder Portion wählen",
+      "quantity": "Menge",
+      "log": "Mahlzeit erfassen",
+      "logFailed": "Die Mahlzeit konnte nicht erfasst werden",
+      "swapTitle": "Verfügbare Alternativen",
+      "saveAsPortion": "Als übliche Portion speichern",
+      "fields": {
+        "name": "Name",
+        "protein": "Protein",
+        "carbs": "Kohlenh.",
+        "fat": "Fett"
+      },
+      "draftError": {
+        "name": "Name eingeben",
+        "macros": "Makros müssen nichtnegative Zahlen sein",
+        "calories": "Kalorien müssen eine nichtnegative Zahl sein",
+        "empty": "Kalorien oder mindestens ein Makro eingeben"
+      }
+    },
+    "catalog": {
+      "title": "Ernährungskatalog",
+      "subtitle": "Ziele, Lebensmittel und Alternativen verwalten",
+      "back": "Zurück zur Ernährung",
+      "cancel": "Abbrechen",
+      "savedTargets": "Ziele gespeichert",
+      "savedFood": "Lebensmittel gespeichert",
+      "savedGroup": "Austauschgruppe gespeichert",
+      "confirmDeleteFood": "{name} aus dem Katalog entfernen?",
+      "confirmDeleteGroup": "Gruppe {name} löschen?",
+      "dayType": {
+        "hard": "Intensiver Tag",
+        "moderate": "Moderater Tag",
+        "rest": "Ruhetag"
+      },
+      "targets": {
+        "eyebrow": "Tagesziele",
+        "title": "Energie nach Tagestyp",
+        "body": "Ziele werden beim Laden des Tages aufgelöst. Änderungen überschreiben daher nie deinen Verlauf.",
+        "sameEveryDay": "Jeden Tag gleiches Ziel",
+        "everyDay": "Jeden Tag",
+        "save": "Ziele speichern",
+        "fields": {
+          "calories": "kcal",
+          "protein": "Protein g",
+          "carbs": "Kohlenh. g",
+          "fat": "Fett g"
+        }
+      },
+      "foods": {
+        "eyebrow": "Persönlicher Katalog",
+        "title": "Lebensmittel und Portionen",
+        "body": "Speichere häufige Lebensmittel, damit du sie in Sekunden erfassen kannst.",
+        "add": "Lebensmittel hinzufügen",
+        "empty": "Noch keine Lebensmittel. Füge das erste hinzu.",
+        "create": "Lebensmittel erstellen",
+        "save": "Änderungen speichern",
+        "delete": "Lebensmittel löschen",
+        "fields": {
+          "name": "Lebensmittelname",
+          "portion": "Portionsbezeichnung",
+          "grams": "Gramm",
+          "calories": "kcal",
+          "protein_g": "Protein g",
+          "carbs_g": "Kohlenh. g",
+          "fat_g": "Fett g",
+          "notes": "Optionale Notizen"
+        },
+        "category": {
+          "protein": "Protein",
+          "carb": "Kohlenhydrat",
+          "fat": "Fett",
+          "mixed": "Gemischt",
+          "veg": "Gemüse"
+        },
+        "unit": {
+          "piece": "Stück",
+          "cup": "Tasse",
+          "grams": "Gramm",
+          "scoop": "Messlöffel",
+          "slice": "Scheibe"
+        }
+      },
+      "groups": {
+        "eyebrow": "Äquivalente Portionen",
+        "title": "Austauschgruppen",
+        "body": "Gruppiere Portionen mit ähnlichen Makros für Alternativen beim Erfassen.",
+        "add": "Neue Gruppe",
+        "empty": "Erstelle eine Gruppe, sobald du mindestens zwei austauschbare Lebensmittel hast.",
+        "create": "Gruppe erstellen",
+        "save": "Gruppe speichern",
+        "delete": "Gruppe löschen",
+        "pickFoods": "Gleichwertige Lebensmittel auswählen",
+        "macro": {
+          "carb": "Kohlenhydrat",
+          "protein": "Protein"
+        },
+        "fields": {
+          "name": "Gruppenname",
+          "target": "Zielmakro g",
+          "notes": "Optionale Notizen",
+          "quantity": "Menge",
+          "label": "Bezeichnung"
+        }
+      },
+      "errors": {
+        "invalidTargets": "Alle Ziele mit gültigen Werten ausfüllen",
+        "saveTargets": "Ziele konnten nicht gespeichert werden",
+        "foodRequired": "Name und Portion sind erforderlich",
+        "saveFood": "Lebensmittel konnte nicht gespeichert werden",
+        "deleteFood": "Lebensmittel konnte nicht gelöscht werden",
+        "groupRequired": "Name und gültiges Zielmakro eingeben",
+        "invalidGroupItems": "Jede Alternative benötigt eine gültige Menge und Bezeichnung",
+        "saveGroup": "Gruppe konnte nicht gespeichert werden",
+        "deleteGroup": "Gruppe konnte nicht gelöscht werden"
+      }
     }
   }
 }

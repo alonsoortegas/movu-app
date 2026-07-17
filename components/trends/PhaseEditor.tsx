@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import type { PhaseKind } from '@/lib/trends/compute'
+import { dateKey, selectActivePhase, type PhaseKind } from '@/lib/trends/compute'
 
 interface PhaseRow {
   id: string
@@ -20,12 +20,12 @@ export default function PhaseEditor({ phases }: { phases: PhaseRow[] }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [kind, setKind] = useState<PhaseKind>('bulk')
-  const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const [startDate, setStartDate] = useState(() => dateKey(new Date().toISOString()))
   const [targetRate, setTargetRate] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const current = phases.find((p) => p.end_date == null)
+  const current = selectActivePhase(phases, dateKey(new Date().toISOString()))
 
   async function startPhase() {
     setBusy(true)
@@ -53,7 +53,7 @@ export default function PhaseEditor({ phases }: { phases: PhaseRow[] }) {
     const res = await fetch(`/api/phases/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ end_date: new Date().toISOString().slice(0, 10) }),
+      body: JSON.stringify({ end_date: dateKey(new Date().toISOString()) }),
     })
     setBusy(false)
     if (res.ok) router.refresh()

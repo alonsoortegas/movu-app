@@ -5,18 +5,28 @@ import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import type { Database } from '@/types/database'
 import { DAY_ORDER, type DayKey } from '@/lib/workout/logic'
+import { dateKey } from '@/lib/trends/compute'
 
 type Plan = Database['public']['Tables']['workout_plans']['Row']
 type Session = Database['public']['Tables']['workout_plan_sessions']['Row']
 type Exercise = Database['public']['Tables']['workout_plan_exercises']['Row']
 
 const SESSION_TYPES = ['strength', 'activation', 'cardio', 'other'] as const
+const todayDate = () => dateKey(new Date().toISOString())
 
 interface PlanMetaForm {
   name: string
   start_date: string
   weeks: string
   active: boolean
+  notes: string
+}
+
+interface SessionForm {
+  day_of_week: DayKey
+  title: string
+  session_type: string
+  notes: string
 }
 
 interface ExerciseForm {
@@ -27,6 +37,7 @@ interface ExerciseForm {
   target_rpe: string
   rest_seconds: string
   superset_group: string
+  is_isometric: boolean
   notes: string
 }
 
@@ -38,6 +49,14 @@ const EMPTY_EXERCISE_FORM: ExerciseForm = {
   target_rpe: '',
   rest_seconds: '',
   superset_group: '',
+  is_isometric: false,
+  notes: '',
+}
+
+const EMPTY_SESSION_FORM: SessionForm = {
+  day_of_week: 'monday',
+  title: '',
+  session_type: 'strength',
   notes: '',
 }
 
@@ -58,14 +77,16 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
   const [metaOpen, setMetaOpen] = useState(initialPlans.length === 0)
   const [metaForm, setMetaForm] = useState<PlanMetaForm>({
     name: '',
-    start_date: new Date().toISOString().slice(0, 10),
+    start_date: todayDate(),
     weeks: '8',
     active: true,
+    notes: '',
   })
   const [metaMode, setMetaMode] = useState<'create' | 'edit'>('create')
 
-  const [sessionForm, setSessionForm] = useState({ day_of_week: 'monday' as DayKey, title: '', session_type: 'strength' })
+  const [sessionForm, setSessionForm] = useState<SessionForm>(EMPTY_SESSION_FORM)
   const [sessionFormOpen, setSessionFormOpen] = useState(false)
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null)
 
   const [exerciseForm, setExerciseForm] = useState<ExerciseForm>(EMPTY_EXERCISE_FORM)
   const [exerciseFormSession, setExerciseFormSession] = useState<string | null>(null)
@@ -103,6 +124,7 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
       start_date: metaForm.start_date,
       weeks: Number(metaForm.weeks),
       active: metaForm.active,
+      notes: metaForm.notes || null,
     }
     const res =
       metaMode === 'create'
@@ -127,22 +149,22 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
 
   function openCreateMeta() {
     setMetaMode('create')
-    setMetaForm({ name: '', start_date: new Date().toISOString().slice(0, 10), weeks: '8', active: true })
+    setMetaForm({ name: '', start_date: todayDate(), weeks: '8', active: true, notes: '' })
     setMetaOpen(true)
   }
 
   function openEditMeta() {
     if (!plan) return
     setMetaMode('edit')
-    setMetaForm({ name: plan.name, start_date: plan.start_date, weeks: String(plan.weeks), active: plan.active })
+    setMetaForm({ name: plan.name, start_date: plan.start_date, weeks: String(plan.weeks), active: plan.active, notes: plan.notes ?? '' })
     setMetaOpen(true)
   }
 
-  async function addSession() {
+  async function saveSession() {
     if (!plan || busy) return
     setBusy(true)
-    const res = await fetch('/api/plan/sessions', {
-      method: 'POST',
+    const res = await fetch(editingSessionId ? `/api/plan/sessions/${editingSessionId}` : '/api/plan/sessions', {
+      method: editingSessionId ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         plan_id: plan.id,
@@ -150,6 +172,7 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
         day_of_week: sessionForm.day_of_week,
         title: sessionForm.title,
         session_type: sessionForm.session_type,
+        notes: sessionForm.notes || null,
       }),
     })
     setBusy(false)
@@ -158,9 +181,21 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
       return
     }
     const { session } = await res.json()
-    setSessions((prev) => [...prev, session])
-    setSessionForm({ day_of_week: 'monday', title: '', session_type: 'strength' })
+    setSessions((prev) => editingSessionId ? prev.map((item) => item.id === session.id ? session : item) : [...prev, session])
+    setSessionForm(EMPTY_SESSION_FORM)
     setSessionFormOpen(false)
+    setEditingSessionId(null)
+  }
+
+  function startEditSession(session: Session) {
+    setEditingSessionId(session.id)
+    setSessionForm({
+      day_of_week: session.day_of_week as DayKey,
+      title: session.title,
+      session_type: session.session_type,
+      notes: session.notes ?? '',
+    })
+    setSessionFormOpen(true)
   }
 
   async function deleteSession(id: string) {
@@ -185,6 +220,7 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
       target_rpe: exerciseForm.target_rpe || null,
       rest_seconds: exerciseForm.rest_seconds || null,
       superset_group: exerciseForm.superset_group || null,
+      is_isometric: exerciseForm.is_isometric,
       notes: exerciseForm.notes || null,
       order_index: editingExerciseId
         ? undefined
@@ -218,6 +254,7 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
       target_rpe: ex.target_rpe ?? '',
       rest_seconds: ex.rest_seconds != null ? String(ex.rest_seconds) : '',
       superset_group: ex.superset_group != null ? String(ex.superset_group) : '',
+      is_isometric: ex.is_isometric,
       notes: ex.notes ?? '',
     })
   }
@@ -355,6 +392,12 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
                 {t('fields.active')}
               </label>
             </div>
+            <input
+              value={metaForm.notes}
+              onChange={(e) => setMetaForm((f) => ({ ...f, notes: e.target.value }))}
+              placeholder={t('fields.planNotes')}
+              className={`${inputCls} w-full`}
+            />
             <button onClick={saveMeta} disabled={busy || !metaForm.name.trim()} className="btn-accent w-full rounded-lg px-3 py-2 text-xs font-bold disabled:opacity-60">
               {metaMode === 'create' ? t('createPlan') : t('savePlan')}
             </button>
@@ -414,10 +457,12 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
                     </div>
                     <div className="text-sm font-bold text-[var(--text)]">{session.title}</div>
                   </div>
-                  <button onClick={() => deleteSession(session.id)} className={smallBtn}>
-                    ✕
-                  </button>
+                  <div className="flex gap-1.5">
+                    <button onClick={() => startEditSession(session)} className={smallBtn}>{t('editSession')}</button>
+                    <button onClick={() => deleteSession(session.id)} className={smallBtn}>✕</button>
+                  </div>
                 </div>
+                {session.notes && <p className="mt-2 text-xs text-muted">{session.notes}</p>}
 
                 <div className="mt-3 space-y-1.5">
                   {sessionExercises.map((ex, idx) => (
@@ -430,6 +475,7 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
                             ex.prescribed_weight_kg != null ? `${ex.prescribed_weight_kg} kg` : null,
                             ex.target_rpe ? `RPE ${ex.target_rpe}` : null,
                             ex.superset_group != null ? `SS${ex.superset_group}` : null,
+                            ex.is_isometric ? t('fields.isometric') : null,
                           ]
                             .filter(Boolean)
                             .join(' · ')}
@@ -472,6 +518,14 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
                       placeholder={t('fields.notes')}
                       className={`${inputCls} w-full`}
                     />
+                    <label className="data flex items-center gap-2 text-[11px] text-[var(--text-dim)]">
+                      <input
+                        type="checkbox"
+                        checked={exerciseForm.is_isometric}
+                        onChange={(e) => setExerciseForm((f) => ({ ...f, is_isometric: e.target.checked }))}
+                      />
+                      {t('fields.isometric')}
+                    </label>
                     <div className="flex gap-2">
                       <button
                         onClick={() => saveExercise(session.id)}
@@ -542,17 +596,23 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
                   placeholder={t('fields.sessionTitle')}
                   className={`${inputCls} w-full`}
                 />
+                <input
+                  value={sessionForm.notes}
+                  onChange={(e) => setSessionForm((f) => ({ ...f, notes: e.target.value }))}
+                  placeholder={t('fields.sessionNotes')}
+                  className={`${inputCls} w-full`}
+                />
                 <div className="flex gap-2">
-                  <button onClick={addSession} disabled={busy || !sessionForm.title.trim()} className="btn-accent flex-1 rounded-lg px-3 py-2 text-xs font-bold disabled:opacity-60">
-                    {t('addSession')}
+                  <button onClick={saveSession} disabled={busy || !sessionForm.title.trim()} className="btn-accent flex-1 rounded-lg px-3 py-2 text-xs font-bold disabled:opacity-60">
+                    {editingSessionId ? t('saveSession') : t('addSession')}
                   </button>
-                  <button onClick={() => setSessionFormOpen(false)} className={smallBtn}>
+                  <button onClick={() => { setSessionFormOpen(false); setEditingSessionId(null); setSessionForm(EMPTY_SESSION_FORM) }} className={smallBtn}>
                     {t('cancel')}
                   </button>
                 </div>
               </div>
             ) : (
-              <button onClick={() => setSessionFormOpen(true)} className={smallBtn}>
+              <button onClick={() => { setEditingSessionId(null); setSessionForm(EMPTY_SESSION_FORM); setSessionFormOpen(true) }} className={smallBtn}>
                 + {t('addSession')}
               </button>
             )}

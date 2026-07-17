@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 function LoginForm() {
@@ -77,7 +78,7 @@ export default function LoginPage() {
         </Suspense>
         <p className="text-center text-sm text-[var(--text-faint)] mt-6">
           Don&apos;t have an account?{" "}
-          <a href="/signup" className="text-accent font-medium hover:underline">Sign up</a>
+          <Link href="/signup" className="text-accent font-medium hover:underline">Sign up</Link>
         </p>
       </div>
     </div>

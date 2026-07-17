@@ -47,6 +47,7 @@ export default function PlanWeekView({
   sessions,
   exercises,
   lastSets,
+  historyLogs,
   todayLogs,
 }: {
   plan: Plan
@@ -54,6 +55,7 @@ export default function PlanWeekView({
   sessions: Session[]
   exercises: Exercise[]
   lastSets: Record<string, SetLog>
+  historyLogs: SetLog[]
   todayLogs: SetLog[]
 }) {
   const t = useTranslations('plan')
@@ -224,6 +226,9 @@ export default function PlanWeekView({
               const s = states[ex.id]
               if (!s) return null
               const last = lastSets[ex.exercise_name]
+              const recentHistory = historyLogs
+                .filter((log) => log.exercise_name === ex.exercise_name)
+                .slice(0, 4)
               const suggestion = getProgressionSuggestion(
                 ex.prescribed_reps,
                 last ? { weight_kg: last.weight_kg, reps: last.reps } : undefined,
@@ -283,6 +288,26 @@ export default function PlanWeekView({
                               {t('logger.applySuggestion', { weight: suggestion })}
                             </button>
                           )}
+                        </div>
+                      )}
+
+                      {recentHistory.length > 0 && (
+                        <div className="rounded-xl border border-[var(--border)] p-2.5">
+                          <div className="data mb-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-muted">
+                            {t('logger.recentHistory')}
+                          </div>
+                          <div className="space-y-1">
+                            {recentHistory.map((log) => (
+                              <div key={log.id} className="data flex items-center justify-between gap-2 text-[10px] text-[var(--text-dim)]">
+                                <span>
+                                  {new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', timeZone: 'America/Mexico_City' }).format(new Date(log.logged_at))}
+                                </span>
+                                <span className="font-semibold text-[var(--text)]">
+                                  {log.weight_kg ?? 0} kg × {log.reps ?? 0} · RPE {log.rpe ?? '—'}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
 

@@ -98,6 +98,14 @@ describe('getPlanWeek', () => {
       reason: 'expired',
     })
   })
+
+  it('uses the Mexico City calendar day at the UTC boundary', () => {
+    expect(getPlanWeek({ start_date: '2026-07-20', weeks: 4 }, new Date('2026-07-20T04:30:00Z'))).toEqual({
+      active: false,
+      week: null,
+      reason: 'not_started',
+    })
+  })
 })
 
 describe('day helpers', () => {
@@ -109,6 +117,10 @@ describe('day helpers', () => {
   it('maps JS Sunday to sunday', () => {
     expect(getTodayKey(new Date('2026-07-19T12:00:00'))).toBe('sunday') // a Sunday
     expect(getTodayKey(new Date('2026-07-17T12:00:00'))).toBe('friday')
+  })
+
+  it('keeps late Sunday in Mexico City on Sunday after UTC has crossed midnight', () => {
+    expect(getTodayKey(new Date('2026-07-20T04:30:00Z'))).toBe('sunday')
   })
 
   it('exposes the RPE picker options', () => {

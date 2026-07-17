@@ -315,3 +315,51 @@ UserProfile
   □ dataSource    [M/W/AH] Active preferred data source; HealthKit sync only sets this from null/manual
   □ healthkitLastSyncAt [AH] Server-side incremental sync anchor
 ```
+
+---
+
+## Productized workout, nutrition, and training-phase tables
+
+Migration: `supabase/migrations/20260717130000_lifeos_port.sql`.
+
+All top-level rows are scoped to `user_profiles.id`, cascade when the user is
+deleted, and are protected by owner-only RLS. Join rows inherit ownership through
+their parent group or meal log.
+
+### Workout planning and logging
+
+| Table | Purpose | Key relationships |
+|---|---|---|
+| `workout_plans` | User-authored multi-week plans and active-plan state | `user_id → user_profiles.id` |
+| `workout_plan_sessions` | Day/session definitions for each plan week | `plan_id → workout_plans.id` |
+| `workout_plan_exercises` | Ordered prescriptions, RPE, rest, supersets, and isometrics | `session_id → workout_plan_sessions.id` |
+| `workout_set_logs` | Historical kg/reps/RPE entries used by progression and strength trends | Optional `exercise_id → workout_plan_exercises.id` |
+
+Weights are stored in kilograms. Exercise names are denormalized into set logs so
+history survives plan edits or deletion.
+
+### Nutrition
+
+| Table | Purpose | Key relationships |
+|---|---|---|
+| `food_items` | Per-user food and macro catalog | `user_id → user_profiles.id` |
+| `saved_food_portions` | Reusable ad-hoc portions normalized by name | `user_id → user_profiles.id` |
+| `food_substitution_groups` | Protein or carbohydrate equivalence groups | `user_id → user_profiles.id` |
+| `food_substitution_group_items` | Portion-sized foods offered as logging swaps | Parent group and `food_item_id → food_items.id` |
+| `nutrition_targets` | Hard, moderate, and rest-day macro targets | Unique `(user_id, day_type)` |
+| `nutrition_days` | Day-type selection for a calendar date | Unique `(user_id, date)` |
+| `meal_logs` | Meal container by date and meal slot | `user_id → user_profiles.id` |
+| `meal_log_items` | Denormalized macros captured at log time | `meal_log_id → meal_logs.id`; optional food item |
+
+Targets are resolved at read time from `nutrition_days.day_type`; historical meal
+macros are never recalculated after catalog edits.
+
+### Trends
+
+| Table | Purpose | Key relationships |
+|---|---|---|
+| `training_phases` | Bulk, cut, and maintenance periods with target weekly rate | `user_id → user_profiles.id` |
+
+The trends page combines these rows with existing `body_measurements`,
+`daily_metrics`, `sleep_logs`, and `activities`. Calendar bucketing uses
+`America/Mexico_City`.

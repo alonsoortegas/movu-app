@@ -10,6 +10,7 @@
       "trends": "Trends",
       "registro": "Log",
       "plan": "My Plan",
+      "nutricion": "Nutrition",
       "perfil": "Profile"
     },
     "cta": "+ Log today"
@@ -19,6 +20,7 @@
     "trends": "Trends",
     "registro": "Log",
     "plan": "My Plan",
+    "nutricion": "Nutrition",
     "perfil": "Profile"
   },
   "localeSwitcher": {
@@ -159,6 +161,7 @@
     },
     "charts": {
       "weight": "Body weight",
+      "phaseBands": "Training phases in range",
       "weighIns": "Weigh-ins",
       "rolling7": "7d rolling",
       "avgRate": "Avg rate",
@@ -203,7 +206,17 @@
     },
     "whoop": {
       "connectBody": "Connect WHOOP or sync Apple Health to see recovery, HRV, and strain here.",
-      "connectCta": "Connect in profile"
+      "connectCta": "Connect WHOOP",
+      "notConnected": "WHOOP not connected",
+      "connected": "WHOOP connected",
+      "connectedBody": "Sync the last 30 days whenever you want to refresh your trends.",
+      "reauthRequired": "WHOOP needs to reconnect",
+      "reauthBody": "The session expired and cannot refresh automatically.",
+      "reconnectCta": "Reconnect",
+      "syncCta": "Sync now",
+      "syncing": "Syncing…",
+      "synced": "Data refreshed",
+      "syncFailed": "Sync failed"
     },
     "emptyV2": {
       "noWeight": "Not enough weigh-ins yet — log your weight in your profile.",
@@ -243,6 +256,7 @@
       "logSet": "Log set {set}",
       "setRow": "Set {set}",
       "lastSet": "Last time: {weight} kg × {reps}",
+      "recentHistory": "Recent history",
       "applySuggestion": "Use {weight} kg",
       "progressionHint": "Suggestion: go up to {weight} kg",
       "invalidWeight": "Invalid weight",
@@ -411,6 +425,8 @@
     "copyPlaceholder": "e.g. 2,3,4",
     "copyCta": "Copy",
     "addSession": "Add session",
+    "editSession": "Edit",
+    "saveSession": "Save session",
     "addExercise": "Add exercise",
     "saveExercise": "Save exercise",
     "cancel": "Cancel",
@@ -434,12 +450,15 @@
       "name": "Plan name",
       "weeks": "Weeks",
       "active": "Active",
+      "planNotes": "Plan notes",
       "sessionTitle": "Session title",
+      "sessionNotes": "Session notes",
       "exerciseName": "Exercise name",
       "sets": "Sets",
       "reps": "Reps",
       "rest": "Rest s",
       "superset": "Superset",
+      "isometric": "Isometric",
       "notes": "Notes"
     },
     "errors": {
@@ -449,6 +468,159 @@
       "delete": "Could not delete",
       "copyTargets": "Invalid target weeks",
       "copyFailed": "Could not copy the week"
+    }
+  },
+  "nutrition": {
+    "title": "Nutrition",
+    "subtitle": "Today's targets, meals, and food swaps",
+    "dayType": {
+      "hard": "Hard day",
+      "moderate": "Moderate day",
+      "rest": "Rest day"
+    },
+    "noTargets": {
+      "title": "Set your targets",
+      "body": "Define calories and macros for hard, moderate, and rest days before logging meals.",
+      "action": "Set targets"
+    },
+    "macros": {
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat"
+    },
+    "remaining": "{kcal} kcal and {protein} g protein remaining",
+    "overTarget": "{kcal} kcal over target",
+    "openCatalog": "Edit catalog and targets",
+    "logger": {
+      "title": "Log a meal",
+      "meals": {
+        "breakfast": "Breakfast",
+        "midday": "Lunch",
+        "pre_workout": "Pre-workout",
+        "post_workout": "Post-workout",
+        "dinner": "Dinner",
+        "snack": "Snack"
+      },
+      "mode": {
+        "catalog": "Catalog",
+        "custom": "Custom entry"
+      },
+      "emptyCatalog": "Your catalog is empty. Add foods or use a custom entry.",
+      "pickFood": "Choose a food or portion",
+      "quantity": "Quantity",
+      "log": "Log meal",
+      "logFailed": "The meal could not be logged",
+      "swapTitle": "Available swaps",
+      "saveAsPortion": "Save as a usual portion",
+      "fields": {
+        "name": "Name",
+        "protein": "Protein",
+        "carbs": "Carbs",
+        "fat": "Fat"
+      },
+      "draftError": {
+        "name": "Add a name",
+        "macros": "Macros must be non-negative numbers",
+        "calories": "Calories must be a non-negative number",
+        "empty": "Add calories or at least one macro"
+      }
+    },
+    "catalog": {
+      "title": "Nutrition catalog",
+      "subtitle": "Set your targets, foods, and swaps",
+      "back": "Back to nutrition",
+      "cancel": "Cancel",
+      "savedTargets": "Targets saved",
+      "savedFood": "Food saved",
+      "savedGroup": "Swap group saved",
+      "confirmDeleteFood": "Remove {name} from your catalog?",
+      "confirmDeleteGroup": "Delete the {name} group?",
+      "dayType": {
+        "hard": "Hard day",
+        "moderate": "Moderate day",
+        "rest": "Rest day"
+      },
+      "targets": {
+        "eyebrow": "Daily targets",
+        "title": "Fuel by day type",
+        "body": "Targets are resolved when each day is read, so changing them never rewrites your history.",
+        "sameEveryDay": "Same target every day",
+        "everyDay": "Every day",
+        "save": "Save targets",
+        "fields": {
+          "calories": "kcal",
+          "protein": "Protein g",
+          "carbs": "Carbs g",
+          "fat": "Fat g"
+        }
+      },
+      "foods": {
+        "eyebrow": "Personal catalog",
+        "title": "Foods and portions",
+        "body": "Save foods you repeat so they take seconds to log.",
+        "add": "Add food",
+        "empty": "No foods yet. Add your first one to get started.",
+        "create": "Create food",
+        "save": "Save changes",
+        "delete": "Delete food",
+        "fields": {
+          "name": "Food name",
+          "portion": "Portion label",
+          "grams": "Grams",
+          "calories": "kcal",
+          "protein_g": "Protein g",
+          "carbs_g": "Carbs g",
+          "fat_g": "Fat g",
+          "notes": "Optional notes"
+        },
+        "category": {
+          "protein": "Protein",
+          "carb": "Carbohydrate",
+          "fat": "Fat",
+          "mixed": "Mixed",
+          "veg": "Vegetable"
+        },
+        "unit": {
+          "piece": "Piece",
+          "cup": "Cup",
+          "grams": "Grams",
+          "scoop": "Scoop",
+          "slice": "Slice"
+        }
+      },
+      "groups": {
+        "eyebrow": "Equivalences",
+        "title": "Substitution groups",
+        "body": "Group portions with similar macros to offer swaps while logging.",
+        "add": "New group",
+        "empty": "Create a group when you have at least two interchangeable foods.",
+        "create": "Create group",
+        "save": "Save group",
+        "delete": "Delete group",
+        "pickFoods": "Select equivalent foods",
+        "macro": {
+          "carb": "Carbohydrate",
+          "protein": "Protein"
+        },
+        "fields": {
+          "name": "Group name",
+          "target": "Target macro g",
+          "notes": "Optional notes",
+          "quantity": "Quantity",
+          "label": "Label"
+        }
+      },
+      "errors": {
+        "invalidTargets": "Complete every target with valid values",
+        "saveTargets": "Targets could not be saved",
+        "foodRequired": "Food name and portion are required",
+        "saveFood": "Food could not be saved",
+        "deleteFood": "Food could not be deleted",
+        "groupRequired": "Add a name and valid target macro",
+        "invalidGroupItems": "Every swap needs a valid quantity and label",
+        "saveGroup": "Group could not be saved",
+        "deleteGroup": "Group could not be deleted"
+      }
     }
   }
 }

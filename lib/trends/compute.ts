@@ -9,6 +9,15 @@ export const APP_TIMEZONE = 'America/Mexico_City'
 // ── Phase constants ───────────────────────────────────────────────────────────
 export type PhaseKind = 'bulk' | 'cut' | 'maintenance'
 
+export function selectActivePhase<T extends { start_date: string; end_date: string | null }>(
+  phases: T[],
+  todayKey: string,
+): T | null {
+  return [...phases]
+    .filter((phase) => phase.start_date <= todayKey && (phase.end_date == null || phase.end_date >= todayKey))
+    .sort((a, b) => b.start_date.localeCompare(a.start_date))[0] ?? null
+}
+
 export interface TrainingPhase {
   phase: PhaseKind
   started_on: string
@@ -41,6 +50,37 @@ function formatterFor(timeZone: string): Intl.DateTimeFormat {
 
 export function dateKey(iso: string, timeZone: string = APP_TIMEZONE): string {
   return formatterFor(timeZone).format(new Date(iso))
+}
+
+function timeZoneOffsetMs(instantMs: number, timeZone: string): number {
+  const part = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    timeZoneName: 'longOffset',
+  })
+    .formatToParts(new Date(instantMs))
+    .find((candidate) => candidate.type === 'timeZoneName')?.value
+  const match = part?.match(/^GMT([+-])(\d{2}):(\d{2})$/)
+  if (!match) return 0
+  const minutes = Number(match[2]) * 60 + Number(match[3])
+  return (match[1] === '+' ? 1 : -1) * minutes * 60000
+}
+
+function zonedMidnightUtc(key: string, timeZone: string): string {
+  const wallClockMs = Date.parse(`${key}T00:00:00Z`)
+  let instantMs = wallClockMs - timeZoneOffsetMs(wallClockMs, timeZone)
+  // Re-evaluate at the candidate instant so offset transitions are respected.
+  instantMs = wallClockMs - timeZoneOffsetMs(instantMs, timeZone)
+  return new Date(instantMs).toISOString()
+}
+
+export function dayRangeUtc(key: string, timeZone: string = APP_TIMEZONE): { start: string; end: string } {
+  const next = new Date(`${key}T12:00:00Z`)
+  next.setUTCDate(next.getUTCDate() + 1)
+  const nextKey = next.toISOString().slice(0, 10)
+  return {
+    start: zonedMidnightUtc(key, timeZone),
+    end: zonedMidnightUtc(nextKey, timeZone),
+  }
 }
 
 function dayNumber(key: string): number {

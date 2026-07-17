@@ -10,6 +10,7 @@
       "trends": "Tendencias",
       "registro": "Registro",
       "plan": "Mi Plan",
+      "nutricion": "Nutrición",
       "perfil": "Perfil"
     },
     "cta": "+ Registrar hoy"
@@ -19,6 +20,7 @@
     "trends": "Tendencias",
     "registro": "Registrar",
     "plan": "Mi Plan",
+    "nutricion": "Nutrición",
     "perfil": "Perfil"
   },
   "localeSwitcher": {
@@ -159,6 +161,7 @@
     },
     "charts": {
       "weight": "Peso corporal",
+      "phaseBands": "Fases de entrenamiento en el rango",
       "weighIns": "Pesajes",
       "rolling7": "Promedio 7d",
       "avgRate": "Ritmo promedio",
@@ -203,7 +206,17 @@
     },
     "whoop": {
       "connectBody": "Conecta WHOOP o sincroniza Apple Health para ver recuperación, HRV y strain aquí.",
-      "connectCta": "Conectar en perfil"
+      "connectCta": "Conectar WHOOP",
+      "notConnected": "WHOOP no conectado",
+      "connected": "WHOOP conectado",
+      "connectedBody": "Sincroniza los últimos 30 días cuando quieras actualizar tus tendencias.",
+      "reauthRequired": "WHOOP necesita reconexión",
+      "reauthBody": "La sesión venció y no se puede renovar automáticamente.",
+      "reconnectCta": "Reconectar",
+      "syncCta": "Sincronizar",
+      "syncing": "Sincronizando…",
+      "synced": "Datos actualizados",
+      "syncFailed": "No se pudo sincronizar"
     },
     "emptyV2": {
       "noWeight": "Aún no hay suficientes pesajes — registra tu peso en el perfil.",
@@ -243,6 +256,7 @@
       "logSet": "Registrar serie {set}",
       "setRow": "Serie {set}",
       "lastSet": "Última vez: {weight} kg × {reps}",
+      "recentHistory": "Historial reciente",
       "applySuggestion": "Usar {weight} kg",
       "progressionHint": "Sugerencia: sube a {weight} kg",
       "invalidWeight": "Peso inválido",
@@ -411,6 +425,8 @@
     "copyPlaceholder": "p.ej. 2,3,4",
     "copyCta": "Copiar",
     "addSession": "Agregar sesión",
+    "editSession": "Editar",
+    "saveSession": "Guardar sesión",
     "addExercise": "Agregar ejercicio",
     "saveExercise": "Guardar ejercicio",
     "cancel": "Cancelar",
@@ -434,12 +450,15 @@
       "name": "Nombre del plan",
       "weeks": "Semanas",
       "active": "Activo",
+      "planNotes": "Notas del plan",
       "sessionTitle": "Título de la sesión",
+      "sessionNotes": "Notas de la sesión",
       "exerciseName": "Nombre del ejercicio",
       "sets": "Series",
       "reps": "Reps",
       "rest": "Descanso s",
       "superset": "Superserie",
+      "isometric": "Isométrico",
       "notes": "Notas"
     },
     "errors": {
@@ -449,6 +468,159 @@
       "delete": "No se pudo eliminar",
       "copyTargets": "Semanas destino inválidas",
       "copyFailed": "No se pudo copiar la semana"
+    }
+  },
+  "nutrition": {
+    "title": "Nutrición",
+    "subtitle": "Objetivos, comidas y equivalencias de hoy",
+    "dayType": {
+      "hard": "Día intenso",
+      "moderate": "Día moderado",
+      "rest": "Descanso"
+    },
+    "noTargets": {
+      "title": "Configura tus objetivos",
+      "body": "Define calorías y macros para días intensos, moderados y de descanso antes de registrar comidas.",
+      "action": "Configurar objetivos"
+    },
+    "macros": {
+      "protein": "Proteína",
+      "carbs": "Carbohidratos",
+      "fat": "Grasa"
+    },
+    "remaining": "Te quedan {kcal} kcal y {protein} g de proteína",
+    "overTarget": "Vas {kcal} kcal por encima del objetivo",
+    "openCatalog": "Editar catálogo y objetivos",
+    "logger": {
+      "title": "Registrar comida",
+      "meals": {
+        "breakfast": "Desayuno",
+        "midday": "Comida",
+        "pre_workout": "Pre-entreno",
+        "post_workout": "Post-entreno",
+        "dinner": "Cena",
+        "snack": "Snack"
+      },
+      "mode": {
+        "catalog": "Catálogo",
+        "custom": "Entrada libre"
+      },
+      "emptyCatalog": "Tu catálogo está vacío. Agrega alimentos o usa una entrada libre.",
+      "pickFood": "Elegir alimento o porción",
+      "quantity": "Cantidad",
+      "log": "Registrar",
+      "logFailed": "No se pudo registrar la comida",
+      "swapTitle": "Equivalencias disponibles",
+      "saveAsPortion": "Guardar como porción habitual",
+      "fields": {
+        "name": "Nombre",
+        "protein": "Prot.",
+        "carbs": "Carb.",
+        "fat": "Grasa"
+      },
+      "draftError": {
+        "name": "Agrega un nombre",
+        "macros": "Los macros deben ser números positivos",
+        "calories": "Las calorías deben ser un número positivo",
+        "empty": "Agrega calorías o al menos un macro"
+      }
+    },
+    "catalog": {
+      "title": "Catálogo de nutrición",
+      "subtitle": "Define tus objetivos, alimentos y equivalencias",
+      "back": "Volver a nutrición",
+      "cancel": "Cancelar",
+      "savedTargets": "Objetivos guardados",
+      "savedFood": "Alimento guardado",
+      "savedGroup": "Grupo de equivalencias guardado",
+      "confirmDeleteFood": "¿Eliminar {name} del catálogo?",
+      "confirmDeleteGroup": "¿Eliminar el grupo {name}?",
+      "dayType": {
+        "hard": "Día intenso",
+        "moderate": "Día moderado",
+        "rest": "Descanso"
+      },
+      "targets": {
+        "eyebrow": "Objetivos diarios",
+        "title": "Tu combustible por tipo de día",
+        "body": "Los objetivos se resuelven al leer cada día, así que puedes ajustarlos sin cambiar tu historial.",
+        "sameEveryDay": "Mismo objetivo diario",
+        "everyDay": "Todos los días",
+        "save": "Guardar objetivos",
+        "fields": {
+          "calories": "kcal",
+          "protein": "Proteína g",
+          "carbs": "Carbos g",
+          "fat": "Grasa g"
+        }
+      },
+      "foods": {
+        "eyebrow": "Catálogo personal",
+        "title": "Alimentos y porciones",
+        "body": "Guarda los alimentos que repites para registrarlos en segundos.",
+        "add": "Agregar alimento",
+        "empty": "Aún no hay alimentos. Agrega el primero para empezar.",
+        "create": "Crear alimento",
+        "save": "Guardar cambios",
+        "delete": "Eliminar alimento",
+        "fields": {
+          "name": "Nombre del alimento",
+          "portion": "Etiqueta de porción",
+          "grams": "Gramos",
+          "calories": "kcal",
+          "protein_g": "Proteína g",
+          "carbs_g": "Carbos g",
+          "fat_g": "Grasa g",
+          "notes": "Notas opcionales"
+        },
+        "category": {
+          "protein": "Proteína",
+          "carb": "Carbohidrato",
+          "fat": "Grasa",
+          "mixed": "Mixto",
+          "veg": "Verdura"
+        },
+        "unit": {
+          "piece": "Pieza",
+          "cup": "Taza",
+          "grams": "Gramos",
+          "scoop": "Scoop",
+          "slice": "Rebanada"
+        }
+      },
+      "groups": {
+        "eyebrow": "Equivalencias",
+        "title": "Grupos de sustitución",
+        "body": "Agrupa porciones con macros similares para ofrecer cambios al registrar.",
+        "add": "Nuevo grupo",
+        "empty": "Crea un grupo cuando tengas al menos dos alimentos intercambiables.",
+        "create": "Crear grupo",
+        "save": "Guardar grupo",
+        "delete": "Eliminar grupo",
+        "pickFoods": "Selecciona alimentos equivalentes",
+        "macro": {
+          "carb": "Carbohidrato",
+          "protein": "Proteína"
+        },
+        "fields": {
+          "name": "Nombre del grupo",
+          "target": "Macro objetivo g",
+          "notes": "Notas opcionales",
+          "quantity": "Cantidad",
+          "label": "Etiqueta"
+        }
+      },
+      "errors": {
+        "invalidTargets": "Completa todos los objetivos con valores válidos",
+        "saveTargets": "No se pudieron guardar los objetivos",
+        "foodRequired": "El nombre y la porción son obligatorios",
+        "saveFood": "No se pudo guardar el alimento",
+        "deleteFood": "No se pudo eliminar el alimento",
+        "groupRequired": "Agrega un nombre y un macro objetivo válido",
+        "invalidGroupItems": "Cada equivalencia necesita cantidad y etiqueta válidas",
+        "saveGroup": "No se pudo guardar el grupo",
+        "deleteGroup": "No se pudo eliminar el grupo"
+      }
     }
   }
 }

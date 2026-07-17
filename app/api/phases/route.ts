@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { isIsoCalendarDate, isValidPhaseRange } from '@/lib/trends/phases'
 
 const KINDS = ['bulk', 'cut', 'maintenance']
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 
 export async function GET() {
   const supabase = await createClient()
@@ -30,11 +30,14 @@ export async function POST(request: Request) {
   if (!KINDS.includes(kind)) {
     return NextResponse.json({ error: 'kind must be bulk, cut, or maintenance' }, { status: 400 })
   }
-  if (typeof start_date !== 'string' || !DATE_RE.test(start_date)) {
+  if (!isIsoCalendarDate(start_date)) {
     return NextResponse.json({ error: 'start_date must be YYYY-MM-DD' }, { status: 400 })
   }
-  if (end_date != null && (typeof end_date !== 'string' || !DATE_RE.test(end_date))) {
+  if (end_date != null && !isIsoCalendarDate(end_date)) {
     return NextResponse.json({ error: 'end_date must be YYYY-MM-DD' }, { status: 400 })
+  }
+  if (!isValidPhaseRange(start_date, end_date ?? null)) {
+    return NextResponse.json({ error: 'end_date must be on or after start_date' }, { status: 400 })
   }
 
   // An open phase (no end_date) supersedes any previous open phase.

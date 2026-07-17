@@ -6,12 +6,15 @@ import type { Database, HrZones } from '@/types/database'
 import MobilePageIntro from '@/components/mobile/MobilePageIntro'
 import { AxisRow, BarChart, BigSpark, ChartTitle, DualSpark, Legend } from '@/components/charts/charts'
 import PhaseEditor from '@/components/trends/PhaseEditor'
+import WhoopStatus from '@/components/trends/WhoopStatus'
 import {
   computeBodyTrend,
   computeFuelTrends,
   computeLoadTrends,
   computeStrengthTrends,
   dateKey,
+  dayRangeUtc,
+  selectActivePhase,
   type Chip,
   type FuelDay,
   type PhaseKind,
@@ -35,13 +38,10 @@ const AMBER = '#fbbf24'
 const CHIP_GLYPH: Record<Chip, string> = { up: '↑', flat: '→', down: '↓' }
 const CHIP_COLOR: Record<Chip, string> = { up: MINT, flat: AMBER, down: CORAL }
 const VERDICT_COLOR: Record<Verdict, string> = { on_track: MINT, fast: AMBER, slow: CORAL }
+const PHASE_COLOR: Record<PhaseKind, string> = { bulk: VIOLET, cut: CORAL, maintenance: CYAN }
 
 const ZONE_COLORS = ['#1e293b', '#3b82f6', '#22c55e', '#f59e0b', '#f97316', '#ef4444']
 const ZONE_LABELS = ['Z0', 'Z1', 'Z2', 'Z3', 'Z4', 'Z5']
-
-function isoDate(d: Date): string {
-  return d.toISOString().slice(0, 10)
-}
 
 function axisLabel(locale: string, date: string): string {
   const parsed = new Date(`${date}T12:00:00Z`)
@@ -136,9 +136,9 @@ export default async function TrendsPage({
   const today = new Date()
   const todayKey = dateKey(today.toISOString())
   const startDate = rangeDays
-    ? isoDate(new Date(today.getTime() - rangeDays * 86400000))
+    ? dateKey(new Date(today.getTime() - rangeDays * 86400000).toISOString())
     : '2000-01-01'
-  const startIso = `${startDate}T00:00:00Z`
+  const startIso = dayRangeUtc(startDate).start
 
   const [
     metricsResult,
@@ -161,14 +161,21 @@ export default async function TrendsPage({
     supabase.from('meal_logs').select('id, date, meal_log_items ( calories, protein_g )').eq('user_id', user!.id).gte('date', startDate),
     supabase.from('nutrition_days').select('date, day_type').eq('user_id', user!.id).gte('date', startDate),
     supabase.from('nutrition_targets').select('*').eq('user_id', user!.id),
-    supabase.from('user_profiles').select('whoop_user_id').eq('id', user!.id).maybeSingle(),
+    supabase.from('user_profiles').select('whoop_user_id, whoop_access_token, whoop_refresh_token, whoop_token_expires').eq('id', user!.id).maybeSingle(),
   ])
 
   const queryError =
     metricsResult.error ?? sleepResult.error ?? activitiesResult.error ?? bodyResult.error ??
     setLogsResult.error ?? phasesResult.error ?? mealLogsResult.error ?? nutritionDaysResult.error ??
     targetsResult.error ?? profileResult.error
-  if (queryError) console.error('Failed to load trends data', queryError)
+  if (queryError) {
+    console.error('Failed to load trends data', JSON.stringify({
+      code: queryError.code,
+      message: queryError.message,
+      details: queryError.details,
+      hint: queryError.hint,
+    }))
+  }
 
   const metrics = metricsResult.data ?? []
   const sleeps = sleepResult.data ?? []
@@ -185,10 +192,14 @@ export default async function TrendsPage({
   }>
   const nutritionDays = nutritionDaysResult.data ?? []
   const targets = targetsResult.data ?? []
-  const whoopConnected = profileResult.data?.whoop_user_id != null
+  const whoopConnected = Boolean(profileResult.data?.whoop_user_id && profileResult.data?.whoop_access_token)
+  const whoopTokenExpired = profileResult.data?.whoop_token_expires
+    ? new Date(profileResult.data.whoop_token_expires) < new Date()
+    : true
+  const whoopReauthRequired = whoopConnected && whoopTokenExpired && !profileResult.data?.whoop_refresh_token
 
   // ── Body ────────────────────────────────────────────────────────────────────
-  const openPhaseRow = phases.find((p) => p.end_date == null || p.end_date >= todayKey)
+  const openPhaseRow = selectActivePhase(phases, todayKey)
   const activePhase: TrainingPhase | null = openPhaseRow
     ? {
         phase: openPhaseRow.kind as PhaseKind,
@@ -276,6 +287,18 @@ export default async function TrendsPage({
 
   const firstBodyDate = bodyTrend.weights[0]?.date
   const lastBodyDate = bodyTrend.weights[bodyTrend.weights.length - 1]?.date
+  const bandStart = firstBodyDate ?? startDate
+  const bandEnd = lastBodyDate ?? todayKey
+  const phaseBands = phases
+    .filter((phase) => phase.start_date <= bandEnd && (phase.end_date == null || phase.end_date >= bandStart))
+    .map((phase) => {
+      const from = phase.start_date < bandStart ? bandStart : phase.start_date
+      const phaseEnd = phase.end_date ?? todayKey
+      const to = phaseEnd > bandEnd ? bandEnd : phaseEnd
+      const days = Math.max(1, Math.floor((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000) + 1)
+      return { ...phase, from, to, days, kind: phase.kind as PhaseKind }
+    })
+    .sort((a, b) => a.from.localeCompare(b.from))
 
   const sleepStages = latestSleep
     ? [
@@ -322,7 +345,7 @@ export default async function TrendsPage({
         ))}
       </div>
 
-      {!hasAnyData ? (
+      {!hasAnyData && (
         <div className="glass ticks rounded-2xl border border-[var(--border-hi)] p-5 text-center md:p-6">
           <div className="mb-1 text-sm font-bold text-[var(--text)]">{t('empty.title')}</div>
           <p className="mx-auto mb-4 max-w-lg text-sm text-[var(--text-dim)]">{t('empty.body')}</p>
@@ -330,8 +353,8 @@ export default async function TrendsPage({
             {t('empty.action')}
           </Link>
         </div>
-      ) : (
-        <div className="space-y-5 md:space-y-6">
+      )}
+      <div className="mt-5 space-y-5 md:space-y-6">
           {/* ── Body ── */}
           <SectionLabel>{t('sectionsV2.body')}</SectionLabel>
           <Panel>
@@ -354,6 +377,27 @@ export default async function TrendsPage({
             {weightValues.length >= 2 ? (
               <>
                 <DualSpark dataA={weightValues} dataB={rolling7Values} colorA={CYAN} colorB={MINT} />
+                {phaseBands.length > 0 && (
+                  <div className="mt-2" aria-label={t('charts.phaseBands')}>
+                    <div className="flex h-2 overflow-hidden rounded-full bg-[var(--ring-track)]">
+                      {phaseBands.map((phase) => (
+                        <div
+                          key={phase.id}
+                          title={`${t(`phases.kind.${phase.kind}`)} · ${phase.from}–${phase.to}`}
+                          style={{ flexGrow: phase.days, background: PHASE_COLOR[phase.kind] }}
+                        />
+                      ))}
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                      {phaseBands.map((phase) => (
+                        <span key={phase.id} className="data inline-flex items-center gap-1 text-[9px] text-muted">
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: PHASE_COLOR[phase.kind] }} />
+                          {t(`phases.kind.${phase.kind}`)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <Legend
                   items={[
                     { label: t('charts.weighIns'), color: CYAN },
@@ -520,14 +564,7 @@ export default async function TrendsPage({
 
           {/* ── Recovery ── */}
           <SectionLabel>{t('sectionsV2.recovery')}</SectionLabel>
-          {!whoopConnected && metrics.length === 0 && (
-            <Panel>
-              <p className="mb-3 text-sm text-[var(--text-dim)]">{t('whoop.connectBody')}</p>
-              <Link href={`/${locale}/perfil`} className="btn-accent inline-flex rounded-xl px-4 py-2 text-xs font-bold">
-                {t('whoop.connectCta')}
-              </Link>
-            </Panel>
-          )}
+          <WhoopStatus connected={whoopConnected} reauthRequired={whoopReauthRequired} />
           {metrics.length > 0 && (
             <>
               <div className="grid grid-cols-3 gap-2">
@@ -627,8 +664,7 @@ export default async function TrendsPage({
               )}
             </Panel>
           </div>
-        </div>
-      )}
+      </div>
     </div>
   )
 }

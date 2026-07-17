@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { resolveSetLogExercise } from '@/lib/workout/set-log'
 
 // GET /api/set-logs?exercise_ids=a,b,c — recent logs for those plan exercises.
 // GET /api/set-logs?exercise_name=Deadlift — recent logs by name (history across plans).
@@ -36,9 +37,19 @@ export async function POST(request: Request) {
   const body = await request.json()
   const { exercise_id, exercise_name, set_number, weight_kg, reps, rpe, notes } = body
 
-  if (typeof exercise_name !== 'string' || !exercise_name.trim()) {
-    return NextResponse.json({ error: 'exercise_name is required' }, { status: 400 })
+  let ownedExercise: { id: string; exercise_name: string } | null = null
+  if (exercise_id) {
+    const { data, error: exerciseError } = await supabase
+      .from('workout_plan_exercises')
+      .select('id, exercise_name')
+      .eq('id', exercise_id)
+      .eq('user_id', user.id)
+      .maybeSingle()
+    if (exerciseError) return NextResponse.json({ error: exerciseError.message }, { status: 500 })
+    ownedExercise = data
   }
+  const resolvedExercise = resolveSetLogExercise({ exercise_id, exercise_name }, ownedExercise)
+  if (!resolvedExercise) return NextResponse.json({ error: 'exercise not found or name missing' }, { status: exercise_id ? 404 : 400 })
   const weight = weight_kg == null ? null : Number(weight_kg)
   if (weight != null && (!Number.isFinite(weight) || weight < 0)) {
     return NextResponse.json({ error: 'weight_kg must be a non-negative number' }, { status: 400 })
@@ -56,8 +67,8 @@ export async function POST(request: Request) {
     .from('workout_set_logs')
     .insert({
       user_id: user.id,
-      exercise_id: exercise_id ?? null,
-      exercise_name: exercise_name.trim(),
+      exercise_id: resolvedExercise.exercise_id,
+      exercise_name: resolvedExercise.exercise_name,
       set_number: Number.isInteger(Number(set_number)) ? Number(set_number) : null,
       weight_kg: weight,
       reps: repsNum,

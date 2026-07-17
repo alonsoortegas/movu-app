@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import type { Database } from '@/types/database'
+import { ownsEveryFoodId } from '@/lib/nutrition/log-entry'
 
 type GroupUpdate = Database['public']['Tables']['food_substitution_groups']['Update']
 
@@ -61,6 +62,18 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     for (const item of body.items) {
       if (!item?.food_item_id || typeof item.label !== 'string' || !item.label.trim()) {
         return NextResponse.json({ error: 'each item needs food_item_id and label' }, { status: 400 })
+      }
+    }
+    const requestedFoodIds = body.items.map((item: { food_item_id: string }) => item.food_item_id)
+    if (requestedFoodIds.length) {
+      const { data: ownedFoods, error: foodsError } = await supabase
+        .from('food_items')
+        .select('id')
+        .eq('user_id', user.id)
+        .in('id', requestedFoodIds)
+      if (foodsError) return NextResponse.json({ error: foodsError.message }, { status: 500 })
+      if (!ownsEveryFoodId(requestedFoodIds, (ownedFoods ?? []).map((food) => food.id))) {
+        return NextResponse.json({ error: 'items must reference distinct owned foods' }, { status: 400 })
       }
     }
     const { error: deleteError } = await supabase

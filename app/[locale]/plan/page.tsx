@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import MobilePageIntro from '@/components/mobile/MobilePageIntro'
 import PlanWeekView from '@/components/plan/PlanWeekView'
 import { getPlanWeek } from '@/lib/workout/logic'
+import { dateKey, dayRangeUtc } from '@/lib/trends/compute'
 import type { Database } from '@/types/database'
 
 type SetLog = Database['public']['Tables']['workout_set_logs']['Row']
@@ -103,6 +104,7 @@ export default async function PlanPage({ params }: { params: Promise<{ locale: s
 
   let exercises: Database['public']['Tables']['workout_plan_exercises']['Row'][] = []
   let lastSets: Record<string, SetLog> = {}
+  let historyLogs: SetLog[] = []
   let todayLogs: SetLog[] = []
 
   if (sessionIds.length) {
@@ -115,8 +117,8 @@ export default async function PlanPage({ params }: { params: Promise<{ locale: s
 
     if (exercises.length) {
       const names = [...new Set(exercises.map((e) => e.exercise_name))]
-      const todayStart = new Date()
-      todayStart.setHours(0, 0, 0, 0)
+      const today = dateKey(new Date().toISOString())
+      const todayRange = dayRangeUtc(today)
 
       const [lastResult, todayResult] = await Promise.all([
         supabase
@@ -124,7 +126,7 @@ export default async function PlanPage({ params }: { params: Promise<{ locale: s
           .select('*')
           .eq('user_id', user!.id)
           .in('exercise_name', names)
-          .lt('logged_at', todayStart.toISOString())
+          .lt('logged_at', todayRange.start)
           .order('logged_at', { ascending: false })
           .limit(200),
         supabase
@@ -132,12 +134,14 @@ export default async function PlanPage({ params }: { params: Promise<{ locale: s
           .select('*')
           .eq('user_id', user!.id)
           .in('exercise_id', exercises.map((e) => e.id))
-          .gte('logged_at', todayStart.toISOString())
+          .gte('logged_at', todayRange.start)
+          .lt('logged_at', todayRange.end)
           .order('logged_at', { ascending: true }),
       ])
 
       lastSets = {}
-      for (const log of lastResult.data ?? []) {
+      historyLogs = lastResult.data ?? []
+      for (const log of historyLogs) {
         if (!lastSets[log.exercise_name]) lastSets[log.exercise_name] = log
       }
       todayLogs = todayResult.data ?? []
@@ -153,6 +157,7 @@ export default async function PlanPage({ params }: { params: Promise<{ locale: s
         sessions={sessions ?? []}
         exercises={exercises}
         lastSets={lastSets}
+        historyLogs={historyLogs}
         todayLogs={todayLogs}
       />
     </div>

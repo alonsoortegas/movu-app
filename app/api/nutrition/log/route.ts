@@ -1,14 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { normalizeSavedPortionName } from '@/lib/nutrition/portions'
+import { resolveMealLogItem } from '@/lib/nutrition/log-entry'
 
 const MEALS = ['breakfast', 'midday', 'pre_workout', 'post_workout', 'dinner', 'snack']
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
-
-function macro(value: unknown): number {
-  const parsed = Number(value)
-  return Number.isFinite(parsed) && parsed >= 0 ? Math.round(parsed * 10) / 10 : 0
-}
 
 // POST {
 //   date, meal_name,
@@ -31,12 +27,26 @@ export async function POST(request: Request) {
   if (!MEALS.includes(meal_name)) {
     return NextResponse.json({ error: 'invalid meal_name' }, { status: 400 })
   }
-  if (!item || typeof item.name !== 'string' || !item.name.trim()) {
-    return NextResponse.json({ error: 'item.name is required' }, { status: 400 })
-  }
+  if (!item) return NextResponse.json({ error: 'item is required' }, { status: 400 })
   const quantity = Number(item.quantity)
   if (!Number.isFinite(quantity) || quantity <= 0) {
     return NextResponse.json({ error: 'item.quantity must be positive' }, { status: 400 })
+  }
+
+  let ownedFood = null
+  if (item.food_item_id) {
+    const { data, error: foodError } = await supabase
+      .from('food_items')
+      .select('id, name, calories, protein_g, carbs_g, fat_g')
+      .eq('id', item.food_item_id)
+      .eq('user_id', user.id)
+      .maybeSingle()
+    if (foodError) return NextResponse.json({ error: foodError.message }, { status: 500 })
+    ownedFood = data
+  }
+  const resolvedItem = resolveMealLogItem({ ...item, quantity }, ownedFood)
+  if (!resolvedItem) {
+    return NextResponse.json({ error: item.food_item_id ? 'food not found' : 'invalid custom item' }, { status: item.food_item_id ? 404 : 400 })
   }
 
   // Find or create the meal log for this date + meal.
@@ -63,21 +73,15 @@ export async function POST(request: Request) {
     .from('meal_log_items')
     .insert({
       meal_log_id: mealLog.id,
-      food_item_id: item.food_item_id ?? null,
-      name: item.name.trim(),
-      quantity,
-      calories: Math.round(macro(item.calories)),
-      protein_g: macro(item.protein_g),
-      carbs_g: macro(item.carbs_g),
-      fat_g: macro(item.fat_g),
+      ...resolvedItem,
     })
     .select()
     .single()
   if (itemError) return NextResponse.json({ error: itemError.message }, { status: 500 })
 
   let savedPortion = null
-  if (save_as_portion && !item.food_item_id) {
-    const name = item.name.trim().replace(/\s+/g, ' ')
+  if (save_as_portion && !resolvedItem.food_item_id) {
+    const name = resolvedItem.name.replace(/\s+/g, ' ')
     // Saved portions store per-1-quantity macros so they scale on reuse.
     const { data: portion, error: portionError } = await supabase
       .from('saved_food_portions')
@@ -86,10 +90,10 @@ export async function POST(request: Request) {
           user_id: user.id,
           normalized_name: normalizeSavedPortionName(name),
           name,
-          calories: Math.round(macro(item.calories) / quantity),
-          protein_g: Math.round((macro(item.protein_g) / quantity) * 10) / 10,
-          carbs_g: Math.round((macro(item.carbs_g) / quantity) * 10) / 10,
-          fat_g: Math.round((macro(item.fat_g) / quantity) * 10) / 10,
+          calories: Math.round(resolvedItem.calories / quantity),
+          protein_g: Math.round((resolvedItem.protein_g / quantity) * 10) / 10,
+          carbs_g: Math.round((resolvedItem.carbs_g / quantity) * 10) / 10,
+          fat_g: Math.round((resolvedItem.fat_g / quantity) * 10) / 10,
         },
         { onConflict: 'user_id,normalized_name' },
       )
