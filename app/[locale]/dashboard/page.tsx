@@ -130,21 +130,21 @@ export default async function DashboardPage({
   const muscleGroups = Object.entries(muscleCount).sort((a, b) => b[1] - a[1]).slice(0, 5)
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto">
+    <div className="boot p-4 md:p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-5 md:mb-8">
         <div>
-          <h1 className="text-xl font-bold text-[#111] md:hidden">{t('greeting', { name: displayName })}</h1>
-          <h1 className="hidden md:block text-2xl font-bold text-[#111]">{t('title')}</h1>
+          <h1 className="display text-xl font-bold text-[var(--text)] md:hidden">{t('greeting', { name: displayName })}</h1>
+          <h1 className="display hidden md:block text-2xl font-bold text-[var(--text)]">{t('title')}</h1>
           <p className="text-xs md:text-sm text-muted mt-0.5">{t('weekLabel')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full bg-[#eee] border border-[#e0e0e0] flex items-center justify-center text-xs font-bold text-[#555] md:hidden">
+          <div className="glass w-9 h-9 rounded-full border border-[var(--border-hi)] flex items-center justify-center text-xs font-bold text-[var(--text-dim)] md:hidden">
             {getInitials(displayName)}
           </div>
           <Link
             href={`/${locale}/registro`}
-            className="hidden md:block bg-accent hover:bg-accent-dark text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors"
+            className="btn-accent hidden rounded-xl px-4 py-2.5 text-sm font-bold md:block"
           >
             {t('registerToday')}
           </Link>
@@ -153,15 +153,15 @@ export default async function DashboardPage({
 
       {/* AI Insight */}
       {cachedInsight ? (
-        <div className="bg-accent-light border-2 border-dashed border-accent rounded-xl p-4 md:p-5 mb-4 md:mb-6">
+        <div className="glass ticks mb-4 rounded-2xl border border-[var(--border-hi)] p-4 md:mb-6 md:p-5">
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-accent text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-wide">{t('aiLabel')}</span>
-            <span className="text-xs font-semibold text-[#555]">{t('aiInsightTitle')}</span>
+            <span className="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-[#10210b]">{t('aiLabel')}</span>
+            <span className="text-xs font-semibold text-[var(--text-dim)]">{t('aiInsightTitle')}</span>
           </div>
-          <p className="text-sm text-[#333] leading-relaxed">&ldquo;{cachedInsight.content}&rdquo;</p>
+          <p className="text-sm leading-relaxed text-[var(--text)]">&ldquo;{cachedInsight.content}&rdquo;</p>
         </div>
       ) : (
-        <div className="bg-surface border border-dashed border-border rounded-xl p-4 md:p-5 mb-4 md:mb-6 flex items-center justify-between gap-4">
+        <div className="panel mb-4 flex items-center justify-between gap-4 rounded-2xl border-dashed p-4 md:mb-6 md:p-5">
           <span className="text-sm text-muted">{t('aiInsightEmpty')}</span>
           <Link href="/api/insights/latest" className="text-xs font-semibold text-accent hover:underline whitespace-nowrap">
             {t('aiGenerate')}
@@ -187,11 +187,11 @@ export default async function DashboardPage({
             return (
               <div
                 key={key}
-                className={`rounded-xl border p-2 md:p-3 text-center transition-all ${isToday ? 'bg-accent-light border-accent shadow-sm' : 'bg-surface border-border'}`}
+                className={`rounded-xl border p-2 text-center transition-all md:p-3 ${isToday ? 'border-accent bg-accent-light shadow-[0_0_18px_rgba(107,224,64,0.12)]' : 'panel'}`}
               >
-                <div className={`text-[10px] md:text-xs font-medium mb-1 ${isToday ? 'text-[#555]' : 'text-muted'}`}>{day.short}</div>
+                <div className={`mb-1 text-[10px] font-medium md:text-xs ${isToday ? 'text-[var(--text)]' : 'text-muted'}`}>{day.short}</div>
                 <div className="text-sm md:text-lg mb-0.5 md:mb-1">{emoji}</div>
-                <div className={`text-[9px] leading-tight hidden md:block truncate ${isToday ? 'text-[#444] font-medium' : 'text-muted'}`}>{label}</div>
+                <div className={`hidden truncate text-[9px] leading-tight md:block ${isToday ? 'font-medium text-[var(--text-dim)]' : 'text-muted'}`}>{label}</div>
               </div>
             )
           })}
@@ -226,10 +226,10 @@ export default async function DashboardPage({
             subKey: null,
           },
         ].map(({ emoji, labelKey, value, subKey }) => (
-          <div key={labelKey} className="bg-surface border border-border rounded-xl p-3 md:p-5 text-center md:text-left">
+          <div key={labelKey} className="panel relative overflow-hidden rounded-2xl p-3 text-center md:p-5 md:text-left">
             <div className="text-lg md:text-2xl mb-1 md:mb-2">{emoji}</div>
             <div className="text-[10px] md:text-xs text-muted mb-0.5 md:mb-1">{t(labelKey)}</div>
-            <div className="text-sm md:text-2xl font-bold text-[#111] leading-tight">{value}</div>
+            <div className="data text-sm font-bold leading-tight text-[var(--text)] md:text-2xl">{value}</div>
             {subKey && <div className="text-[10px] text-muted mt-0.5 hidden md:block">{t(subKey)}</div>}
           </div>
         ))}
@@ -238,7 +238,7 @@ export default async function DashboardPage({
       {/* Recent workouts */}
       <div className="mb-4 md:mb-6">
         <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-2 md:mb-3">{t('recentWorkouts')}</h2>
-        <div className="bg-white border border-border rounded-xl overflow-hidden">
+        <div className="panel overflow-hidden rounded-2xl">
           {(recentActivities ?? []).length === 0 ? (
             <div className="px-4 py-6 text-center text-sm text-muted">{t('noActivities')}</div>
           ) : (
@@ -251,7 +251,7 @@ export default async function DashboardPage({
                   {CATEGORY_EMOJI[w.activity_category ?? ''] ?? '🏋️'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-[#111] truncate">
+                  <div className="truncate text-sm font-semibold text-[var(--text)]">
                     {w.activity_name ?? w.activity_category ?? w.source}
                   </div>
                   <div className="text-xs text-muted">
@@ -267,7 +267,7 @@ export default async function DashboardPage({
 
       {/* Desktop: progress + muscle groups */}
       <div className="hidden md:grid md:grid-cols-2 gap-4">
-        <div className="bg-surface border border-border rounded-xl p-5">
+        <div className="panel rounded-2xl p-5">
           <h3 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">{t('weeklyProgress')}</h3>
           <div className="space-y-2.5">
             {[
@@ -277,22 +277,22 @@ export default async function DashboardPage({
             ].map(({ key, val, max }) => (
               <div key={key}>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-[#555]">{t(key)}</span>
-                  <span className="text-[#888]">{val} / {max}</span>
+                  <span className="text-[var(--text-dim)]">{t(key)}</span>
+                  <span className="data text-[var(--text-faint)]">{val} / {max}</span>
                 </div>
-                <div className="h-1.5 bg-[#e8e8e8] rounded-full overflow-hidden">
+                <div className="h-1.5 overflow-hidden rounded-full bg-[var(--ring-track)]">
                   <div className="h-full bg-accent rounded-full" style={{ width: `${Math.min((val / max) * 100, 100)}%` }} />
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <div className="bg-surface border border-border rounded-xl p-5">
+        <div className="panel rounded-2xl p-5">
           <h3 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">{t('muscleGroups')}</h3>
           {muscleGroups.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {muscleGroups.map(([m, c]) => (
-                <div key={m} className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-light border border-accent text-xs text-[#444]">
+                <div key={m} className="flex items-center gap-1.5 rounded-full border border-accent bg-accent-light px-3 py-1 text-xs text-[var(--text)]">
                   {m}<span className="font-bold text-accent-dark ml-1">{c}x</span>
                 </div>
               ))}
@@ -305,7 +305,8 @@ export default async function DashboardPage({
 
       <Link
         href={`/${locale}/registro`}
-        className="md:hidden fixed bottom-[72px] left-4 right-4 bg-accent text-white text-sm font-semibold text-center py-3.5 rounded-xl shadow-lg"
+        className="btn-accent fixed left-4 right-4 z-40 rounded-2xl py-3.5 text-center text-sm font-bold md:hidden"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)' }}
       >
         {t('registerCta')}
       </Link>
