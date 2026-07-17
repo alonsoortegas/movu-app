@@ -12,25 +12,24 @@ export default function MobileHeader() {
   const activeItem = MOVU_NAV_ITEMS[getActiveNavigationIndex(pathname)];
 
   return (
-    <header className="glass-thick fixed inset-x-0 top-0 z-50 md:hidden safe-top">
-      <div className="flex h-[72px] items-center gap-3 px-4">
-        <div className="min-w-0">
-          <div className="display text-[20px] font-bold leading-none tracking-[-0.04em] text-[var(--text)]">
-            mov<span className="text-accent">u</span>
-          </div>
-          <div className="mt-1 flex items-center gap-1.5">
-            <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
-            <span className="truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
-              {t(activeItem.key)}
-            </span>
-          </div>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
+    <header className="glass-thick mobile-chrome fixed inset-x-0 top-0 z-50 safe-top md:hidden">
+      <div className="flex h-16 items-center gap-2 px-3">
+        <div className="mobile-brand-mark" aria-hidden="true">M</div>
+        <span className="display text-lg font-bold text-[var(--text)]">
+          mov<span className="text-accent">u</span>
+        </span>
+        <div className="ml-auto flex items-center gap-1.5">
           <LocaleSwitcher compact />
           <ThemeToggle />
+          <span className="glass flex min-h-10 items-center rounded-full border border-[var(--border)] px-2.5">
+            <span className="pulse-dot mr-2 h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
+            <span className="display max-w-[64px] truncate text-[10px] font-semibold text-[var(--text-dim)]">
+              {t(activeItem.key)}
+            </span>
+          </span>
         </div>
       </div>
-      <div className="glint-track h-px bg-[var(--ink-06)]" aria-hidden="true" />
+      <div className="glint-track absolute inset-x-0 bottom-0 h-px bg-[var(--ink-06)]" aria-hidden="true" />
     </header>
   );
 }

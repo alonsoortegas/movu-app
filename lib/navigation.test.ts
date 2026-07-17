@@ -8,8 +8,10 @@ import {
 describe('getActiveNavigationIndex', () => {
   it.each([
     ['/dashboard', 0],
+    ['/dashboard/activity', 0],
     ['/trends', 1],
     ['/registro', 2],
+    ['/plan', 3],
     ['/plan/week', 3],
     ['/perfil', 4],
   ])('maps %s to %i', (pathname, expected) => {
