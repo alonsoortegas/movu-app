@@ -16,10 +16,41 @@ export type {
   NewBodyMeasurement,
   Insight as InsightRow,
   NewInsight,
+  WorkoutPlan as WorkoutPlanRow,
+  NewWorkoutPlan,
+  WorkoutPlanSession as WorkoutPlanSessionRow,
+  NewWorkoutPlanSession,
+  WorkoutPlanExercise as WorkoutPlanExerciseRow,
+  NewWorkoutPlanExercise,
+  WorkoutSetLog as WorkoutSetLogRow,
+  NewWorkoutSetLog,
+  FoodItem as FoodItemRow,
+  NewFoodItem,
+  SavedFoodPortion as SavedFoodPortionRow,
+  NewSavedFoodPortion,
+  FoodSubstitutionGroup as FoodSubstitutionGroupRow,
+  NewFoodSubstitutionGroup,
+  FoodSubstitutionGroupItem as FoodSubstitutionGroupItemRow,
+  NewFoodSubstitutionGroupItem,
+  NutritionTarget as NutritionTargetRow,
+  NewNutritionTarget,
+  NutritionDay as NutritionDayRow,
+  NewNutritionDay,
+  MealLog as MealLogRow,
+  NewMealLog,
+  MealLogItem as MealLogItemRow,
+  NewMealLogItem,
+  TrainingPhaseRow,
+  NewTrainingPhase,
   ActivityCategory,
   ActivitySource,
   WaitlistStatus,
   InsightType,
+  SessionType,
+  FoodCategory,
+  TrackingUnit,
+  MacroType,
+  PhaseKindColumn,
 } from '@/db/schema'
 
 // HrZones type (used in hr_zones jsonb field)
@@ -512,6 +543,459 @@ export type Database = {
           type?: string | null
           content?: string | null
           model_used?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      workout_plans: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          start_date: string
+          weeks: number
+          active: boolean
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          start_date: string
+          weeks: number
+          active?: boolean
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          start_date?: string
+          weeks?: number
+          active?: boolean
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      workout_plan_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          plan_id: string
+          week_number: number
+          day_of_week: string
+          title: string
+          session_type: string
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          plan_id: string
+          week_number: number
+          day_of_week: string
+          title: string
+          session_type?: string
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          plan_id?: string
+          week_number?: number
+          day_of_week?: string
+          title?: string
+          session_type?: string
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      workout_plan_exercises: {
+        Row: {
+          id: string
+          user_id: string
+          session_id: string
+          order_index: number
+          exercise_name: string
+          prescribed_sets: number | null
+          prescribed_reps: string | null
+          prescribed_weight_kg: number | null
+          target_rpe: string | null
+          superset_group: number | null
+          rest_seconds: number | null
+          is_isometric: boolean
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          session_id: string
+          order_index?: number
+          exercise_name: string
+          prescribed_sets?: number | null
+          prescribed_reps?: string | null
+          prescribed_weight_kg?: number | null
+          target_rpe?: string | null
+          superset_group?: number | null
+          rest_seconds?: number | null
+          is_isometric?: boolean
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          session_id?: string
+          order_index?: number
+          exercise_name?: string
+          prescribed_sets?: number | null
+          prescribed_reps?: string | null
+          prescribed_weight_kg?: number | null
+          target_rpe?: string | null
+          superset_group?: number | null
+          rest_seconds?: number | null
+          is_isometric?: boolean
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      workout_set_logs: {
+        Row: {
+          id: string
+          user_id: string
+          exercise_id: string | null
+          exercise_name: string
+          set_number: number | null
+          weight_kg: number | null
+          reps: number | null
+          rpe: number | null
+          notes: string | null
+          logged_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          exercise_id?: string | null
+          exercise_name: string
+          set_number?: number | null
+          weight_kg?: number | null
+          reps?: number | null
+          rpe?: number | null
+          notes?: string | null
+          logged_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          exercise_id?: string | null
+          exercise_name?: string
+          set_number?: number | null
+          weight_kg?: number | null
+          reps?: number | null
+          rpe?: number | null
+          notes?: string | null
+          logged_at?: string
+        }
+        Relationships: []
+      }
+      food_items: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          category: string
+          portion_label: string
+          grams: number | null
+          calories: number
+          protein_g: number
+          carbs_g: number
+          fat_g: number
+          tracking_unit: string
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          category: string
+          portion_label: string
+          grams?: number | null
+          calories?: number
+          protein_g?: number
+          carbs_g?: number
+          fat_g?: number
+          tracking_unit?: string
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          category?: string
+          portion_label?: string
+          grams?: number | null
+          calories?: number
+          protein_g?: number
+          carbs_g?: number
+          fat_g?: number
+          tracking_unit?: string
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      saved_food_portions: {
+        Row: {
+          id: string
+          user_id: string
+          normalized_name: string
+          name: string
+          calories: number
+          protein_g: number
+          carbs_g: number
+          fat_g: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          normalized_name: string
+          name: string
+          calories?: number
+          protein_g?: number
+          carbs_g?: number
+          fat_g?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          normalized_name?: string
+          name?: string
+          calories?: number
+          protein_g?: number
+          carbs_g?: number
+          fat_g?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      food_substitution_groups: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          macro_type: string
+          target_macro_g: number
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          macro_type: string
+          target_macro_g: number
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          macro_type?: string
+          target_macro_g?: number
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      food_substitution_group_items: {
+        Row: {
+          id: string
+          group_id: string
+          food_item_id: string
+          quantity: number
+          label: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          group_id: string
+          food_item_id: string
+          quantity?: number
+          label: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          group_id?: string
+          food_item_id?: string
+          quantity?: number
+          label?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      nutrition_targets: {
+        Row: {
+          id: string
+          user_id: string
+          day_type: string
+          calories_target: number
+          protein_target: number
+          carbs_target: number
+          fat_target: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_type: string
+          calories_target: number
+          protein_target: number
+          carbs_target: number
+          fat_target: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_type?: string
+          calories_target?: number
+          protein_target?: number
+          carbs_target?: number
+          fat_target?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      nutrition_days: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          day_type: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          day_type: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          day_type?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      meal_logs: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          meal_name: string
+          logged_at: string
+          notes: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          meal_name: string
+          logged_at?: string
+          notes?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          meal_name?: string
+          logged_at?: string
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      meal_log_items: {
+        Row: {
+          id: string
+          meal_log_id: string
+          food_item_id: string | null
+          name: string
+          quantity: number
+          calories: number
+          protein_g: number
+          carbs_g: number
+          fat_g: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          meal_log_id: string
+          food_item_id?: string | null
+          name: string
+          quantity?: number
+          calories?: number
+          protein_g?: number
+          carbs_g?: number
+          fat_g?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          meal_log_id?: string
+          food_item_id?: string | null
+          name?: string
+          quantity?: number
+          calories?: number
+          protein_g?: number
+          carbs_g?: number
+          fat_g?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      training_phases: {
+        Row: {
+          id: string
+          user_id: string
+          kind: string
+          start_date: string
+          end_date: string | null
+          target_rate_kg_per_week: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          kind: string
+          start_date: string
+          end_date?: string | null
+          target_rate_kg_per_week?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          kind?: string
+          start_date?: string
+          end_date?: string | null
+          target_rate_kg_per_week?: number | null
           created_at?: string
         }
         Relationships: []
