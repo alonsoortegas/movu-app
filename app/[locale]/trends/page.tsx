@@ -2,56 +2,51 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import type { Database } from '@/types/database'
+import type { Database, HrZones } from '@/types/database'
 import MobilePageIntro from '@/components/mobile/MobilePageIntro'
-import { formatActivityDisplayName } from '@/lib/activities/display-name'
+import { AxisRow, BarChart, BigSpark, ChartTitle, DualSpark, Legend } from '@/components/charts/charts'
+import PhaseEditor from '@/components/trends/PhaseEditor'
+import {
+  computeBodyTrend,
+  computeFuelTrends,
+  computeLoadTrends,
+  computeStrengthTrends,
+  dateKey,
+  type Chip,
+  type FuelDay,
+  type PhaseKind,
+  type TrainingPhase,
+  type Verdict,
+} from '@/lib/trends/compute'
 
 type DailyMetric = Database['public']['Tables']['daily_metrics']['Row']
 type SleepLog = Database['public']['Tables']['sleep_logs']['Row']
-type Activity = Database['public']['Tables']['activities']['Row']
-type BodyMeasurement = Database['public']['Tables']['body_measurements']['Row']
 
-type Point = { date: string; value: number | null }
-type ChartSeries = { label: string; color: string; data: Point[]; dashed?: boolean }
+const RANGES = ['4w', '12w', '6m', 'all'] as const
+type TrendsRange = (typeof RANGES)[number]
+const RANGE_DAYS: Record<TrendsRange, number | null> = { '4w': 28, '12w': 84, '6m': 183, all: null }
 
-const WINDOW_DAYS = 30
-const CATEGORY_COLORS: Record<string, string> = {
-  run: '#4f46e5',
-  ride: '#0ea5e9',
-  strength: '#65a30d',
-  hiit: '#f97316',
-  mobility: '#14b8a6',
-  walk: '#6b7280',
-  swim: '#0891b2',
-  other: '#a855f7',
-}
+const MINT = '#00d26a'
+const CYAN = '#38bdf8'
+const VIOLET = '#a78bfa'
+const CORAL = '#fb7185'
+const AMBER = '#fbbf24'
+
+const CHIP_GLYPH: Record<Chip, string> = { up: '↑', flat: '→', down: '↓' }
+const CHIP_COLOR: Record<Chip, string> = { up: MINT, flat: AMBER, down: CORAL }
+const VERDICT_COLOR: Record<Verdict, string> = { on_track: MINT, fast: AMBER, slow: CORAL }
+
+const ZONE_COLORS = ['#1e293b', '#3b82f6', '#22c55e', '#f59e0b', '#f97316', '#ef4444']
+const ZONE_LABELS = ['Z0', 'Z1', 'Z2', 'Z3', 'Z4', 'Z5']
 
 function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10)
 }
 
-function addDays(d: Date, days: number): Date {
-  const next = new Date(d)
-  next.setUTCDate(next.getUTCDate() + days)
-  return next
-}
-
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600)
-  const m = Math.round((seconds % 3600) / 60)
-  if (h > 0) return `${h}h ${m}m`
-  return `${m}m`
-}
-
-function avg(values: Array<number | null | undefined>, decimals = 0): string {
-  const nums = values.filter((v): v is number => typeof v === 'number' && Number.isFinite(v))
-  if (nums.length === 0) return '—'
-  const mean = nums.reduce((s, v) => s + v, 0) / nums.length
-  return decimals > 0 ? mean.toFixed(decimals) : String(Math.round(mean))
-}
-
-function sum(values: Array<number | null | undefined>): number {
-  return values.reduce<number>((s, v) => s + (typeof v === 'number' && Number.isFinite(v) ? v : 0), 0)
+function axisLabel(locale: string, date: string): string {
+  const parsed = new Date(`${date}T12:00:00Z`)
+  if (Number.isNaN(parsed.getTime())) return '—'
+  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(parsed)
 }
 
 function numberLabel(value: number | null | undefined, decimals = 0): string {
@@ -59,264 +54,228 @@ function numberLabel(value: number | null | undefined, decimals = 0): string {
   return decimals > 0 ? value.toFixed(decimals) : String(Math.round(value))
 }
 
-function parseDateValue(value: string): Date | null {
-  const trimmed = value.trim()
-  if (!trimmed) return null
-
-  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(trimmed)
-    ? new Date(`${trimmed}T12:00:00Z`)
-    : new Date(trimmed)
-
-  return Number.isNaN(parsed.getTime()) ? null : parsed
+function signed(value: number, decimals = 2): string {
+  const s = value.toFixed(decimals)
+  return value > 0 ? `+${s}` : s
 }
 
-function axisLabel(locale: string, date: string): string {
-  const parsed = parseDateValue(date)
-  if (!parsed) return '—'
-
-  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(parsed)
+function zoneMinutes(zones: HrZones | null): number[] {
+  if (!zones) return [0, 0, 0, 0, 0, 0]
+  const minute = (min?: number, sec?: number) => min ?? (sec != null ? sec / 60 : 0)
+  return [
+    minute(zones.z0_min, undefined),
+    minute(zones.z1_min, zones.z1_s),
+    minute(zones.z2_min, zones.z2_s),
+    minute(zones.z3_min, zones.z3_s),
+    minute(zones.z4_min, zones.z4_s),
+    minute(zones.z5_min, zones.z5_s),
+  ]
 }
 
-function minMax(series: ChartSeries[]): { min: number; max: number } {
-  const values = series.flatMap(s => s.data.map(p => p.value)).filter((v): v is number => typeof v === 'number' && Number.isFinite(v))
-  if (values.length === 0) return { min: 0, max: 1 }
-  const min = Math.min(...values)
-  const max = Math.max(...values)
-  if (min === max) return { min: Math.max(0, min - 1), max: max + 1 }
-  const pad = (max - min) * 0.12
-  return { min: Math.max(0, min - pad), max: max + pad }
+function Panel({ children }: { children: React.ReactNode }) {
+  return <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">{children}</div>
 }
 
-function LineChart({ series, height = 118 }: { series: ChartSeries[]; height?: number }) {
-  const width = 420
-  const pad = 12
-  const { min, max } = minMax(series)
-  const len = Math.max(...series.map(s => s.data.length), 1)
-
-  const toPoints = (data: Point[]) =>
-    data
-      .map((p, i) => {
-        if (p.value == null) return null
-        const x = pad + (i / Math.max(len - 1, 1)) * (width - pad * 2)
-        const y = pad + (1 - (p.value - min) / (max - min || 1)) * (height - pad * 2)
-        return `${x},${y}`
-      })
-      .filter(Boolean)
-      .join(' ')
-
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-[118px]" role="img" aria-hidden="true">
-      <line x1={pad} y1={height - pad} x2={width - pad} y2={height - pad} stroke="var(--border)" strokeWidth="1" />
-      {series.map(s => (
-        <polyline
-          key={s.label}
-          points={toPoints(s.data)}
-          fill="none"
-          stroke={s.color}
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeDasharray={s.dashed ? '6 5' : undefined}
-        />
-      ))}
-    </svg>
-  )
-}
-
-function BarChart({ data, color = '#6be040', maxValue }: { data: Point[]; color?: string; maxValue?: number }) {
-  const max = maxValue ?? Math.max(...data.map(p => p.value ?? 0), 1)
-  return (
-    <div className="h-[118px] flex items-end gap-1.5">
-      {data.map((p, i) => {
-        const pct = Math.min(((p.value ?? 0) / max) * 100, 100)
-        return (
-          <div key={`${p.date}-${i}`} className="flex h-full min-w-0 flex-1 items-end overflow-hidden rounded-t-sm bg-[var(--ring-track)]">
-            <div className="w-full rounded-t-sm" style={{ height: `${Math.max(pct, p.value ? 4 : 0)}%`, background: color }} />
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-function MetricCard({ label, value, unit, color }: { label: string; value: string; unit?: string; color: string }) {
-  return (
-    <div className="panel mobile-sheet relative overflow-hidden rounded-[1.45rem] p-4 md:rounded-2xl">
-      <div className="data mb-2 text-[10px] uppercase tracking-[0.16em] text-muted md:text-xs">{label}</div>
-      <div className="flex items-baseline gap-1">
-        <span className="data text-2xl font-bold" style={{ color }}>{value}</span>
-        {unit && <span className="text-xs text-muted">{unit}</span>}
-      </div>
-    </div>
-  )
-}
-
-function ChartCard({ title, right, children }: { title: string; right?: string; children: React.ReactNode }) {
-  return (
-    <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
-      <div className="flex items-baseline justify-between gap-3 mb-3">
-        <h3 className="data text-[10px] font-semibold uppercase tracking-[0.18em] text-muted md:text-xs">{title}</h3>
-        {right && <span className="data text-xs font-semibold text-[var(--text-dim)]">{right}</span>}
-      </div>
+    <div className="data mt-2 border-b border-[var(--border)] pb-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
       {children}
     </div>
   )
 }
 
-function Legend({ items }: { items: { label: string; color: string; dashed?: boolean }[] }) {
+function StatChip({ label, color }: { label: string; color: string }) {
   return (
-    <div className="flex flex-wrap gap-3 mt-3">
-      {items.map(item => (
-        <span key={item.label} className="inline-flex items-center gap-1.5 text-[11px] text-muted">
-          <span
-            className="w-5 h-0.5 rounded-full"
-            style={{ background: item.dashed ? 'transparent' : item.color, borderTop: item.dashed ? `2px dashed ${item.color}` : undefined }}
-          />
-          {item.label}
-        </span>
-      ))}
+    <span
+      className="data rounded-full border border-[var(--border)] px-2.5 py-1 text-[10px]"
+      style={{ color }}
+    >
+      {label}
+    </span>
+  )
+}
+
+function MiniStat({ label, value, unit, color, sub }: { label: string; value: string; unit?: string; color: string; sub?: string }) {
+  return (
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5">
+      <div className="data text-[9px] uppercase tracking-wide text-muted">{label}</div>
+      <div className="mt-1 flex items-baseline gap-0.5">
+        <span className="data text-xl font-bold leading-none" style={{ color }}>{value}</span>
+        {unit && <span className="data text-[9px] text-muted">{unit}</span>}
+      </div>
+      {sub && <div className="data mt-1 text-[8px] text-[var(--text-faint)]">{sub}</div>}
     </div>
   )
 }
 
-function EmptyState({ locale, title, body, action }: { locale: string; title: string; body: string; action: string }) {
-  return (
-    <div className="glass ticks rounded-2xl border border-[var(--border-hi)] p-5 text-center md:p-6">
-      <div className="mb-1 text-sm font-bold text-[var(--text)]">{title}</div>
-      <p className="mx-auto mb-4 max-w-lg text-sm text-[var(--text-dim)]">{body}</p>
-      <Link href={`/${locale}/perfil`} className="btn-accent inline-flex rounded-xl px-4 py-2.5 text-sm font-bold">
-        {action}
-      </Link>
-    </div>
-  )
-}
-
-function ErrorState({ locale, title, body, action }: { locale: string; title: string; body: string; action: string }) {
-  return (
-    <div className="rounded-2xl border border-[rgba(251,113,133,0.35)] bg-[rgba(251,113,133,0.10)] p-5 text-center shadow-[var(--panel-shadow)] md:p-6">
-      <div className="mb-1 text-sm font-bold text-[var(--coral)]">{title}</div>
-      <p className="mx-auto mb-4 max-w-lg text-sm text-[var(--text-dim)]">{body}</p>
-      <Link href={`/${locale}/perfil`} className="glass inline-flex rounded-xl border border-[var(--border-hi)] px-4 py-2.5 text-sm font-semibold text-[var(--text)] transition-all hover:border-[var(--coral)]">
-        {action}
-      </Link>
-    </div>
-  )
+function EmptyNote({ children }: { children: React.ReactNode }) {
+  return <div className="data py-2 text-[11px] text-[var(--text-faint)]">{children}</div>
 }
 
 export default async function TrendsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ range?: string }>
 }) {
   const { locale } = await params
+  const { range: rangeParam } = await searchParams
   setRequestLocale(locale)
   const t = await getTranslations('trends')
 
+  const range: TrendsRange = RANGES.includes(rangeParam as TrendsRange)
+    ? (rangeParam as TrendsRange)
+    : '12w'
+  const rangeDays = RANGE_DAYS[range]
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect(`/login?next=/${locale}/trends`)
 
-  if (!user) {
-    redirect(`/login?next=/${locale}/trends`)
-  }
-
-  const end = new Date()
-  end.setUTCHours(23, 59, 59, 999)
-  const start = addDays(end, -(WINDOW_DAYS - 1))
-  start.setUTCHours(0, 0, 0, 0)
-  const startDate = isoDate(start)
-  const endDate = isoDate(end)
-  const dateKeys = Array.from({ length: WINDOW_DAYS }, (_, i) => isoDate(addDays(start, i)))
+  const today = new Date()
+  const todayKey = dateKey(today.toISOString())
+  const startDate = rangeDays
+    ? isoDate(new Date(today.getTime() - rangeDays * 86400000))
+    : '2000-01-01'
+  const startIso = `${startDate}T00:00:00Z`
 
   const [
     metricsResult,
-    sleepLogsResult,
+    sleepResult,
     activitiesResult,
-    latestBodyResult,
+    bodyResult,
+    setLogsResult,
+    phasesResult,
+    mealLogsResult,
+    nutritionDaysResult,
+    targetsResult,
+    profileResult,
   ] = await Promise.all([
-    supabase
-      .from('daily_metrics')
-      .select('*')
-      .eq('user_id', user!.id)
-      .gte('date', startDate)
-      .lte('date', endDate)
-      .order('date', { ascending: true }),
-    supabase
-      .from('sleep_logs')
-      .select('*')
-      .eq('user_id', user!.id)
-      .gte('date', startDate)
-      .lte('date', endDate)
-      .order('date', { ascending: true }),
-    supabase
-      .from('activities')
-      .select('*')
-      .eq('user_id', user!.id)
-      .gte('start_date_utc', start.toISOString())
-      .lte('start_date_utc', end.toISOString())
-      .order('start_date_utc', { ascending: false }),
-    supabase
-      .from('body_measurements')
-      .select('*')
-      .eq('user_id', user!.id)
-      .order('measured_at', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
+    supabase.from('daily_metrics').select('*').eq('user_id', user!.id).gte('date', startDate).order('date', { ascending: true }),
+    supabase.from('sleep_logs').select('*').eq('user_id', user!.id).gte('date', startDate).order('date', { ascending: true }),
+    supabase.from('activities').select('*').eq('user_id', user!.id).gte('start_date_utc', startIso).order('start_date_utc', { ascending: true }),
+    supabase.from('body_measurements').select('measured_at, weight_kg').eq('user_id', user!.id).gte('measured_at', startDate).order('measured_at', { ascending: true }),
+    supabase.from('workout_set_logs').select('logged_at, exercise_name, weight_kg, reps').eq('user_id', user!.id).gte('logged_at', startIso).order('logged_at', { ascending: true }),
+    supabase.from('training_phases').select('*').eq('user_id', user!.id).order('start_date', { ascending: false }),
+    supabase.from('meal_logs').select('id, date, meal_log_items ( calories, protein_g )').eq('user_id', user!.id).gte('date', startDate),
+    supabase.from('nutrition_days').select('date, day_type').eq('user_id', user!.id).gte('date', startDate),
+    supabase.from('nutrition_targets').select('*').eq('user_id', user!.id),
+    supabase.from('user_profiles').select('whoop_user_id').eq('id', user!.id).maybeSingle(),
   ])
 
-  const queryError = metricsResult.error ?? sleepLogsResult.error ?? activitiesResult.error ?? latestBodyResult.error
-  if (queryError) {
-    console.error('Failed to load trends data', queryError)
+  const queryError =
+    metricsResult.error ?? sleepResult.error ?? activitiesResult.error ?? bodyResult.error ??
+    setLogsResult.error ?? phasesResult.error ?? mealLogsResult.error ?? nutritionDaysResult.error ??
+    targetsResult.error ?? profileResult.error
+  if (queryError) console.error('Failed to load trends data', queryError)
+
+  const metrics = metricsResult.data ?? []
+  const sleeps = sleepResult.data ?? []
+  const activities = activitiesResult.data ?? []
+  const measurements = bodyResult.data ?? []
+  const setLogs = setLogsResult.data ?? []
+  const phases = phasesResult.data ?? []
+  // Relationships are not declared in the hand-maintained Database type, so the
+  // nested select needs an explicit shape.
+  const mealLogs = (mealLogsResult.data ?? []) as unknown as Array<{
+    id: string
+    date: string
+    meal_log_items: Array<{ calories: number | null; protein_g: number | null }> | null
+  }>
+  const nutritionDays = nutritionDaysResult.data ?? []
+  const targets = targetsResult.data ?? []
+  const whoopConnected = profileResult.data?.whoop_user_id != null
+
+  // ── Body ────────────────────────────────────────────────────────────────────
+  const openPhaseRow = phases.find((p) => p.end_date == null || p.end_date >= todayKey)
+  const activePhase: TrainingPhase | null = openPhaseRow
+    ? {
+        phase: openPhaseRow.kind as PhaseKind,
+        started_on: openPhaseRow.start_date,
+        target_rate_kg_per_week: openPhaseRow.target_rate_kg_per_week,
+      }
+    : null
+  const bodyTrend = computeBodyTrend(
+    measurements.map((m) => ({ measured_on: m.measured_at, weight_kg: m.weight_kg })),
+    activePhase,
+    todayKey,
+  )
+
+  // ── Strength ────────────────────────────────────────────────────────────────
+  const strength = computeStrengthTrends(setLogs, todayKey)
+
+  // ── Load ────────────────────────────────────────────────────────────────────
+  const load = computeLoadTrends(
+    activities
+      .filter((a) => a.start_date_utc != null)
+      .map((a) => ({
+        start: a.start_date_utc!,
+        category: a.activity_category === 'walk' ? ('lifestyle' as const) : ('training' as const),
+        minutes: a.moving_time_s != null ? Math.round(a.moving_time_s / 60) : null,
+      })),
+    metrics.map((m: DailyMetric) => ({ date: m.date, strain: m.daily_strain })),
+  )
+
+  // ── Fuel ────────────────────────────────────────────────────────────────────
+  const targetByDayType = new Map(targets.map((row) => [row.day_type, row]))
+  const dayTypeByDate = new Map(nutritionDays.map((row) => [row.date, row.day_type]))
+  const fuelByDate = new Map<string, { kcal: number; protein: number; items: number }>()
+  for (const log of mealLogs) {
+    const agg = fuelByDate.get(log.date) ?? { kcal: 0, protein: 0, items: 0 }
+    for (const item of log.meal_log_items ?? []) {
+      agg.kcal += Number(item.calories) || 0
+      agg.protein += Number(item.protein_g) || 0
+      agg.items += 1
+    }
+    fuelByDate.set(log.date, agg)
   }
+  const fuelDates = new Set([...fuelByDate.keys(), ...dayTypeByDate.keys()])
+  const fuelDays: FuelDay[] = [...fuelDates].map((date) => {
+    const agg = fuelByDate.get(date)
+    const target = targetByDayType.get(dayTypeByDate.get(date) ?? 'moderate')
+    return {
+      date,
+      kcal: Math.round(agg?.kcal ?? 0),
+      protein: Math.round(agg?.protein ?? 0),
+      kcalTarget: target?.calories_target ?? null,
+      proteinTarget: target?.protein_target ?? null,
+      logged: (agg?.items ?? 0) > 0,
+    }
+  })
+  const latestWeightKg = bodyTrend.weights.length
+    ? bodyTrend.weights[bodyTrend.weights.length - 1].value
+    : null
+  const fuel = computeFuelTrends(fuelDays, todayKey, {
+    actualRatePerWeek: bodyTrend.ratePerWeek,
+    latestWeightKg,
+  })
 
-  const metrics = metricsResult.data
-  const sleepLogs = sleepLogsResult.data
-  const activities = activitiesResult.data
-  const latestBody = latestBodyResult.data
-
-  const metricsByDate = new Map((metrics ?? []).map((m: DailyMetric) => [m.date, m]))
-  const sleepByDate = new Map((sleepLogs ?? []).map((s: SleepLog) => [s.date, s]))
-  const activitiesByDate = new Map<string, Activity[]>()
-  for (const act of activities ?? []) {
-    if (!act.start_date_utc) continue
-    const key = act.start_date_utc.slice(0, 10)
-    activitiesByDate.set(key, [...(activitiesByDate.get(key) ?? []), act])
-  }
-
-  const metricSeries = (field: keyof DailyMetric): Point[] =>
-    dateKeys.map(date => ({ date, value: (metricsByDate.get(date)?.[field] as number | null | undefined) ?? null }))
-  const sleepSeries = (field: keyof SleepLog): Point[] =>
-    dateKeys.map(date => ({ date, value: (sleepByDate.get(date)?.[field] as number | null | undefined) ?? null }))
-  const activitySeries = (selector: (acts: Activity[]) => number): Point[] =>
-    dateKeys.map(date => ({ date, value: selector(activitiesByDate.get(date) ?? []) }))
-
-  const hrv = metricSeries('hrv_ms')
-  const rhr = metricSeries('resting_hr_bpm')
-  const calories = metricSeries('total_calories_kcal')
-  const activeMin = metricSeries('active_min')
-  const sleepHours = sleepSeries('hours')
-  const sleepPerformance = sleepSeries('performance_pct')
-  const sleepConsistency = sleepSeries('consistency_pct')
-  const workoutCount = activitySeries(acts => acts.length)
-  const workoutMinutes = activitySeries(acts => Math.round(sum(acts.map(a => a.moving_time_s)) / 60))
-  const workoutCalories = activitySeries(acts => Math.round(sum(acts.map(a => a.calories_kcal))))
-
-  const acts = activities ?? []
-  const sleeps = sleepLogs ?? []
-  const allMetrics = metrics ?? []
-  const hasData = allMetrics.length > 0 || sleeps.length > 0 || acts.length > 0
-  const firstLabel = axisLabel(locale, startDate)
-  const lastLabel = axisLabel(locale, endDate)
-
-  const totalTimeS = sum(acts.map(a => a.moving_time_s))
-  const totalCalories = sum(acts.map(a => a.calories_kcal))
-  const categoryCounts = acts.reduce<Record<string, number>>((acc, act) => {
-    const key = act.activity_category ?? 'other'
-    acc[key] = (acc[key] ?? 0) + 1
-    return acc
-  }, {})
-  const topCategories = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).slice(0, 6)
+  // ── Recovery ────────────────────────────────────────────────────────────────
+  const recoverySeries = metrics.map((m) => m.recovery_score).filter((v): v is number => v != null)
+  const hrvSeries = metrics.map((m) => m.hrv_ms).filter((v): v is number => v != null)
+  const rhrSeries = metrics.map((m) => m.resting_hr_bpm).filter((v): v is number => v != null)
+  const strainRecovery = metrics.filter((m) => m.daily_strain != null && m.recovery_score != null)
+  const sleepHours = sleeps.map((s: SleepLog) => s.hours).filter((v): v is number => v != null)
   const latestSleep = sleeps[sleeps.length - 1]
-  const body = latestBody as BodyMeasurement | null
+  const zoneTotals = activities.reduce<number[]>((acc, a) => {
+    const z = zoneMinutes((a.hr_zones as HrZones | null) ?? null)
+    return acc.map((v, i) => v + z[i])
+  }, [0, 0, 0, 0, 0, 0])
+  const zoneSum = zoneTotals.reduce((s, v) => s + v, 0)
+
+  const hasAnyData =
+    metrics.length > 0 || sleeps.length > 0 || activities.length > 0 ||
+    measurements.length > 0 || setLogs.length > 0 || fuelDays.length > 0
+
+  const avgOf = (xs: number[], decimals = 0) =>
+    xs.length ? numberLabel(xs.reduce((s, v) => s + v, 0) / xs.length, decimals) : '—'
+
+  const weightValues = bodyTrend.weights.map((p) => p.value)
+  const rolling7Values = bodyTrend.rolling7.map((p) => p.value)
+
+  const firstBodyDate = bodyTrend.weights[0]?.date
+  const lastBodyDate = bodyTrend.weights[bodyTrend.weights.length - 1]?.date
 
   const sleepStages = latestSleep
     ? [
@@ -326,189 +285,348 @@ export default async function TrendsPage({
         { key: 'awake', label: t('sleepStages.awake'), value: latestSleep.awake_hours ?? 0, color: '#94a3b8' },
       ]
     : []
-  const sleepStageTotal = sum(sleepStages.map(s => s.value))
+  const sleepStageTotal = sleepStages.reduce((s, stage) => s + stage.value, 0)
 
   return (
     <div className="boot mx-auto max-w-6xl p-4 md:p-8">
       <MobilePageIntro
         title={t('title')}
-        eyebrow={t('subtitle', { start: firstLabel, end: lastLabel })}
+        eyebrow={t('subtitle')}
         aside={
           <Link href={`/${locale}/perfil`} className="glass grid min-h-11 min-w-11 place-items-center rounded-full border border-[var(--border)] text-base text-accent">
             ↻<span className="sr-only">{t('syncCta')}</span>
           </Link>
         }
       />
-      <div className="mb-8 hidden items-end justify-between gap-3 md:flex">
+      <div className="mb-6 hidden items-end justify-between gap-3 md:flex">
         <div>
           <h1 className="display text-2xl font-bold text-[var(--text)]">{t('title')}</h1>
-          <p className="mt-0.5 text-sm text-muted">{t('subtitle', { start: firstLabel, end: lastLabel })}</p>
+          <p className="mt-0.5 text-sm text-muted">{t('subtitle')}</p>
         </div>
-        <Link href={`/${locale}/perfil`} className="glass rounded-xl border border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text-dim)] transition-colors hover:border-accent hover:text-[var(--text)]">
-          {t('syncCta')}
-        </Link>
       </div>
 
-      {!hasData ? (
-        queryError ? (
-          <ErrorState locale={locale} title={t('error.title')} body={t('error.body')} action={t('error.action')} />
-        ) : (
-          <EmptyState locale={locale} title={t('empty.title')} body={t('empty.body')} action={t('empty.action')} />
-        )
+      {/* Range selector */}
+      <div className="mb-5 flex gap-1.5">
+        {RANGES.map((r) => (
+          <Link
+            key={r}
+            href={`/${locale}/trends?range=${r}`}
+            className={`data rounded-full border px-3.5 py-1.5 text-[11px] font-semibold transition-colors ${
+              r === range
+                ? 'border-accent bg-accent-light text-[var(--text)]'
+                : 'border-[var(--border)] text-[var(--text-dim)]'
+            }`}
+          >
+            {t(`ranges.${r}`)}
+          </Link>
+        ))}
+      </div>
+
+      {!hasAnyData ? (
+        <div className="glass ticks rounded-2xl border border-[var(--border-hi)] p-5 text-center md:p-6">
+          <div className="mb-1 text-sm font-bold text-[var(--text)]">{t('empty.title')}</div>
+          <p className="mx-auto mb-4 max-w-lg text-sm text-[var(--text-dim)]">{t('empty.body')}</p>
+          <Link href={`/${locale}/perfil`} className="btn-accent inline-flex rounded-xl px-4 py-2.5 text-sm font-bold">
+            {t('empty.action')}
+          </Link>
+        </div>
       ) : (
         <div className="space-y-5 md:space-y-6">
-          <section>
-            <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">{t('averages')}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-              <MetricCard label={t('metrics.hrv')} value={avg(hrv.map(p => p.value), 1)} unit="ms" color="#2563eb" />
-              <MetricCard label={t('metrics.rhr')} value={avg(rhr.map(p => p.value))} unit="bpm" color="#f97316" />
-              <MetricCard label={t('metrics.sleep')} value={avg(sleepHours.map(p => p.value), 1)} unit="h" color="#0891b2" />
-              <MetricCard label={t('metrics.calories')} value={avg(calories.map(p => p.value))} unit="kcal" color="#e11d48" />
-            </div>
-          </section>
+          {/* ── Body ── */}
+          <SectionLabel>{t('sectionsV2.body')}</SectionLabel>
+          <Panel>
+            <ChartTitle
+              title={t('charts.weight')}
+              right={
+                <span className="flex gap-1.5">
+                  {bodyTrend.ratePerWeek != null && (
+                    <StatChip
+                      label={`${signed(bodyTrend.ratePerWeek)} kg/${t('perWeek')}`}
+                      color={bodyTrend.verdict ? VERDICT_COLOR[bodyTrend.verdict] : 'var(--text-dim)'}
+                    />
+                  )}
+                  {bodyTrend.verdict && (
+                    <StatChip label={t(`verdict.${bodyTrend.verdict}`)} color={VERDICT_COLOR[bodyTrend.verdict]} />
+                  )}
+                </span>
+              }
+            />
+            {weightValues.length >= 2 ? (
+              <>
+                <DualSpark dataA={weightValues} dataB={rolling7Values} colorA={CYAN} colorB={MINT} />
+                <Legend
+                  items={[
+                    { label: t('charts.weighIns'), color: CYAN },
+                    { label: t('charts.rolling7'), color: MINT, dashed: true },
+                  ]}
+                />
+                {firstBodyDate && lastBodyDate && (
+                  <AxisRow first={axisLabel(locale, firstBodyDate)} last={axisLabel(locale, lastBodyDate)} />
+                )}
+              </>
+            ) : (
+              <EmptyNote>{t('emptyV2.noWeight')}</EmptyNote>
+            )}
+            {bodyTrend.sinceStart && activePhase && (
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                <MiniStat
+                  label={t(`phases.kind.${activePhase.phase}`)}
+                  value={signed(bodyTrend.sinceStart.totalKg)}
+                  unit="kg"
+                  color={VIOLET}
+                  sub={t('phases.sinceStart', { days: bodyTrend.sinceStart.days })}
+                />
+                <MiniStat
+                  label={t('charts.avgRate')}
+                  value={bodyTrend.sinceStart.avgPerWeek != null ? signed(bodyTrend.sinceStart.avgPerWeek) : '—'}
+                  unit={`kg/${t('perWeek')}`}
+                  color={CYAN}
+                />
+                <MiniStat
+                  label={t('charts.targetRate')}
+                  value={bodyTrend.targetRate != null ? signed(bodyTrend.targetRate) : '—'}
+                  unit={`kg/${t('perWeek')}`}
+                  color={MINT}
+                />
+              </div>
+            )}
+            <PhaseEditor
+              phases={phases.map((p) => ({
+                id: p.id,
+                kind: p.kind as PhaseKind,
+                start_date: p.start_date,
+                end_date: p.end_date,
+                target_rate_kg_per_week: p.target_rate_kg_per_week,
+              }))}
+            />
+          </Panel>
 
-          <section>
-            <ChartCard title={t('sections.hrvRhr')}>
-              <LineChart
-                series={[
-                  { label: t('metrics.hrv'), color: '#2563eb', data: hrv },
-                  { label: t('metrics.rhr'), color: '#f97316', data: rhr, dashed: true },
-                ]}
-              />
-              <Legend items={[{ label: t('metrics.hrv'), color: '#2563eb' }, { label: t('metrics.rhr'), color: '#f97316', dashed: true }]} />
-            </ChartCard>
-          </section>
+          {/* ── Strength ── */}
+          <SectionLabel>{t('sectionsV2.strength')}</SectionLabel>
+          {strength.exercises.length > 0 ? (
+            <>
+              <div className="flex gap-1.5">
+                {strength.strengthChip && (
+                  <StatChip
+                    label={`${t('charts.e1rm')} ${CHIP_GLYPH[strength.strengthChip]}`}
+                    color={CHIP_COLOR[strength.strengthChip]}
+                  />
+                )}
+                {strength.volumeChip && (
+                  <StatChip
+                    label={`${t('charts.volume')} ${CHIP_GLYPH[strength.volumeChip]}`}
+                    color={CHIP_COLOR[strength.volumeChip]}
+                  />
+                )}
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {strength.exercises.slice(0, 4).map((ex) => (
+                  <Panel key={ex.exercise}>
+                    <ChartTitle
+                      title={ex.exercise}
+                      right={
+                        ex.slopePctPerWeek != null ? (
+                          <span className="data text-[10px]" style={{ color: ex.slopePctPerWeek > 1 ? MINT : ex.slopePctPerWeek < -1 ? CORAL : AMBER }}>
+                            {signed(ex.slopePctPerWeek, 1)}%/{t('perWeek')}
+                          </span>
+                        ) : undefined
+                      }
+                    />
+                    <BigSpark data={ex.points.map((p) => p.value)} color={VIOLET} height={56} />
+                    <AxisRow
+                      first={ex.points[0] ? axisLabel(locale, ex.points[0].date) : '—'}
+                      last={ex.points[ex.points.length - 1] ? axisLabel(locale, ex.points[ex.points.length - 1].date) : '—'}
+                    />
+                  </Panel>
+                ))}
+              </div>
+              <Panel>
+                <ChartTitle
+                  title={t('charts.weeklyTonnage')}
+                  right={<span className="data text-[10px] text-muted">{numberLabel(strength.weeklyTonnage.reduce((s, w) => s + w.kg, 0))} kg</span>}
+                />
+                <BarChart data={strength.weeklyTonnage.map((w) => w.kg)} color={VIOLET} />
+                <AxisRow
+                  first={strength.weeklyTonnage[0] ? axisLabel(locale, strength.weeklyTonnage[0].week) : '—'}
+                  last={strength.weeklyTonnage.length ? axisLabel(locale, strength.weeklyTonnage[strength.weeklyTonnage.length - 1].week) : '—'}
+                />
+              </Panel>
+            </>
+          ) : (
+            <Panel>
+              <EmptyNote>{t('emptyV2.noSets')}</EmptyNote>
+            </Panel>
+          )}
 
-          <section className="grid lg:grid-cols-[1.1fr_0.9fr] gap-4">
-            <ChartCard title={t('sections.sleepTrends')} right={t('sections.avgSleep', { value: avg(sleepHours.map(p => p.value), 1) })}>
-              <LineChart
-                series={[
-                  { label: t('metrics.sleep'), color: '#0891b2', data: sleepHours },
-                  { label: t('metrics.sleepPerformance'), color: '#65a30d', data: sleepPerformance, dashed: true },
-                  { label: t('metrics.sleepConsistency'), color: '#6366f1', data: sleepConsistency, dashed: true },
-                ]}
-              />
-              <Legend
-                items={[
-                  { label: t('metrics.sleep'), color: '#0891b2' },
-                  { label: t('metrics.sleepPerformance'), color: '#65a30d', dashed: true },
-                  { label: t('metrics.sleepConsistency'), color: '#6366f1', dashed: true },
-                ]}
-              />
-            </ChartCard>
-            <ChartCard title={t('sections.latestSleep')} right={latestSleep?.hours ? `${numberLabel(latestSleep.hours, 1)}h` : undefined}>
-              {sleepStageTotal > 0 ? (
-                <>
-                  <div className="mb-4 flex h-3 overflow-hidden rounded-full bg-[var(--ring-track)]">
-                    {sleepStages.map(stage => (
+          {/* ── Load ── */}
+          <SectionLabel>{t('sectionsV2.load')}</SectionLabel>
+          <Panel>
+            <ChartTitle
+              title={t('charts.weeklyMinutes')}
+              right={
+                <span className="data text-[10px] text-muted">
+                  {t('charts.sessions', { count: load.weeks.reduce((s, w) => s + w.sessions, 0) })}
+                </span>
+              }
+            />
+            {load.weeks.length > 0 ? (
+              <>
+                <BarChart data={load.weeks.map((w) => w.trainingMin)} color={CYAN} />
+                <AxisRow
+                  first={axisLabel(locale, load.weeks[0].week)}
+                  last={axisLabel(locale, load.weeks[load.weeks.length - 1].week)}
+                />
+              </>
+            ) : (
+              <EmptyNote>{t('emptyV2.noActivities')}</EmptyNote>
+            )}
+          </Panel>
+
+          {/* ── Fuel ── */}
+          <SectionLabel>{t('sectionsV2.fuel')}</SectionLabel>
+          <Panel>
+            <ChartTitle
+              title={t('charts.dailyKcal')}
+              right={
+                fuel.adherence.loggedPct != null ? (
+                  <span className="data text-[10px] text-muted">
+                    {t('charts.loggedPct', { pct: fuel.adherence.loggedPct })}
+                  </span>
+                ) : undefined
+              }
+            />
+            {fuel.days.some((d) => d.logged) ? (
+              <>
+                <BarChart
+                  data={fuel.days.map((d) => d.kcal)}
+                  colors={fuel.days.map((d) =>
+                    d.kcalTarget && Math.abs(d.kcal - d.kcalTarget) <= 0.1 * d.kcalTarget ? MINT : AMBER,
+                  )}
+                />
+                <AxisRow
+                  first={axisLabel(locale, fuel.days[0].date)}
+                  last={axisLabel(locale, fuel.days[fuel.days.length - 1].date)}
+                />
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <MiniStat label={t('charts.kcalAdherence')} value={fuel.adherence.kcalWithin10Pct != null ? `${fuel.adherence.kcalWithin10Pct}` : '—'} unit="%" color={MINT} />
+                  <MiniStat label={t('charts.proteinHit')} value={fuel.adherence.proteinHitPct != null ? `${fuel.adherence.proteinHitPct}` : '—'} unit="%" color={CYAN} />
+                  <MiniStat label={t('charts.proteinPerKg')} value={fuel.proteinPerKg != null ? fuel.proteinPerKg.toFixed(1) : '—'} unit="g/kg" color={VIOLET} />
+                </div>
+              </>
+            ) : (
+              <EmptyNote>{t('emptyV2.noMeals')}</EmptyNote>
+            )}
+          </Panel>
+
+          {/* ── Recovery ── */}
+          <SectionLabel>{t('sectionsV2.recovery')}</SectionLabel>
+          {!whoopConnected && metrics.length === 0 && (
+            <Panel>
+              <p className="mb-3 text-sm text-[var(--text-dim)]">{t('whoop.connectBody')}</p>
+              <Link href={`/${locale}/perfil`} className="btn-accent inline-flex rounded-xl px-4 py-2 text-xs font-bold">
+                {t('whoop.connectCta')}
+              </Link>
+            </Panel>
+          )}
+          {metrics.length > 0 && (
+            <>
+              <div className="grid grid-cols-3 gap-2">
+                <MiniStat label={t('metrics.recovery')} value={avgOf(recoverySeries)} unit="%" color={MINT} />
+                <MiniStat label={t('metrics.hrv')} value={avgOf(hrvSeries, 1)} unit="ms" color={CYAN} />
+                <MiniStat label={t('metrics.rhr')} value={avgOf(rhrSeries)} unit="bpm" color={CORAL} />
+              </div>
+              <Panel>
+                <ChartTitle title={t('charts.recovery')} />
+                {recoverySeries.length >= 2 ? (
+                  <BigSpark data={recoverySeries} colorByValue />
+                ) : (
+                  <EmptyNote>{t('emptyV2.noRecovery')}</EmptyNote>
+                )}
+              </Panel>
+              <div className="grid gap-4 md:grid-cols-2">
+                <Panel>
+                  <ChartTitle title={t('sections.hrvRhr')} />
+                  {hrvSeries.length >= 2 && rhrSeries.length >= 2 ? (
+                    <>
+                      <DualSpark dataA={hrvSeries} dataB={rhrSeries} colorA={CYAN} colorB={CORAL} />
+                      <Legend items={[{ label: t('metrics.hrv'), color: CYAN }, { label: t('metrics.rhr'), color: CORAL, dashed: true }]} />
+                    </>
+                  ) : (
+                    <EmptyNote>{t('emptyV2.noRecovery')}</EmptyNote>
+                  )}
+                </Panel>
+                <Panel>
+                  <ChartTitle title={t('charts.strainVsRecovery')} />
+                  {strainRecovery.length >= 2 ? (
+                    <>
+                      <DualSpark
+                        dataA={strainRecovery.map((m) => m.daily_strain!)}
+                        dataB={strainRecovery.map((m) => m.recovery_score!)}
+                        colorA={AMBER}
+                        colorB={MINT}
+                      />
+                      <Legend items={[{ label: t('metrics.strain'), color: AMBER }, { label: t('metrics.recovery'), color: MINT, dashed: true }]} />
+                    </>
+                  ) : (
+                    <EmptyNote>{t('emptyV2.noRecovery')}</EmptyNote>
+                  )}
+                </Panel>
+              </div>
+            </>
+          )}
+          <div className="grid gap-4 md:grid-cols-2">
+            <Panel>
+              <ChartTitle title={t('charts.sleepHours')} right={<span className="data text-[10px] text-muted">{avgOf(sleepHours, 1)}h {t('charts.avg')}</span>} />
+              {sleepHours.length > 0 ? (
+                <BarChart data={sleepHours} color={VIOLET} maxVal={10} />
+              ) : (
+                <EmptyNote>{t('emptyV2.noSleep')}</EmptyNote>
+              )}
+              {sleepStageTotal > 0 && (
+                <div className="mt-4">
+                  <div className="mb-2 flex h-2.5 overflow-hidden rounded-full bg-[var(--ring-track)]">
+                    {sleepStages.map((stage) => (
                       <div key={stage.key} style={{ width: `${(stage.value / sleepStageTotal) * 100}%`, background: stage.color }} />
                     ))}
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {sleepStages.map(stage => (
-                      <div key={stage.key} className="flex items-center justify-between gap-2 text-xs">
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {sleepStages.map((stage) => (
+                      <div key={stage.key} className="flex items-center justify-between text-[11px]">
                         <span className="inline-flex items-center gap-1.5 text-muted">
-                          <span className="w-2 h-2 rounded-sm" style={{ background: stage.color }} />
+                          <span className="h-2 w-2 rounded-sm" style={{ background: stage.color }} />
                           {stage.label}
                         </span>
                         <span className="data font-semibold text-[var(--text)]">{numberLabel(stage.value, 1)}h</span>
                       </div>
                     ))}
                   </div>
-                </>
-              ) : (
-                <p className="text-sm text-muted">{t('empty.noSleepStages')}</p>
-              )}
-            </ChartCard>
-          </section>
-
-          <section className="grid lg:grid-cols-2 gap-4">
-            <ChartCard title={t('sections.activeMinutes')} right={formatDuration(totalTimeS)}>
-              <BarChart data={activeMin.some(p => p.value) ? activeMin : workoutMinutes} color="#65a30d" />
-            </ChartCard>
-            <ChartCard title={t('sections.dailyCalories')} right={`${Math.round(totalCalories)} kcal`}>
-              <BarChart data={calories.some(p => p.value) ? calories : workoutCalories} color="#e11d48" />
-            </ChartCard>
-          </section>
-
-          <section className="grid lg:grid-cols-[0.9fr_1.1fr] gap-4">
-            <ChartCard title={t('sections.workoutCount')} right={t('sections.totalWorkouts', { count: acts.length })}>
-              <BarChart data={workoutCount} color="#f97316" />
-            </ChartCard>
-            <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
-              <h3 className="data mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted md:text-xs">{t('sections.categoryMix')}</h3>
-              {topCategories.length > 0 ? (
-                <div className="space-y-3">
-                  {topCategories.map(([category, count]) => {
-                    const pct = (count / acts.length) * 100
-                    return (
-                      <div key={category}>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="capitalize text-[var(--text-dim)]">{category}</span>
-                          <span className="text-muted">{count}</span>
-                        </div>
-                        <div className="h-2 overflow-hidden rounded-full bg-[var(--ring-track)]">
-                          <div className="h-full rounded-full" style={{ width: `${pct}%`, background: CATEGORY_COLORS[category] ?? CATEGORY_COLORS.other }} />
-                        </div>
-                      </div>
-                    )
-                  })}
                 </div>
-              ) : (
-                <p className="text-sm text-muted">{t('empty.noWorkouts')}</p>
               )}
-            </div>
-          </section>
-
-          <section className="grid lg:grid-cols-[1.2fr_0.8fr] gap-4">
-            <div className="panel mobile-sheet overflow-hidden rounded-[1.6rem] md:rounded-2xl">
-              <div className="px-4 md:px-5 py-4 border-b border-border">
-                <h3 className="text-xs font-semibold text-muted uppercase tracking-wide">{t('sections.recentWorkouts')}</h3>
-              </div>
-              {acts.length > 0 ? (
-                acts.slice(0, 8).map((act, i) => (
-                  <div key={act.id} className={`flex items-center gap-3 px-4 md:px-5 py-3 ${i < Math.min(acts.length, 8) - 1 ? 'border-b border-dashed border-border' : ''}`}>
-                    <div className="w-2.5 h-10 rounded-full flex-shrink-0" style={{ background: CATEGORY_COLORS[act.activity_category ?? 'other'] ?? CATEGORY_COLORS.other }} />
-                    <div className="flex-1 min-w-0">
-                      <div className="truncate text-sm font-semibold text-[var(--text)]">{formatActivityDisplayName(act)}</div>
-                      <div className="text-xs text-muted">
-                        {act.start_date_utc ? axisLabel(locale, act.start_date_utc.slice(0, 10)) : '—'} · {act.moving_time_s ? formatDuration(act.moving_time_s) : '—'}
+            </Panel>
+            <Panel>
+              <ChartTitle title={t('charts.hrZones')} />
+              {zoneSum > 0 ? (
+                <div className="space-y-2">
+                  {zoneTotals.map((minutes, i) => (
+                    <div key={ZONE_LABELS[i]} className="flex items-center gap-2">
+                      <span className="data w-6 text-[10px] text-muted">{ZONE_LABELS[i]}</span>
+                      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[var(--ring-track)]">
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${(minutes / zoneSum) * 100}%`, background: ZONE_COLORS[i] }}
+                        />
                       </div>
-                    </div>
-                    <div className="text-right text-xs text-muted flex-shrink-0">
-                      {act.calories_kcal != null && <div>{Math.round(act.calories_kcal)} kcal</div>}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="px-4 py-8 text-center text-sm text-muted">{t('empty.noWorkouts')}</div>
-              )}
-            </div>
-
-            <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
-              <h3 className="data mb-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted md:text-xs">{t('sections.bodyComp')}</h3>
-              {body ? (
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { label: t('body.weight'), value: numberLabel(body.weight_kg, 1), unit: 'kg', color: 'var(--text)' },
-                    { label: t('body.muscle'), value: numberLabel(body.muscle_mass_kg, 1), unit: 'kg', color: '#65a30d' },
-                    { label: t('body.fat'), value: numberLabel(body.fat_percentage, 1), unit: '%', color: '#f97316' },
-                    { label: t('body.date'), value: body.measured_at ? axisLabel(locale, body.measured_at) : '—', unit: '', color: 'var(--text-dim)' },
-                  ].map(item => (
-                    <div key={item.label} className="border-t border-border pt-3">
-                      <div className="text-[10px] text-muted uppercase tracking-wide mb-1">{item.label}</div>
-                      <div className="flex items-baseline gap-1">
-                        <span className="data text-lg font-bold" style={{ color: item.color }}>{item.value}</span>
-                        {item.unit && <span className="text-xs text-muted">{item.unit}</span>}
-                      </div>
+                      <span className="data w-12 text-right text-[10px] text-[var(--text-dim)]">
+                        {numberLabel(minutes)} min
+                      </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted">{t('empty.noBody')}</p>
+                <EmptyNote>{t('emptyV2.noZones')}</EmptyNote>
               )}
-            </div>
-          </section>
+            </Panel>
+          </div>
         </div>
       )}
     </div>

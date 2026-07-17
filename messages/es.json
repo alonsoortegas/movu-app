@@ -21,7 +21,9 @@
     "plan": "Mi Plan",
     "perfil": "Perfil"
   },
-  "localeSwitcher": { "label": "Idioma" },
+  "localeSwitcher": {
+    "label": "Idioma"
+  },
   "dashboard": {
     "title": "Dashboard",
     "greeting": "Hola, {name}",
@@ -52,18 +54,46 @@
       "calories": "Calorías"
     },
     "weekDays": {
-      "mon": { "short": "L", "label": "Lun", "type": "pesas" },
-      "tue": { "short": "M", "label": "Mar", "type": "cardio" },
-      "wed": { "short": "X", "label": "Mié", "type": "pesas" },
-      "thu": { "short": "J", "label": "Jue", "type": "descanso" },
-      "fri": { "short": "V", "label": "Vie", "type": "correr" },
-      "sat": { "short": "S", "label": "Sáb", "type": "combinado" },
-      "sun": { "short": "D", "label": "Dom", "type": "—" }
+      "mon": {
+        "short": "L",
+        "label": "Lun",
+        "type": "pesas"
+      },
+      "tue": {
+        "short": "M",
+        "label": "Mar",
+        "type": "cardio"
+      },
+      "wed": {
+        "short": "X",
+        "label": "Mié",
+        "type": "pesas"
+      },
+      "thu": {
+        "short": "J",
+        "label": "Jue",
+        "type": "descanso"
+      },
+      "fri": {
+        "short": "V",
+        "label": "Vie",
+        "type": "correr"
+      },
+      "sat": {
+        "short": "S",
+        "label": "Sáb",
+        "type": "combinado"
+      },
+      "sun": {
+        "short": "D",
+        "label": "Dom",
+        "type": "—"
+      }
     }
   },
   "trends": {
     "title": "Tendencias",
-    "subtitle": "Últimos 30 días · {start} – {end}",
+    "subtitle": "Tu progreso a lo largo del tiempo",
     "syncCta": "Sincronizar datos",
     "averages": "Promedios de 30 días",
     "metrics": {
@@ -72,7 +102,9 @@
       "sleep": "Sueño",
       "sleepPerformance": "Sueño perf.",
       "sleepConsistency": "Consistencia",
-      "calories": "Calorías"
+      "calories": "Calorías",
+      "recovery": "Recuperación",
+      "strain": "Strain"
     },
     "sections": {
       "hrvRhr": "HRV y FC en reposo",
@@ -111,6 +143,76 @@
       "title": "No se pudieron cargar las tendencias",
       "body": "Hubo un problema leyendo tus datos de fitness. Intenta sincronizar de nuevo desde tu perfil.",
       "action": "Abrir perfil"
+    },
+    "ranges": {
+      "4w": "4 sem",
+      "12w": "12 sem",
+      "6m": "6 meses",
+      "all": "Todo"
+    },
+    "sectionsV2": {
+      "body": "Peso y fase",
+      "strength": "Fuerza",
+      "load": "Carga de entrenamiento",
+      "fuel": "Nutrición",
+      "recovery": "Recuperación"
+    },
+    "charts": {
+      "weight": "Peso corporal",
+      "weighIns": "Pesajes",
+      "rolling7": "Promedio 7d",
+      "avgRate": "Ritmo promedio",
+      "targetRate": "Ritmo objetivo",
+      "e1rm": "Fuerza",
+      "volume": "Volumen",
+      "weeklyTonnage": "Tonelaje semanal",
+      "weeklyMinutes": "Minutos de entrenamiento por semana",
+      "sessions": "{count} sesiones",
+      "dailyKcal": "Calorías diarias vs objetivo",
+      "loggedPct": "{pct}% de días registrados",
+      "kcalAdherence": "Kcal ±10%",
+      "proteinHit": "Proteína ok",
+      "proteinPerKg": "Prot/kg",
+      "recovery": "Recuperación",
+      "strainVsRecovery": "Strain vs recuperación",
+      "sleepHours": "Horas de sueño",
+      "hrZones": "Zonas de frecuencia cardiaca",
+      "avg": "prom"
+    },
+    "verdict": {
+      "on_track": "en ritmo",
+      "fast": "muy rápido",
+      "slow": "muy lento"
+    },
+    "perWeek": "sem",
+    "phases": {
+      "kind": {
+        "bulk": "Volumen",
+        "cut": "Definición",
+        "maintenance": "Mantenimiento"
+      },
+      "current": "{kind} · desde {since}",
+      "none": "Sin fase activa",
+      "start": "Nueva fase",
+      "end": "Terminar",
+      "cancel": "Cancelar",
+      "confirm": "Iniciar fase",
+      "ratePlaceholder": "kg/sem",
+      "saveError": "No se pudo guardar la fase",
+      "sinceStart": "{days} días"
+    },
+    "whoop": {
+      "connectBody": "Conecta WHOOP o sincroniza Apple Health para ver recuperación, HRV y strain aquí.",
+      "connectCta": "Conectar en perfil"
+    },
+    "emptyV2": {
+      "noWeight": "Aún no hay suficientes pesajes — registra tu peso en el perfil.",
+      "noSets": "Aún no hay series registradas. Registra tus entrenamientos de fuerza desde Mi Plan.",
+      "noActivities": "Sin actividades en este periodo.",
+      "noMeals": "Sin comidas registradas en este periodo.",
+      "noRecovery": "Sin datos de recuperación en este periodo.",
+      "noSleep": "Sin datos de sueño en este periodo.",
+      "noZones": "Sin datos de zonas de FC en este periodo."
     }
   },
   "plan": {
@@ -131,13 +233,48 @@
       "min": "Min"
     },
     "planRows": {
-      "mon": { "day": "Lunes", "dayShort": "Lun", "muscle": "Pecho + Tríceps", "type": "Pesas" },
-      "tue": { "day": "Martes", "dayShort": "Mar", "muscle": "Pierna", "type": "Pesas" },
-      "wed": { "day": "Miércoles", "dayShort": "Mié", "muscle": "Cardio HIIT", "type": "Cardio" },
-      "thu": { "day": "Jueves", "dayShort": "Jue", "muscle": "Descanso", "type": "—" },
-      "fri": { "day": "Viernes", "dayShort": "Vie", "muscle": "Espalda + Bícep", "type": "Pesas" },
-      "sat": { "day": "Sábado", "dayShort": "Sáb", "muscle": "Full Body", "type": "Combinado" },
-      "sun": { "day": "Domingo", "dayShort": "Dom", "muscle": "Descanso", "type": "—" }
+      "mon": {
+        "day": "Lunes",
+        "dayShort": "Lun",
+        "muscle": "Pecho + Tríceps",
+        "type": "Pesas"
+      },
+      "tue": {
+        "day": "Martes",
+        "dayShort": "Mar",
+        "muscle": "Pierna",
+        "type": "Pesas"
+      },
+      "wed": {
+        "day": "Miércoles",
+        "dayShort": "Mié",
+        "muscle": "Cardio HIIT",
+        "type": "Cardio"
+      },
+      "thu": {
+        "day": "Jueves",
+        "dayShort": "Jue",
+        "muscle": "Descanso",
+        "type": "—"
+      },
+      "fri": {
+        "day": "Viernes",
+        "dayShort": "Vie",
+        "muscle": "Espalda + Bícep",
+        "type": "Pesas"
+      },
+      "sat": {
+        "day": "Sábado",
+        "dayShort": "Sáb",
+        "muscle": "Full Body",
+        "type": "Combinado"
+      },
+      "sun": {
+        "day": "Domingo",
+        "dayShort": "Dom",
+        "muscle": "Descanso",
+        "type": "—"
+      }
     },
     "muscleBadges": {
       "chest": "Pecho",

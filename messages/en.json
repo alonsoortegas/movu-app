@@ -21,7 +21,9 @@
     "plan": "My Plan",
     "perfil": "Profile"
   },
-  "localeSwitcher": { "label": "Language" },
+  "localeSwitcher": {
+    "label": "Language"
+  },
   "dashboard": {
     "title": "Dashboard",
     "greeting": "Hey, {name}",
@@ -52,18 +54,46 @@
       "calories": "Calories"
     },
     "weekDays": {
-      "mon": { "short": "M", "label": "Mon", "type": "weights" },
-      "tue": { "short": "T", "label": "Tue", "type": "cardio" },
-      "wed": { "short": "W", "label": "Wed", "type": "weights" },
-      "thu": { "short": "T", "label": "Thu", "type": "rest" },
-      "fri": { "short": "F", "label": "Fri", "type": "run" },
-      "sat": { "short": "S", "label": "Sat", "type": "combined" },
-      "sun": { "short": "S", "label": "Sun", "type": "—" }
+      "mon": {
+        "short": "M",
+        "label": "Mon",
+        "type": "weights"
+      },
+      "tue": {
+        "short": "T",
+        "label": "Tue",
+        "type": "cardio"
+      },
+      "wed": {
+        "short": "W",
+        "label": "Wed",
+        "type": "weights"
+      },
+      "thu": {
+        "short": "T",
+        "label": "Thu",
+        "type": "rest"
+      },
+      "fri": {
+        "short": "F",
+        "label": "Fri",
+        "type": "run"
+      },
+      "sat": {
+        "short": "S",
+        "label": "Sat",
+        "type": "combined"
+      },
+      "sun": {
+        "short": "S",
+        "label": "Sun",
+        "type": "—"
+      }
     }
   },
   "trends": {
     "title": "Trends",
-    "subtitle": "Last 30 days · {start} – {end}",
+    "subtitle": "Your progress over time",
     "syncCta": "Sync data",
     "averages": "30-day averages",
     "metrics": {
@@ -72,7 +102,9 @@
       "sleep": "Sleep",
       "sleepPerformance": "Sleep perf.",
       "sleepConsistency": "Consistency",
-      "calories": "Calories"
+      "calories": "Calories",
+      "recovery": "Recovery",
+      "strain": "Strain"
     },
     "sections": {
       "hrvRhr": "HRV & resting HR",
@@ -111,6 +143,76 @@
       "title": "Trends could not load",
       "body": "There was a problem reading your fitness data. Try syncing again from your profile.",
       "action": "Open profile"
+    },
+    "ranges": {
+      "4w": "4 wk",
+      "12w": "12 wk",
+      "6m": "6 mo",
+      "all": "All"
+    },
+    "sectionsV2": {
+      "body": "Weight & phase",
+      "strength": "Strength",
+      "load": "Training load",
+      "fuel": "Nutrition",
+      "recovery": "Recovery"
+    },
+    "charts": {
+      "weight": "Body weight",
+      "weighIns": "Weigh-ins",
+      "rolling7": "7d rolling",
+      "avgRate": "Avg rate",
+      "targetRate": "Target rate",
+      "e1rm": "Strength",
+      "volume": "Volume",
+      "weeklyTonnage": "Weekly tonnage",
+      "weeklyMinutes": "Weekly training minutes",
+      "sessions": "{count} sessions",
+      "dailyKcal": "Daily calories vs target",
+      "loggedPct": "{pct}% days logged",
+      "kcalAdherence": "Kcal ±10%",
+      "proteinHit": "Protein hit",
+      "proteinPerKg": "Prot/kg",
+      "recovery": "Recovery",
+      "strainVsRecovery": "Strain vs recovery",
+      "sleepHours": "Sleep hours",
+      "hrZones": "Heart-rate zones",
+      "avg": "avg"
+    },
+    "verdict": {
+      "on_track": "on track",
+      "fast": "too fast",
+      "slow": "too slow"
+    },
+    "perWeek": "wk",
+    "phases": {
+      "kind": {
+        "bulk": "Bulk",
+        "cut": "Cut",
+        "maintenance": "Maintenance"
+      },
+      "current": "{kind} · since {since}",
+      "none": "No active phase",
+      "start": "New phase",
+      "end": "End",
+      "cancel": "Cancel",
+      "confirm": "Start phase",
+      "ratePlaceholder": "kg/wk",
+      "saveError": "Could not save the phase",
+      "sinceStart": "{days} days"
+    },
+    "whoop": {
+      "connectBody": "Connect WHOOP or sync Apple Health to see recovery, HRV, and strain here.",
+      "connectCta": "Connect in profile"
+    },
+    "emptyV2": {
+      "noWeight": "Not enough weigh-ins yet — log your weight in your profile.",
+      "noSets": "No sets logged yet. Log your strength workouts from My Plan.",
+      "noActivities": "No activities in this period.",
+      "noMeals": "No meals logged in this period.",
+      "noRecovery": "No recovery data in this period.",
+      "noSleep": "No sleep data in this period.",
+      "noZones": "No HR-zone data in this period."
     }
   },
   "plan": {
@@ -131,13 +233,48 @@
       "min": "Min"
     },
     "planRows": {
-      "mon": { "day": "Monday", "dayShort": "Mon", "muscle": "Chest + Triceps", "type": "Weights" },
-      "tue": { "day": "Tuesday", "dayShort": "Tue", "muscle": "Legs", "type": "Weights" },
-      "wed": { "day": "Wednesday", "dayShort": "Wed", "muscle": "Cardio HIIT", "type": "Cardio" },
-      "thu": { "day": "Thursday", "dayShort": "Thu", "muscle": "Rest", "type": "—" },
-      "fri": { "day": "Friday", "dayShort": "Fri", "muscle": "Back + Biceps", "type": "Weights" },
-      "sat": { "day": "Saturday", "dayShort": "Sat", "muscle": "Full Body", "type": "Combined" },
-      "sun": { "day": "Sunday", "dayShort": "Sun", "muscle": "Rest", "type": "—" }
+      "mon": {
+        "day": "Monday",
+        "dayShort": "Mon",
+        "muscle": "Chest + Triceps",
+        "type": "Weights"
+      },
+      "tue": {
+        "day": "Tuesday",
+        "dayShort": "Tue",
+        "muscle": "Legs",
+        "type": "Weights"
+      },
+      "wed": {
+        "day": "Wednesday",
+        "dayShort": "Wed",
+        "muscle": "Cardio HIIT",
+        "type": "Cardio"
+      },
+      "thu": {
+        "day": "Thursday",
+        "dayShort": "Thu",
+        "muscle": "Rest",
+        "type": "—"
+      },
+      "fri": {
+        "day": "Friday",
+        "dayShort": "Fri",
+        "muscle": "Back + Biceps",
+        "type": "Weights"
+      },
+      "sat": {
+        "day": "Saturday",
+        "dayShort": "Sat",
+        "muscle": "Full Body",
+        "type": "Combined"
+      },
+      "sun": {
+        "day": "Sunday",
+        "dayShort": "Sun",
+        "muscle": "Rest",
+        "type": "—"
+      }
     },
     "muscleBadges": {
       "chest": "Chest",
