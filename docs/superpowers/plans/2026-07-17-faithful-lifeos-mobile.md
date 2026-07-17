@@ -49,7 +49,7 @@
 - Consumes: existing semantic CSS tokens.
 - Produces: `clampPercent(value: number): number`, `weeklyActivityProgress(completed: number, target?: number | null): number | null`, and four display-only components.
 
-- [ ] **Step 1: Write failing progress tests**
+- [x] **Step 1: Write failing progress tests**
 
 ```ts
 import { describe, expect, it } from 'vitest'
@@ -75,13 +75,13 @@ describe('weeklyActivityProgress', () => {
 })
 ```
 
-- [ ] **Step 2: Verify the test fails**
+- [x] **Step 2: Verify the test fails**
 
 Run: `npm test -- lib/mobile-dashboard.test.ts`
 
 Expected: FAIL because `lib/mobile-dashboard.ts` does not exist.
 
-- [ ] **Step 3: Implement pure helpers**
+- [x] **Step 3: Implement pure helpers**
 
 ```ts
 export function clampPercent(value: number): number {
@@ -97,13 +97,13 @@ export function weeklyActivityProgress(
 }
 ```
 
-- [ ] **Step 4: Verify the helper tests pass**
+- [x] **Step 4: Verify the helper tests pass**
 
 Run: `npm test -- lib/mobile-dashboard.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Implement `MobilePageIntro`**
+- [x] **Step 5: Implement `MobilePageIntro`**
 
 ```tsx
 import type { ReactNode } from 'react'
@@ -133,7 +133,7 @@ export default function MobilePageIntro({
 }
 ```
 
-- [ ] **Step 6: Implement `MobilePanel` and `MetricTile`**
+- [x] **Step 6: Implement `MobilePanel` and `MetricTile`**
 
 ```tsx
 // MobilePanel.tsx
@@ -175,7 +175,7 @@ export default function MetricTile({
 }
 ```
 
-- [ ] **Step 7: Implement accessible `ProgressRing`**
+- [x] **Step 7: Implement accessible `ProgressRing`**
 
 ```tsx
 import { clampPercent } from '@/lib/mobile-dashboard'
@@ -214,7 +214,7 @@ export default function ProgressRing({
 }
 ```
 
-- [ ] **Step 8: Add non-blurred mobile material CSS**
+- [x] **Step 8: Add non-blurred mobile material CSS**
 
 Add after `.data` in `app/globals.css`:
 
@@ -253,7 +253,7 @@ Add after `.data` in `app/globals.css`:
 
 Do not add `backdrop-filter` to these repeated surfaces.
 
-- [ ] **Step 9: Verify and commit primitives**
+- [x] **Step 9: Verify and commit primitives**
 
 Run: `npm test -- lib/mobile-dashboard.test.ts && npx tsc --noEmit`
 
@@ -278,7 +278,7 @@ git commit -m "feat: add LifeOS mobile visual primitives"
 - Consumes: existing navigation items and pure route/drag helpers.
 - Produces: compact header and protruding active dock bubble without routing changes.
 
-- [ ] **Step 1: Extend route characterization tests**
+- [x] **Step 1: Extend route characterization tests**
 
 Add these cases to the existing `it.each` table:
 
@@ -287,13 +287,13 @@ Add these cases to the existing `it.each` table:
 ['/plan', 3],
 ```
 
-- [ ] **Step 2: Run the focused suite**
+- [x] **Step 2: Run the focused suite**
 
 Run: `npm test -- lib/navigation.test.ts`
 
 Expected: PASS, locking URL-driven state before presentation edits.
 
-- [ ] **Step 3: Recompose `MobileHeader`**
+- [x] **Step 3: Recompose `MobileHeader`**
 
 Keep `LocaleSwitcher`, `ThemeToggle`, current route lookup, and safe-area wrapper. Use this inner structure:
 
@@ -316,7 +316,7 @@ Keep `LocaleSwitcher`, `ThemeToggle`, current route lookup, and safe-area wrappe
 </div>
 ```
 
-- [ ] **Step 4: Replace the flat dock pill presentation**
+- [x] **Step 4: Replace the flat dock pill presentation**
 
 Preserve refs, native non-passive `touchmove`, window pointer listeners, click suppression, localized links, and `aria-current`. Add `mobile-dock` to the container, use `min-h-[58px]` links, and replace the moving layer with:
 
@@ -336,7 +336,7 @@ Preserve refs, native non-passive `touchmove`, window pointer listeners, click s
 </div>
 ```
 
-- [ ] **Step 5: Add active bubble CSS**
+- [x] **Step 5: Add active bubble CSS**
 
 ```css
 .mobile-brand-mark {
@@ -371,7 +371,7 @@ Preserve refs, native non-passive `touchmove`, window pointer listeners, click s
 }
 ```
 
-- [ ] **Step 6: Verify mechanics and commit**
+- [x] **Step 6: Verify mechanics and commit**
 
 Run: `npm test -- lib/navigation.test.ts && npx tsc --noEmit`
 
@@ -395,7 +395,7 @@ git commit -m "feat: deepen LifeOS mobile chrome"
 - Consumes: all Task 1 primitives.
 - Produces: moment header, AI hero, honest rings, metric tiles, and luminous activity panels; desktop and queries remain intact.
 
-- [ ] **Step 1: Characterize the existing five-workout target**
+- [x] **Step 1: Characterize the existing five-workout target**
 
 Add:
 
@@ -409,7 +409,7 @@ Run: `npm test -- lib/mobile-dashboard.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 2: Derive ring values without changing queries**
+- [x] **Step 2: Derive ring values without changing queries**
 
 ```ts
 const recoveryPercent = todaySleep?.performance_pct == null
@@ -418,7 +418,7 @@ const recoveryPercent = todaySleep?.performance_pct == null
 const trainingProgress = weeklyActivityProgress(acts.length, 5)
 ```
 
-- [ ] **Step 3: Render the mobile moment header**
+- [x] **Step 3: Render the mobile moment header**
 
 ```tsx
 <MobilePageIntro
@@ -434,11 +434,11 @@ const trainingProgress = weeklyActivityProgress(acts.length, 5)
 
 Keep the current desktop title separately under `hidden md:block`.
 
-- [ ] **Step 4: Turn insight into the single mobile hero**
+- [x] **Step 4: Turn insight into the single mobile hero**
 
 Render one rounded `MobilePanel channel="lime"` with `.ticks`, mono `aiLabel`, existing title/empty copy, and actual `cachedInsight.content` as a 1.55rem display headline. When absent, retain the current Generate link. Do not invent confidence, evidence, or actions. Keep desktop insight markup separate.
 
-- [ ] **Step 5: Add the two-ring row**
+- [x] **Step 5: Add the two-ring row**
 
 ```tsx
 <section className="mb-6 grid grid-cols-2 gap-4 md:hidden" aria-label={t('weeklyProgress')}>
@@ -447,15 +447,15 @@ Render one rounded `MobilePanel channel="lime"` with `.ticks`, mono `aiLabel`, e
 </section>
 ```
 
-- [ ] **Step 6: Replace mobile metrics with channel tiles**
+- [x] **Step 6: Replace mobile metrics with channel tiles**
 
 Use a `md:hidden grid grid-cols-2 gap-3`: Sleep/cyan, Steps/lime, Calories/coral, and Time/violet. Use existing values and translations. Keep current cards under `hidden md:grid`.
 
-- [ ] **Step 7: Align week and activity sections**
+- [x] **Step 7: Align week and activity sections**
 
 Move the mobile week strip below rings. Use mono symbols or channel dots instead of emoji as the primary mobile marker. Wrap week and recent activity groups in rounded `MobilePanel`s. Preserve content, empty states, links, and desktop emoji.
 
-- [ ] **Step 8: Verify and commit Dashboard**
+- [x] **Step 8: Verify and commit Dashboard**
 
 Run: `npm test -- lib/mobile-dashboard.test.ts && npx tsc --noEmit`
 
@@ -481,7 +481,7 @@ git commit -m "feat: recompose mobile dashboard like LifeOS"
 - Consumes: `MobilePageIntro` and `MobilePanel`.
 - Produces: mobile day modules and grouped logging sheets with unchanged desktop rendering and mutations.
 
-- [ ] **Step 1: Add the missing Register subtitle in every locale**
+- [x] **Step 1: Add the missing Register subtitle in every locale**
 
 Add `registro.subtitle` with these exact values:
 
@@ -496,7 +496,7 @@ Add `registro.subtitle` with these exact values:
 "subtitle": "Heutiges Training erfassen"
 ```
 
-- [ ] **Step 2: Add mobile moment headers**
+- [x] **Step 2: Add mobile moment headers**
 
 Use existing route title and subtitle/context translations:
 
@@ -506,19 +506,19 @@ Use existing route title and subtitle/context translations:
 
 Use Plan's existing `subtitle` and Register's new translated `subtitle`. Keep desktop headings separate.
 
-- [ ] **Step 3: Convert mobile Plan days to semantic modules**
+- [x] **Step 3: Convert mobile Plan days to semantic modules**
 
 Preserve `t.raw`, rest logic, groups, and volume. Use a `MobilePanel` per day: lime for current emphasis, violet for strength, cyan for endurance, neutral for rest. Use mono uppercase day labels and a display workout title. Keep desktop table/grid unchanged.
 
-- [ ] **Step 4: Keep Plan logic as the only blurred hero**
+- [x] **Step 4: Keep Plan logic as the only blurred hero**
 
 Retain `.glass.ticks` for the explanation. Use non-blurred `MobilePanel` for every repeated day row.
 
-- [ ] **Step 5: Convert Register groups to mobile sheets**
+- [x] **Step 5: Convert Register groups to mobile sheets**
 
 Wrap current mobile form groups in rounded `MobilePanel`s. Preserve every input name/value, setter, conditional distance/period field, validation message, payload, and handler.
 
-- [ ] **Step 6: Verify iOS form ergonomics**
+- [x] **Step 6: Verify iOS form ergonomics**
 
 Confirm mobile inputs compute to `16px`, targets are at least `44px`, and fixed actions use:
 
@@ -526,7 +526,7 @@ Confirm mobile inputs compute to `16px`, targets are at least `44px`, and fixed 
 style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)' }}
 ```
 
-- [ ] **Step 7: Verify and commit**
+- [x] **Step 7: Verify and commit**
 
 Run: `npx tsc --noEmit && npm test`
 
@@ -549,27 +549,27 @@ git commit -m "feat: align mobile plan and register with LifeOS"
 - Consumes: mobile primitives, current chart data, form handlers, `Capacitor.isNativePlatform()`, and HealthKit state.
 - Produces: mobile chart/data panels and one conditional native integration hero without behavior changes.
 
-- [ ] **Step 1: Add mobile moment headers**
+- [x] **Step 1: Add mobile moment headers**
 
 Use existing title/context translations for Trends and Profile. Keep desktop headings unchanged.
 
-- [ ] **Step 2: Restyle Trends range selection**
+- [x] **Step 2: Restyle Trends range selection**
 
 Keep current query/link/state mechanics. On mobile, use one glass rounded segmented container with 44-pixel segments and a luminous active state.
 
-- [ ] **Step 3: Convert chart cards to non-blurred panels**
+- [x] **Step 3: Convert chart cards to non-blurred panels**
 
 Wrap existing chart SVGs/summaries in `MobilePanel`: sleep/recovery cyan or lime, load/strength violet, warnings coral, time/goal progression amber. Do not alter calculations, paths, queries, or empty-state conditions.
 
-- [ ] **Step 4: Make Apple Health the native Profile hero**
+- [x] **Step 4: Make Apple Health the native Profile hero**
 
 Preserve the exact platform condition, handlers, loading states, and web XML fallback. Within the existing native-only condition, use the route's only `.glass.ticks` hero.
 
-- [ ] **Step 5: Convert Profile sections to data panels**
+- [x] **Step 5: Convert Profile sections to data panels**
 
 Use mono values and semantic accents. Preserve all fields, history, conditional rendering, payloads, disabled states, and submit behavior.
 
-- [ ] **Step 6: Verify and commit**
+- [x] **Step 6: Verify and commit**
 
 Run: `npx tsc --noEmit && npm test`
 
@@ -592,7 +592,7 @@ git commit -m "feat: align mobile trends and profile with LifeOS"
 - Consumes: complete mobile implementation.
 - Produces: automated and visual evidence across all routes and iOS constraints.
 
-- [ ] **Step 1: Run full automation**
+- [x] **Step 1: Run full automation**
 
 ```bash
 npm test
@@ -602,7 +602,7 @@ set -a; source /Users/alonso/vscode/movu/.env.local; set +a; npm run build
 
 Expected: all tests pass, TypeScript exits zero, and every route builds.
 
-- [ ] **Step 2: Audit implementation boundaries**
+- [x] **Step 2: Audit implementation boundaries**
 
 ```bash
 git diff --check
@@ -629,7 +629,7 @@ Capture Dashboard, Plan, and Profile at `390x844` in light and dark. Emulate red
 
 Open the URL in iPhone Simulator Safari and verify safe areas, fixed chrome, scroll-behind, and input focus without zoom. After merging with HealthKit work, repeat in Capacitor and verify native controls and foreground return.
 
-- [ ] **Step 7: Fix observed defects and commit**
+- [x] **Step 7: Fix observed defects and commit**
 
 For each defect, record route and viewport, make the smallest presentation correction, then repeat the exposing check. Run:
 
