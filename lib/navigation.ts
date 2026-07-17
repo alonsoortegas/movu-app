@@ -6,6 +6,14 @@ export const MOVU_NAV_ITEMS = [
   { key: 'perfil', href: '/perfil', icon: '◉' },
 ] as const
 
+export const LIFEOS_DOCK_GEOMETRY = {
+  radius: 28,
+  itemMinHeight: 52,
+  pillInset: 6,
+  restScale: 1,
+  dragScale: 1.06,
+} as const
+
 export function getActiveNavigationIndex(pathname: string): number {
   const index = MOVU_NAV_ITEMS.findIndex(
     ({ href }) => pathname === href || pathname.startsWith(`${href}/`),

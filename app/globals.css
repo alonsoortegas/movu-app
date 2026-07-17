@@ -287,31 +287,23 @@ textarea {
 }
 
 .mobile-dock {
-  min-height: 68px;
   overflow: visible;
-}
-
-.mobile-dock-pill {
-  top: -9px;
-  bottom: -9px;
 }
 
 .mobile-dock-bubble {
   width: 100%;
   height: 100%;
-  border: 1px solid color-mix(in srgb, var(--accent) 52%, white 12%);
-  border-radius: 27px;
+  border: 1px solid rgba(107, 224, 64, 0.4);
+  border-radius: 999px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.04) 46%),
-    linear-gradient(180deg, rgba(107, 224, 64, 0.32), rgba(107, 224, 64, 0.13));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48), 0 9px 24px rgba(15, 23, 42, 0.18), 0 0 30px rgba(107, 224, 64, 0.28);
-  transform: scaleX(1.08);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.02) 48%),
+    linear-gradient(180deg, rgba(107, 224, 64, 0.3), rgba(107, 224, 64, 0.12));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.22), 0 0 18px rgba(107, 224, 64, 0.24);
   transition: transform 0.2s cubic-bezier(0.3, 1.35, 0.4, 1), box-shadow 0.2s ease;
 }
 
 .mobile-dock-bubble.is-dragging {
-  transform: scale(1.1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58), 0 12px 28px rgba(15, 23, 42, 0.24), 0 0 38px rgba(107, 224, 64, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 6px 18px rgba(0, 0, 0, 0.3), 0 0 26px rgba(107, 224, 64, 0.38);
 }
 
 @media (min-width: 768px) {

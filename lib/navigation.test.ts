@@ -1,9 +1,22 @@
 import { describe, expect, it } from 'vitest'
 import {
   getActiveNavigationIndex,
+  LIFEOS_DOCK_GEOMETRY,
   nearestNavigationIndex,
   positionFromPointer,
 } from './navigation'
+
+describe('LIFEOS_DOCK_GEOMETRY', () => {
+  it('keeps the active material compact and inside the dock', () => {
+    expect(LIFEOS_DOCK_GEOMETRY).toEqual({
+      radius: 28,
+      itemMinHeight: 52,
+      pillInset: 6,
+      restScale: 1,
+      dragScale: 1.06,
+    })
+  })
+})
 
 describe('getActiveNavigationIndex', () => {
   it.each([

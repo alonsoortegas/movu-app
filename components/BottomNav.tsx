@@ -5,6 +5,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
   getActiveNavigationIndex,
+  LIFEOS_DOCK_GEOMETRY,
   MOVU_NAV_ITEMS,
   nearestNavigationIndex,
   positionFromPointer,
@@ -83,13 +84,14 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Primary navigation"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 md:hidden"
-      style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 10px)" }}
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-4 md:hidden"
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}
     >
       <div
         ref={barRef}
-        className="glass mobile-dock pointer-events-auto relative mx-auto flex max-w-md select-none rounded-[30px] border border-[var(--border-hi)] p-1.5"
+        className="glass mobile-dock pointer-events-auto relative mx-auto flex max-w-md select-none border border-[var(--border-hi)] p-1.5"
         style={{
+          borderRadius: LIFEOS_DOCK_GEOMETRY.radius,
           boxShadow: "var(--glass-edge), var(--shadow-pop)",
           touchAction: "none",
           WebkitUserSelect: "none",
@@ -102,6 +104,8 @@ export default function BottomNav() {
           aria-hidden="true"
           className="mobile-dock-pill absolute"
           style={{
+            top: LIFEOS_DOCK_GEOMETRY.pillInset,
+            bottom: LIFEOS_DOCK_GEOMETRY.pillInset,
             left: 6,
             width: `calc((100% - 12px) / ${MOVU_NAV_ITEMS.length})`,
             transform: `translateX(${pillPosition * 100}%)`,
@@ -109,7 +113,12 @@ export default function BottomNav() {
             willChange: "transform",
           }}
         >
-          <div className={`mobile-dock-bubble ${dragging ? "is-dragging" : ""}`} />
+          <div
+            className={`mobile-dock-bubble ${dragging ? "is-dragging" : ""}`}
+            style={{
+              transform: `scale(${dragging ? LIFEOS_DOCK_GEOMETRY.dragScale : LIFEOS_DOCK_GEOMETRY.restScale})`,
+            }}
+          />
         </div>
 
         {MOVU_NAV_ITEMS.map((item, index) => {
@@ -125,8 +134,11 @@ export default function BottomNav() {
               onClick={(event) => {
                 if (movedRef.current) event.preventDefault();
               }}
-              className="relative z-10 flex min-h-[58px] flex-1 flex-col items-center justify-center gap-0.5 rounded-full transition-transform duration-150 active:scale-90"
-              style={{ WebkitTapHighlightColor: "transparent" }}
+              className="relative z-10 flex flex-1 flex-col items-center justify-center gap-0.5 rounded-full transition-transform duration-150 active:scale-90"
+              style={{
+                minHeight: LIFEOS_DOCK_GEOMETRY.itemMinHeight,
+                WebkitTapHighlightColor: "transparent",
+              }}
             >
               <span
                 aria-hidden="true"

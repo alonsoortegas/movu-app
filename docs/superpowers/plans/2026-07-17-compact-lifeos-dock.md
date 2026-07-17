@@ -30,7 +30,7 @@
 - Produces: `LIFEOS_DOCK_GEOMETRY` with `radius`, `itemMinHeight`, `pillInset`, `restScale`, and `dragScale` numeric properties.
 - Consumes: the existing dock route and drag helpers without signature changes.
 
-- [ ] **Step 1: Write the failing geometry test**
+- [x] **Step 1: Write the failing geometry test**
 
 ```ts
 import { LIFEOS_DOCK_GEOMETRY } from './navigation'
@@ -48,13 +48,13 @@ describe('LIFEOS_DOCK_GEOMETRY', () => {
 })
 ```
 
-- [ ] **Step 2: Run the test and verify the missing-export failure**
+- [x] **Step 2: Run the test and verify the missing-export failure**
 
 Run: `npm test -- lib/navigation.test.ts`
 
 Expected: FAIL because `LIFEOS_DOCK_GEOMETRY` is not exported.
 
-- [ ] **Step 3: Implement the geometry constant**
+- [x] **Step 3: Implement the geometry constant**
 
 ```ts
 export const LIFEOS_DOCK_GEOMETRY = {
@@ -66,7 +66,7 @@ export const LIFEOS_DOCK_GEOMETRY = {
 } as const
 ```
 
-- [ ] **Step 4: Consume exact geometry in BottomNav**
+- [x] **Step 4: Consume exact geometry in BottomNav**
 
 Import the constant. Set the dock `borderRadius`, link `minHeight`, pill `top`/`bottom`, and bubble `transform` through existing inline style objects. Remove `rounded-[30px]`, `min-h-[58px]`, and the protruding geometry from CSS.
 
@@ -94,7 +94,7 @@ style={{
 
 Set the bubble transform to `scale(1.06)` only while dragging and `scale(1)` at rest. Restore LifeOS's smaller resting and dragging shadow values.
 
-- [ ] **Step 5: Verify tests, typecheck, and mobile rendering**
+- [x] **Step 5: Verify tests, typecheck, and mobile rendering**
 
 Run: `npm test -- lib/navigation.test.ts && npx tsc --noEmit`
 
@@ -102,7 +102,7 @@ Expected: PASS.
 
 At `390px`, verify the active pill stays inside the dock and all five routes remain tappable.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add lib/navigation.ts lib/navigation.test.ts components/BottomNav.tsx app/globals.css
