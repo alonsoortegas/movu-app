@@ -104,7 +104,7 @@ function LineChart({ series, height = 118 }: { series: ChartSeries[]; height?: n
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-[118px]" role="img" aria-hidden="true">
-      <line x1={pad} y1={height - pad} x2={width - pad} y2={height - pad} stroke="#e8e8e8" strokeWidth="1" />
+      <line x1={pad} y1={height - pad} x2={width - pad} y2={height - pad} stroke="var(--border)" strokeWidth="1" />
       {series.map(s => (
         <polyline
           key={s.label}
@@ -128,7 +128,7 @@ function BarChart({ data, color = '#6be040', maxValue }: { data: Point[]; color?
       {data.map((p, i) => {
         const pct = Math.min(((p.value ?? 0) / max) * 100, 100)
         return (
-          <div key={`${p.date}-${i}`} className="flex-1 h-full bg-[#eeeeee] rounded-t-sm overflow-hidden min-w-0 flex items-end">
+          <div key={`${p.date}-${i}`} className="flex h-full min-w-0 flex-1 items-end overflow-hidden rounded-t-sm bg-[var(--ring-track)]">
             <div className="w-full rounded-t-sm" style={{ height: `${Math.max(pct, p.value ? 4 : 0)}%`, background: color }} />
           </div>
         )
@@ -139,10 +139,10 @@ function BarChart({ data, color = '#6be040', maxValue }: { data: Point[]; color?
 
 function MetricCard({ label, value, unit, color }: { label: string; value: string; unit?: string; color: string }) {
   return (
-    <div className="bg-surface border border-border rounded-xl p-3 md:p-4">
+    <div className="panel relative overflow-hidden rounded-2xl p-3 md:p-4">
       <div className="text-[10px] md:text-xs text-muted uppercase tracking-wide mb-1">{label}</div>
       <div className="flex items-baseline gap-1">
-        <span className="text-xl md:text-2xl font-bold text-[#111]" style={{ color }}>{value}</span>
+        <span className="data text-xl font-bold md:text-2xl" style={{ color }}>{value}</span>
         {unit && <span className="text-xs text-muted">{unit}</span>}
       </div>
     </div>
@@ -151,10 +151,10 @@ function MetricCard({ label, value, unit, color }: { label: string; value: strin
 
 function ChartCard({ title, right, children }: { title: string; right?: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white border border-border rounded-xl p-4 md:p-5">
+    <div className="panel rounded-2xl p-4 md:p-5">
       <div className="flex items-baseline justify-between gap-3 mb-3">
         <h3 className="text-xs font-semibold text-muted uppercase tracking-wide">{title}</h3>
-        {right && <span className="text-xs font-semibold text-[#555]">{right}</span>}
+        {right && <span className="data text-xs font-semibold text-[var(--text-dim)]">{right}</span>}
       </div>
       {children}
     </div>
@@ -179,10 +179,10 @@ function Legend({ items }: { items: { label: string; color: string; dashed?: boo
 
 function EmptyState({ locale, title, body, action }: { locale: string; title: string; body: string; action: string }) {
   return (
-    <div className="bg-accent-light border-2 border-dashed border-accent rounded-xl p-5 md:p-6 text-center">
-      <div className="text-sm font-bold text-[#222] mb-1">{title}</div>
-      <p className="text-sm text-[#444] max-w-lg mx-auto mb-4">{body}</p>
-      <Link href={`/${locale}/perfil`} className="inline-flex bg-accent hover:bg-accent-dark text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
+    <div className="glass ticks rounded-2xl border border-[var(--border-hi)] p-5 text-center md:p-6">
+      <div className="mb-1 text-sm font-bold text-[var(--text)]">{title}</div>
+      <p className="mx-auto mb-4 max-w-lg text-sm text-[var(--text-dim)]">{body}</p>
+      <Link href={`/${locale}/perfil`} className="btn-accent inline-flex rounded-xl px-4 py-2.5 text-sm font-bold">
         {action}
       </Link>
     </div>
@@ -191,10 +191,10 @@ function EmptyState({ locale, title, body, action }: { locale: string; title: st
 
 function ErrorState({ locale, title, body, action }: { locale: string; title: string; body: string; action: string }) {
   return (
-    <div className="bg-red-50 border border-red-200 rounded-xl p-5 md:p-6 text-center">
-      <div className="text-sm font-bold text-red-950 mb-1">{title}</div>
-      <p className="text-sm text-red-900/80 max-w-lg mx-auto mb-4">{body}</p>
-      <Link href={`/${locale}/perfil`} className="inline-flex bg-[#111] hover:bg-[#333] text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors">
+    <div className="rounded-2xl border border-[rgba(251,113,133,0.35)] bg-[rgba(251,113,133,0.10)] p-5 text-center shadow-[var(--panel-shadow)] md:p-6">
+      <div className="mb-1 text-sm font-bold text-[var(--coral)]">{title}</div>
+      <p className="mx-auto mb-4 max-w-lg text-sm text-[var(--text-dim)]">{body}</p>
+      <Link href={`/${locale}/perfil`} className="glass inline-flex rounded-xl border border-[var(--border-hi)] px-4 py-2.5 text-sm font-semibold text-[var(--text)] transition-all hover:border-[var(--coral)]">
         {action}
       </Link>
     </div>
@@ -327,13 +327,13 @@ export default async function TrendsPage({
   const sleepStageTotal = sum(sleepStages.map(s => s.value))
 
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto">
+    <div className="boot p-4 md:p-8 max-w-6xl mx-auto">
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5 md:mb-8">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-[#111]">{t('title')}</h1>
+          <h1 className="display text-xl font-bold text-[var(--text)] md:text-2xl">{t('title')}</h1>
           <p className="text-xs md:text-sm text-muted mt-0.5">{t('subtitle', { start: firstLabel, end: lastLabel })}</p>
         </div>
-        <Link href={`/${locale}/perfil`} className="self-start md:self-auto text-xs font-semibold px-3 py-2 rounded-lg bg-surface border border-border text-[#444] hover:border-accent transition-colors">
+        <Link href={`/${locale}/perfil`} className="glass self-start rounded-xl border border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text-dim)] transition-colors hover:border-accent hover:text-[var(--text)] md:self-auto">
           {t('syncCta')}
         </Link>
       </div>
@@ -388,7 +388,7 @@ export default async function TrendsPage({
             <ChartCard title={t('sections.latestSleep')} right={latestSleep?.hours ? `${numberLabel(latestSleep.hours, 1)}h` : undefined}>
               {sleepStageTotal > 0 ? (
                 <>
-                  <div className="h-3 rounded-full overflow-hidden flex bg-[#eeeeee] mb-4">
+                  <div className="mb-4 flex h-3 overflow-hidden rounded-full bg-[var(--ring-track)]">
                     {sleepStages.map(stage => (
                       <div key={stage.key} style={{ width: `${(stage.value / sleepStageTotal) * 100}%`, background: stage.color }} />
                     ))}
@@ -400,7 +400,7 @@ export default async function TrendsPage({
                           <span className="w-2 h-2 rounded-sm" style={{ background: stage.color }} />
                           {stage.label}
                         </span>
-                        <span className="font-semibold text-[#333]">{numberLabel(stage.value, 1)}h</span>
+                        <span className="data font-semibold text-[var(--text)]">{numberLabel(stage.value, 1)}h</span>
                       </div>
                     ))}
                   </div>
@@ -424,7 +424,7 @@ export default async function TrendsPage({
             <ChartCard title={t('sections.workoutCount')} right={t('sections.totalWorkouts', { count: acts.length })}>
               <BarChart data={workoutCount} color="#f97316" />
             </ChartCard>
-            <div className="bg-white border border-border rounded-xl p-4 md:p-5">
+            <div className="panel rounded-2xl p-4 md:p-5">
               <h3 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">{t('sections.categoryMix')}</h3>
               {topCategories.length > 0 ? (
                 <div className="space-y-3">
@@ -433,10 +433,10 @@ export default async function TrendsPage({
                     return (
                       <div key={category}>
                         <div className="flex justify-between text-xs mb-1">
-                          <span className="text-[#555] capitalize">{category}</span>
+                          <span className="capitalize text-[var(--text-dim)]">{category}</span>
                           <span className="text-muted">{count}</span>
                         </div>
-                        <div className="h-2 bg-[#eeeeee] rounded-full overflow-hidden">
+                        <div className="h-2 overflow-hidden rounded-full bg-[var(--ring-track)]">
                           <div className="h-full rounded-full" style={{ width: `${pct}%`, background: CATEGORY_COLORS[category] ?? CATEGORY_COLORS.other }} />
                         </div>
                       </div>
@@ -450,7 +450,7 @@ export default async function TrendsPage({
           </section>
 
           <section className="grid lg:grid-cols-[1.2fr_0.8fr] gap-4">
-            <div className="bg-white border border-border rounded-xl overflow-hidden">
+            <div className="panel overflow-hidden rounded-2xl">
               <div className="px-4 md:px-5 py-4 border-b border-border">
                 <h3 className="text-xs font-semibold text-muted uppercase tracking-wide">{t('sections.recentWorkouts')}</h3>
               </div>
@@ -459,7 +459,7 @@ export default async function TrendsPage({
                   <div key={act.id} className={`flex items-center gap-3 px-4 md:px-5 py-3 ${i < Math.min(acts.length, 8) - 1 ? 'border-b border-dashed border-border' : ''}`}>
                     <div className="w-2.5 h-10 rounded-full flex-shrink-0" style={{ background: CATEGORY_COLORS[act.activity_category ?? 'other'] ?? CATEGORY_COLORS.other }} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-[#111] truncate">{act.activity_name ?? act.activity_category ?? act.source}</div>
+                      <div className="truncate text-sm font-semibold text-[var(--text)]">{act.activity_name ?? act.activity_category ?? act.source}</div>
                       <div className="text-xs text-muted">
                         {act.start_date_utc ? axisLabel(locale, act.start_date_utc.slice(0, 10)) : '—'} · {act.moving_time_s ? formatDuration(act.moving_time_s) : '—'}
                       </div>
@@ -474,20 +474,20 @@ export default async function TrendsPage({
               )}
             </div>
 
-            <div className="bg-surface border border-border rounded-xl p-4 md:p-5">
+            <div className="panel rounded-2xl p-4 md:p-5">
               <h3 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">{t('sections.bodyComp')}</h3>
               {body ? (
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { label: t('body.weight'), value: numberLabel(body.weight_kg, 1), unit: 'kg', color: '#111111' },
+                    { label: t('body.weight'), value: numberLabel(body.weight_kg, 1), unit: 'kg', color: 'var(--text)' },
                     { label: t('body.muscle'), value: numberLabel(body.muscle_mass_kg, 1), unit: 'kg', color: '#65a30d' },
                     { label: t('body.fat'), value: numberLabel(body.fat_percentage, 1), unit: '%', color: '#f97316' },
-                    { label: t('body.date'), value: body.measured_at ? axisLabel(locale, body.measured_at) : '—', unit: '', color: '#555555' },
+                    { label: t('body.date'), value: body.measured_at ? axisLabel(locale, body.measured_at) : '—', unit: '', color: 'var(--text-dim)' },
                   ].map(item => (
                     <div key={item.label} className="border-t border-border pt-3">
                       <div className="text-[10px] text-muted uppercase tracking-wide mb-1">{item.label}</div>
                       <div className="flex items-baseline gap-1">
-                        <span className="text-lg font-bold" style={{ color: item.color }}>{item.value}</span>
+                        <span className="data text-lg font-bold" style={{ color: item.color }}>{item.value}</span>
                         {item.unit && <span className="text-xs text-muted">{item.unit}</span>}
                       </div>
                     </div>
