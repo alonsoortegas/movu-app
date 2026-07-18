@@ -21,6 +21,12 @@ import {
   type TrainingPhase,
   type Verdict,
 } from '@/lib/trends/compute'
+import {
+  computeRunningTrends,
+  dedupeRuns,
+  formatPace,
+  type RunZones,
+} from '@/lib/trends/running'
 
 type DailyMetric = Database['public']['Tables']['daily_metrics']['Row']
 type SleepLog = Database['public']['Tables']['sleep_logs']['Row']
@@ -226,6 +232,25 @@ export default async function TrendsPage({
         minutes: a.moving_time_s != null ? Math.round(a.moving_time_s / 60) : null,
       })),
     metrics.map((m: DailyMetric) => ({ date: m.date, strain: m.daily_strain })),
+  )
+
+  // ── Running ─────────────────────────────────────────────────────────────────
+  const runRows = dedupeRuns(
+    activities
+      .filter((a) => a.activity_category === 'run' && a.start_date_utc != null)
+      .map((a) => ({
+        start: a.start_date_utc!,
+        source: a.source,
+        distanceM: a.distance_m != null ? Number(a.distance_m) : null,
+        movingTimeS: a.moving_time_s,
+        avgHrBpm: a.avg_hr_bpm != null ? Number(a.avg_hr_bpm) : null,
+        hrZones: (a.hr_zones as RunZones | null) ?? null,
+      })),
+  )
+  const running = computeRunningTrends(
+    runRows,
+    metrics.map((m: DailyMetric) => ({ date: m.date, vo2: m.vo2_max })),
+    todayKey,
   )
 
   // ── Fuel ────────────────────────────────────────────────────────────────────
@@ -525,6 +550,182 @@ export default async function TrendsPage({
               <EmptyNote>{t('emptyV2.noActivities')}</EmptyNote>
             )}
           </Panel>
+
+          {/* ── Running ── */}
+          <SectionLabel>{t('sectionsV2.running')}</SectionLabel>
+          {running.summary.totalRuns === 0 ? (
+            <Panel>
+              <EmptyNote>{t('emptyV2.noRuns')}</EmptyNote>
+            </Panel>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                <MiniStat
+                  label={t('running.thisWeek')}
+                  value={numberLabel(running.summary.thisWeekKm, 1)}
+                  unit="km"
+                  color={MINT}
+                  sub={running.summary.avg4wKmPerWeek != null
+                    ? t('running.avg4w', { km: numberLabel(running.summary.avg4wKmPerWeek, 1) })
+                    : undefined}
+                />
+                <MiniStat
+                  label={t('running.avgPace4w')}
+                  value={formatPace(running.pace.avg4wS)}
+                  unit="/km"
+                  color={CYAN}
+                  sub={running.pace.bestS != null
+                    ? t('running.bestPace', { pace: formatPace(running.pace.bestS) })
+                    : undefined}
+                />
+                <MiniStat
+                  label={t('running.efficiency')}
+                  value={running.efficiency.latest != null ? running.efficiency.latest.toFixed(2) : '—'}
+                  unit={t('running.efficiencyUnit')}
+                  color={VIOLET}
+                  sub={running.efficiency.slopePctPerWeek != null
+                    ? `${signed(running.efficiency.slopePctPerWeek, 1)}%/${t('perWeek')}`
+                    : undefined}
+                />
+                <MiniStat
+                  label={t('running.vo2max')}
+                  value={numberLabel(running.vo2.latest, 1)}
+                  color={AMBER}
+                  sub={running.vo2.delta != null
+                    ? t('running.vo2Delta', { delta: signed(running.vo2.delta, 1) })
+                    : undefined}
+                />
+              </div>
+              <Panel>
+                <ChartTitle
+                  title={t('running.weeklyKm')}
+                  right={
+                    <span className="data text-[10px] text-muted">
+                      {t('running.runsCount', { count: running.summary.totalRuns })}
+                    </span>
+                  }
+                />
+                <BarChart data={running.weeks.map((w) => w.km)} color={MINT} />
+                <AxisRow
+                  first={axisLabel(locale, running.weeks[0].week)}
+                  last={axisLabel(locale, running.weeks[running.weeks.length - 1].week)}
+                />
+              </Panel>
+              <div className="grid gap-4 md:grid-cols-2">
+                <Panel>
+                  <ChartTitle
+                    title={t('running.pace')}
+                    right={
+                      running.pace.slopeSPerKmPerWeek != null ? (
+                        <StatChip
+                          label={t('running.paceSlope', { value: signed(running.pace.slopeSPerKmPerWeek, 1) })}
+                          color={running.pace.chip ? CHIP_COLOR[running.pace.chip] : 'var(--text-dim)'}
+                        />
+                      ) : undefined
+                    }
+                  />
+                  {running.pace.points.length >= 2 ? (
+                    <>
+                      {/* Negated so a dropping pace (faster) plots upward. */}
+                      <BigSpark data={running.pace.points.map((p) => -p.value)} color={CYAN} height={56} />
+                      <AxisRow
+                        first={formatPace(running.pace.points[0].value)}
+                        last={formatPace(running.pace.points[running.pace.points.length - 1].value)}
+                      />
+                      <div className="data mt-1 text-[9px] text-[var(--text-faint)]">{t('running.paceSub')}</div>
+                    </>
+                  ) : (
+                    <EmptyNote>{t('emptyV2.noRuns')}</EmptyNote>
+                  )}
+                </Panel>
+                <Panel>
+                  <ChartTitle
+                    title={t('running.efficiency')}
+                    right={
+                      running.efficiency.slopePctPerWeek != null ? (
+                        <StatChip
+                          label={`${signed(running.efficiency.slopePctPerWeek, 1)}%/${t('perWeek')}`}
+                          color={running.efficiency.chip ? CHIP_COLOR[running.efficiency.chip] : 'var(--text-dim)'}
+                        />
+                      ) : undefined
+                    }
+                  />
+                  {running.efficiency.points.length >= 2 ? (
+                    <>
+                      <BigSpark data={running.efficiency.points.map((p) => p.value)} color={VIOLET} height={56} />
+                      <AxisRow
+                        first={running.efficiency.points[0].value.toFixed(2)}
+                        last={running.efficiency.points[running.efficiency.points.length - 1].value.toFixed(2)}
+                      />
+                      <div className="data mt-1 text-[9px] text-[var(--text-faint)]">{t('running.efficiencySub')}</div>
+                    </>
+                  ) : (
+                    <EmptyNote>{t('emptyV2.noRunHr')}</EmptyNote>
+                  )}
+                </Panel>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <Panel>
+                  <ChartTitle
+                    title={t('running.zoneMix')}
+                    right={
+                      running.zoneMix ? (
+                        <StatChip label={t('running.easyPct', { pct: running.zoneMix.easyPct })} color="#22c55e" />
+                      ) : undefined
+                    }
+                  />
+                  {running.zoneMix ? (
+                    <div className="space-y-2">
+                      {[
+                        { label: t('running.easy'), pct: running.zoneMix.easyPct, color: '#22c55e' },
+                        { label: t('running.moderate'), pct: running.zoneMix.modPct, color: '#f59e0b' },
+                        { label: t('running.hard'), pct: running.zoneMix.hardPct, color: '#ef4444' },
+                      ].map((band) => (
+                        <div key={band.label} className="flex items-center gap-2">
+                          <span className="data w-16 text-[10px] text-muted">{band.label}</span>
+                          <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[var(--ring-track)]">
+                            <div
+                              className="h-full rounded-full"
+                              style={{ width: `${band.pct}%`, background: band.color }}
+                            />
+                          </div>
+                          <span className="data w-8 text-right text-[10px] text-[var(--text-dim)]">{band.pct}%</span>
+                        </div>
+                      ))}
+                      <div className="data text-[9px] text-[var(--text-faint)]">{t('running.zoneMixSub')}</div>
+                    </div>
+                  ) : (
+                    <EmptyNote>{t('emptyV2.noRunZones')}</EmptyNote>
+                  )}
+                </Panel>
+                <Panel>
+                  <ChartTitle
+                    title={t('running.vo2max')}
+                    right={
+                      running.vo2.delta != null ? (
+                        <StatChip
+                          label={t('running.vo2Delta', { delta: signed(running.vo2.delta, 1) })}
+                          color={running.vo2.delta >= 0 ? MINT : CORAL}
+                        />
+                      ) : undefined
+                    }
+                  />
+                  {running.vo2.points.length >= 2 ? (
+                    <>
+                      <BigSpark data={running.vo2.points.map((p) => p.value)} color={AMBER} height={56} />
+                      <AxisRow
+                        first={axisLabel(locale, running.vo2.points[0].date)}
+                        last={axisLabel(locale, running.vo2.points[running.vo2.points.length - 1].date)}
+                      />
+                      <div className="data mt-1 text-[9px] text-[var(--text-faint)]">{t('running.vo2Sub')}</div>
+                    </>
+                  ) : (
+                    <EmptyNote>{t('emptyV2.noVo2')}</EmptyNote>
+                  )}
+                </Panel>
+              </div>
+            </>
+          )}
 
           {/* ── Fuel ── */}
           <SectionLabel>{t('sectionsV2.fuel')}</SectionLabel>

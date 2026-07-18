@@ -144,8 +144,33 @@
       "body": "Gewicht & Phase",
       "strength": "Kraft",
       "load": "Trainingslast",
+      "running": "Laufen",
       "fuel": "Ernährung",
       "recovery": "Erholung"
+    },
+    "running": {
+      "thisWeek": "Diese Woche",
+      "avg4w": "4-Wo-Schnitt {km} km/Wo",
+      "avgPace4w": "Ø Pace · 4 Wo",
+      "bestPace": "Beste {pace} /km",
+      "efficiency": "Aerobe Eff.",
+      "efficiencyUnit": "m/Schlag",
+      "efficiencySub": "Tempo ÷ Ø HF · WHOOP-Läufe",
+      "vo2max": "VO₂max",
+      "vo2Sub": "Apple-Watch-Schätzung · ml/kg/min",
+      "weeklyKm": "Wochenvolumen",
+      "weeklyKmSub": "km pro Woche",
+      "runsCount": "{count} Läufe",
+      "pace": "Pace",
+      "paceSub": "pro Lauf · schneller ist oben",
+      "paceSlope": "{value} s/km · Wo",
+      "zoneMix": "Intensitätsmix",
+      "zoneMixSub": "Laufzeit nach HF-Zone · Ziel ≈ 80% locker",
+      "easy": "Z1–Z2 locker",
+      "moderate": "Z3",
+      "hard": "Z4–Z5",
+      "easyPct": "{pct}% locker",
+      "vo2Delta": "{delta} im Zeitraum"
     },
     "charts": {
       "weight": "Körpergewicht",
@@ -213,7 +238,11 @@
       "noMeals": "Keine Mahlzeiten in diesem Zeitraum erfasst.",
       "noRecovery": "Keine Erholungsdaten in diesem Zeitraum.",
       "noSleep": "Keine Schlafdaten in diesem Zeitraum.",
-      "noZones": "Keine HF-Zonen-Daten in diesem Zeitraum."
+      "noZones": "Keine HF-Zonen-Daten in diesem Zeitraum.",
+      "noRuns": "Keine Läufe in diesem Zeitraum.",
+      "noRunHr": "Keine HF-Daten für Läufe in diesem Zeitraum.",
+      "noRunZones": "Keine HF-Zonen-Daten für Läufe in diesem Zeitraum.",
+      "noVo2": "Keine VO₂max-Daten in diesem Zeitraum."
     }
   },
   "plan": {

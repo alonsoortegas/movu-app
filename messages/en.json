@@ -143,8 +143,33 @@
       "body": "Weight & phase",
       "strength": "Strength",
       "load": "Training load",
+      "running": "Running",
       "fuel": "Nutrition",
       "recovery": "Recovery"
+    },
+    "running": {
+      "thisWeek": "This week",
+      "avg4w": "4-wk avg {km} km/wk",
+      "avgPace4w": "Avg pace · 4w",
+      "bestPace": "Best {pace} /km",
+      "efficiency": "Aerobic eff.",
+      "efficiencyUnit": "m/beat",
+      "efficiencySub": "speed ÷ avg HR · WHOOP runs",
+      "vo2max": "VO₂max",
+      "vo2Sub": "Apple Watch estimate · ml/kg/min",
+      "weeklyKm": "Weekly volume",
+      "weeklyKmSub": "km per week",
+      "runsCount": "{count} runs",
+      "pace": "Pace",
+      "paceSub": "per run · faster is up",
+      "paceSlope": "{value} s/km · wk",
+      "zoneMix": "Intensity mix",
+      "zoneMixSub": "run time by HR zone · target ≈ 80% easy",
+      "easy": "Z1–Z2 easy",
+      "moderate": "Z3",
+      "hard": "Z4–Z5",
+      "easyPct": "{pct}% easy",
+      "vo2Delta": "{delta} in range"
     },
     "charts": {
       "weight": "Body weight",
@@ -212,7 +237,11 @@
       "noMeals": "No meals logged in this period.",
       "noRecovery": "No recovery data in this period.",
       "noSleep": "No sleep data in this period.",
-      "noZones": "No HR-zone data in this period."
+      "noZones": "No HR-zone data in this period.",
+      "noRuns": "No runs in this period.",
+      "noRunHr": "No heart-rate data for runs in this period.",
+      "noRunZones": "No HR-zone data for runs in this period.",
+      "noVo2": "No VO₂max data in this period."
     }
   },
   "plan": {
