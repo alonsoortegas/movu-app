@@ -30,68 +30,55 @@
   "dashboard": {
     "title": "Dashboard",
     "greeting": "Hey, {name}",
-    "weekLabel": "Week of Apr 14–20 · 2025",
     "registerToday": "+ Log today",
     "registerCta": "+ Log today's workout",
-    "aiLabel": "AI",
-    "aiInsightTitle": "Today's insight",
-    "aiInsight": "Today is a great day for high intensity — you slept well and your weekly load is low. Consider a weights or HIIT session.",
-    "thisWeek": "This week",
     "recentWorkouts": "Recent workouts",
-    "weeklyProgress": "Weekly progress",
-    "muscleGroups": "Muscle groups",
     "noActivities": "No workouts logged this week yet.",
-    "noMuscleData": "Log workouts to see muscle group data.",
-    "aiInsightEmpty": "No insight generated yet for this week.",
-    "aiGenerate": "Generate →",
-    "metrics": {
+    "todaySession": {
+      "label": "Today's session",
+      "exercises": "{count} exercises",
+      "sets": "{count} sets",
+      "start": "Start session →",
+      "restDay": "Rest day",
+      "nextUp": "Next up: {title} · {day}",
+      "viewPlan": "View plan →",
+      "noPlan": "No active plan",
+      "noPlanBody": "Create your weekly plan to see today's session here.",
+      "createPlan": "Create plan →",
+      "notStarted": "Your plan starts on {date}",
+      "expired": "Your plan has ended",
+      "editPlan": "Edit plan →"
+    },
+    "fuel": {
+      "label": "Fuel today",
+      "dayType": { "hard": "Hard day", "moderate": "Moderate day", "rest": "Rest day" },
+      "kcal": "Calories",
+      "protein": "Protein",
+      "remaining": "{kcal} kcal · {protein} g protein remaining",
+      "over": "Over by {kcal} kcal",
+      "noTargets": "Set your nutrition targets to track progress.",
+      "logMeal": "Log meal →"
+    },
+    "inputs": {
       "sleep": "Sleep",
-      "sleepSub": "Good quality",
       "steps": "Steps",
-      "calories": "Calories",
-      "time": "Time"
+      "recovery": "Recovery"
     },
-    "progress": {
-      "workouts": "Workouts",
-      "activeMinutes": "Active minutes",
-      "calories": "Calories"
-    },
-    "weekDays": {
-      "mon": {
-        "short": "M",
-        "label": "Mon",
-        "type": "weights"
-      },
-      "tue": {
-        "short": "T",
-        "label": "Tue",
-        "type": "cardio"
-      },
-      "wed": {
-        "short": "W",
-        "label": "Wed",
-        "type": "weights"
-      },
-      "thu": {
-        "short": "T",
-        "label": "Thu",
-        "type": "rest"
-      },
-      "fri": {
-        "short": "F",
-        "label": "Fri",
-        "type": "run"
-      },
-      "sat": {
-        "short": "S",
-        "label": "Sat",
-        "type": "combined"
-      },
-      "sun": {
-        "short": "S",
-        "label": "Sun",
-        "type": "—"
-      }
+    "week": {
+      "label": "Your week",
+      "weight": "Weight",
+      "perWeek": "wk",
+      "phase": { "bulk": "Bulk", "cut": "Cut", "maintenance": "Maintenance" },
+      "verdict": { "on_track": "On track", "fast": "Fast", "slow": "Slow" },
+      "noWeight": "Log your weight to see the trend.",
+      "adherence": "Adherence",
+      "logged": "Logged",
+      "kcalOk": "Kcal ±10%",
+      "proteinOk": "Protein",
+      "noFuel": "No meals logged this week.",
+      "load": "Training load",
+      "sessions": "{count} sessions this week",
+      "noLoad": "No workouts in recent weeks."
     }
   },
   "trends": {

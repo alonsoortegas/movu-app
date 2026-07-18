@@ -29,68 +29,55 @@
   "dashboard": {
     "title": "Dashboard",
     "greeting": "Hola, {name}",
-    "weekLabel": "Semana del 14–20 Abr · 2025",
     "registerToday": "+ Registrar hoy",
     "registerCta": "+ Registrar entrenamiento de hoy",
-    "aiLabel": "IA",
-    "aiInsightTitle": "Insight de hoy",
-    "aiInsight": "Hoy es buen día para intensidad alta — dormiste bien y tu carga semanal es baja. Considera una sesión de pesas o HIIT.",
-    "thisWeek": "Esta semana",
     "recentWorkouts": "Últimos entrenamientos",
-    "weeklyProgress": "Progreso semanal",
-    "muscleGroups": "Grupos musculares",
     "noActivities": "Aún no hay entrenamientos esta semana.",
-    "noMuscleData": "Registra entrenamientos para ver grupos musculares.",
-    "aiInsightEmpty": "Aún no hay insight generado para esta semana.",
-    "aiGenerate": "Generar →",
-    "metrics": {
+    "todaySession": {
+      "label": "Sesión de hoy",
+      "exercises": "{count} ejercicios",
+      "sets": "{count} series",
+      "start": "Empezar sesión →",
+      "restDay": "Día de descanso",
+      "nextUp": "Próxima: {title} · {day}",
+      "viewPlan": "Ver plan →",
+      "noPlan": "Sin plan activo",
+      "noPlanBody": "Crea tu plan semanal para ver aquí la sesión del día.",
+      "createPlan": "Crear plan →",
+      "notStarted": "Tu plan empieza el {date}",
+      "expired": "Tu plan terminó",
+      "editPlan": "Editar plan →"
+    },
+    "fuel": {
+      "label": "Nutrición de hoy",
+      "dayType": { "hard": "Día fuerte", "moderate": "Día moderado", "rest": "Día de descanso" },
+      "kcal": "Calorías",
+      "protein": "Proteína",
+      "remaining": "Te quedan {kcal} kcal · {protein} g de proteína",
+      "over": "Te pasaste por {kcal} kcal",
+      "noTargets": "Configura tus objetivos de nutrición para ver el progreso.",
+      "logMeal": "Registrar comida →"
+    },
+    "inputs": {
       "sleep": "Sueño",
-      "sleepSub": "Buena calidad",
       "steps": "Pasos",
-      "calories": "Calorías",
-      "time": "Tiempo"
+      "recovery": "Recuperación"
     },
-    "progress": {
-      "workouts": "Entrenamientos",
-      "activeMinutes": "Minutos activos",
-      "calories": "Calorías"
-    },
-    "weekDays": {
-      "mon": {
-        "short": "L",
-        "label": "Lun",
-        "type": "pesas"
-      },
-      "tue": {
-        "short": "M",
-        "label": "Mar",
-        "type": "cardio"
-      },
-      "wed": {
-        "short": "X",
-        "label": "Mié",
-        "type": "pesas"
-      },
-      "thu": {
-        "short": "J",
-        "label": "Jue",
-        "type": "descanso"
-      },
-      "fri": {
-        "short": "V",
-        "label": "Vie",
-        "type": "correr"
-      },
-      "sat": {
-        "short": "S",
-        "label": "Sáb",
-        "type": "combinado"
-      },
-      "sun": {
-        "short": "D",
-        "label": "Dom",
-        "type": "—"
-      }
+    "week": {
+      "label": "Tu semana",
+      "weight": "Peso",
+      "perWeek": "sem",
+      "phase": { "bulk": "Volumen", "cut": "Definición", "maintenance": "Mantenimiento" },
+      "verdict": { "on_track": "En objetivo", "fast": "Rápido", "slow": "Lento" },
+      "noWeight": "Registra tu peso para ver la tendencia.",
+      "adherence": "Adherencia",
+      "logged": "Registrado",
+      "kcalOk": "Kcal ±10%",
+      "proteinOk": "Proteína",
+      "noFuel": "Sin comidas registradas esta semana.",
+      "load": "Carga de entrenamiento",
+      "sessions": "{count} sesiones esta semana",
+      "noLoad": "Sin entrenamientos en las últimas semanas."
     }
   },
   "trends": {
