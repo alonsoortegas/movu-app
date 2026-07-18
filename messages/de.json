@@ -10,7 +10,7 @@
       "dashboard": "Dashboard",
       "trends": "Trends",
       "registro": "Log",
-      "plan": "My Plan",
+      "plan": "Plan",
       "nutricion": "Ernährung",
       "perfil": "Profile"
     },
@@ -20,7 +20,7 @@
     "dashboard": "Dashboard",
     "trends": "Trends",
     "registro": "Log",
-    "plan": "My Plan",
+    "plan": "Plan",
     "nutricion": "Ernährung",
     "perfil": "Profile"
   },
@@ -220,6 +220,7 @@
     "title": "Mein Plan",
     "subtitle": "Dein wöchentlicher Trainingsplan",
     "editPlan": "Plan bearbeiten",
+    "registerWorkout": "Training erfassen",
     "weekLabel": "Woche {week}",
     "restDay": "Ruhetag",
     "restDaySub": "Keine Einheit für diesen Tag geplant.",

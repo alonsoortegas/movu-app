@@ -9,7 +9,7 @@
       "dashboard": "Dashboard",
       "trends": "Tendencias",
       "registro": "Registro",
-      "plan": "Mi Plan",
+      "plan": "Plan",
       "nutricion": "Nutrición",
       "perfil": "Perfil"
     },
@@ -19,7 +19,7 @@
     "dashboard": "Dashboard",
     "trends": "Tendencias",
     "registro": "Registrar",
-    "plan": "Mi Plan",
+    "plan": "Plan",
     "nutricion": "Nutrición",
     "perfil": "Perfil"
   },
@@ -219,6 +219,7 @@
     "title": "Mi Plan",
     "subtitle": "Tu plan de entrenamiento semanal",
     "editPlan": "Editar plan",
+    "registerWorkout": "Registrar entrenamiento",
     "weekLabel": "Semana {week}",
     "restDay": "Día de descanso",
     "restDaySub": "Sin sesión programada para este día.",

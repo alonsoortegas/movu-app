@@ -42,17 +42,31 @@ export default async function PlanPage({ params }: { params: Promise<{ locale: s
           </Link>
         }
       />
+      <Link
+        href={`/${locale}/registro`}
+        className="btn-accent mb-5 flex min-h-11 items-center justify-center rounded-2xl px-4 py-3 text-sm font-bold md:hidden"
+      >
+        {t('registerWorkout')}
+      </Link>
       <div className="mb-6 hidden items-end justify-between gap-3 md:flex">
         <div>
           <h1 className="display text-2xl font-bold text-[var(--text)]">{t('title')}</h1>
           <p className="mt-0.5 text-sm text-muted">{plan ? plan.name : t('subtitle')}</p>
         </div>
-        <Link
-          href={`/${locale}/plan/edit`}
-          className="glass rounded-xl border border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text-dim)] transition-colors hover:border-accent hover:text-[var(--text)]"
-        >
-          {t('editPlan')}
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/${locale}/registro`}
+            className="btn-accent rounded-xl px-4 py-2.5 text-sm font-bold"
+          >
+            {t('registerWorkout')}
+          </Link>
+          <Link
+            href={`/${locale}/plan/edit`}
+            className="glass rounded-xl border border-[var(--border)] px-3 py-2.5 text-xs font-semibold text-[var(--text-dim)] transition-colors hover:border-accent hover:text-[var(--text)]"
+          >
+            {t('editPlan')}
+          </Link>
+        </div>
       </div>
     </>
   )

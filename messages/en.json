@@ -9,7 +9,7 @@
       "dashboard": "Dashboard",
       "trends": "Trends",
       "registro": "Log",
-      "plan": "My Plan",
+      "plan": "Plan",
       "nutricion": "Nutrition",
       "perfil": "Profile"
     },
@@ -19,7 +19,7 @@
     "dashboard": "Dashboard",
     "trends": "Trends",
     "registro": "Log",
-    "plan": "My Plan",
+    "plan": "Plan",
     "nutricion": "Nutrition",
     "perfil": "Profile"
   },
@@ -219,6 +219,7 @@
     "title": "My Plan",
     "subtitle": "Your weekly training plan",
     "editPlan": "Edit plan",
+    "registerWorkout": "Log workout",
     "weekLabel": "Week {week}",
     "restDay": "Rest day",
     "restDaySub": "No session scheduled for this day.",
