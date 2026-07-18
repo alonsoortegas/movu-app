@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { formatActivityDisplayName } from '@/lib/activities/display-name'
 import {
+  APP_TIMEZONE,
   computeBodyTrend,
   computeFuelTrends,
   computeLoadTrends,
@@ -186,17 +187,33 @@ export default async function DashboardPage({
     if (!status.active) {
       sessionProps = { state: 'inactive', locale, reason: status.reason as 'not_started' | 'expired', startDate: plan.start_date }
     } else {
-      const { data: sessions } = await supabase
+      const { data: sessions, error: sessionsError } = await supabase
         .from('workout_plan_sessions')
         .select('id, day_of_week, title, session_type')
         .eq('plan_id', plan.id)
         .eq('week_number', status.week!)
+      if (sessionsError) {
+        console.error('Failed to load plan sessions', JSON.stringify({
+          code: sessionsError.code,
+          message: sessionsError.message,
+          details: sessionsError.details,
+          hint: sessionsError.hint,
+        }))
+      }
       const today = resolveTodaySession(sessions ?? [], todayDayKey)
       if (today.kind === 'session') {
-        const { data: exercises } = await supabase
+        const { data: exercises, error: exercisesError } = await supabase
           .from('workout_plan_exercises')
           .select('prescribed_sets')
           .eq('session_id', today.session.id)
+        if (exercisesError) {
+          console.error('Failed to load plan exercises', JSON.stringify({
+            code: exercisesError.code,
+            message: exercisesError.message,
+            details: exercisesError.details,
+            hint: exercisesError.hint,
+          }))
+        }
         sessionProps = {
           state: 'session',
           locale,
@@ -207,7 +224,7 @@ export default async function DashboardPage({
         }
       } else {
         const nextDayLabel = today.daysUntilNext != null
-          ? new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(
+          ? new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: APP_TIMEZONE }).format(
               new Date(now.getTime() + today.daysUntilNext * 86400000),
             )
           : null
@@ -316,7 +333,12 @@ export default async function DashboardPage({
   const stepsValue = todayMetric?.steps_count != null ? todayMetric.steps_count.toLocaleString(locale) : '—'
   const recoveryScore = todayMetric?.recovery_score ?? null
 
-  const dateLabel = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(now)
+  const dateLabel = new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    timeZone: APP_TIMEZONE,
+  }).format(now)
 
   return (
     <div className="boot mx-auto max-w-5xl p-4 md:p-8">
