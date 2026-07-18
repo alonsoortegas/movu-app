@@ -21,12 +21,12 @@ describe('LIFEOS_DOCK_GEOMETRY', () => {
 
 describe('getActiveNavigationIndex', () => {
   it('exposes the five primary destinations in product order', () => {
-    expect(MOVU_NAV_ITEMS.map((item) => item.key)).toEqual([
-      'dashboard',
-      'plan',
-      'nutricion',
-      'trends',
-      'perfil',
+    expect(MOVU_NAV_ITEMS.map(({ key, href }) => ({ key, href }))).toEqual([
+      { key: 'dashboard', href: '/dashboard' },
+      { key: 'plan', href: '/plan' },
+      { key: 'nutricion', href: '/nutricion' },
+      { key: 'trends', href: '/trends' },
+      { key: 'perfil', href: '/perfil' },
     ])
   })
 
@@ -38,7 +38,9 @@ describe('getActiveNavigationIndex', () => {
     ['/nutricion', 2],
     ['/nutricion/catalogo', 2],
     ['/trends', 3],
+    ['/trends/detail', 3],
     ['/perfil', 4],
+    ['/perfil/settings', 4],
   ])('maps %s to %i', (pathname, expected) => {
     expect(getActiveNavigationIndex(pathname)).toBe(expected)
   })
