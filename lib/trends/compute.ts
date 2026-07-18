@@ -83,7 +83,7 @@ export function dayRangeUtc(key: string, timeZone: string = APP_TIMEZONE): { sta
   }
 }
 
-function dayNumber(key: string): number {
+export function dayNumber(key: string): number {
   return Math.floor(Date.parse(`${key}T00:00:00Z`) / 86400000)
 }
 
