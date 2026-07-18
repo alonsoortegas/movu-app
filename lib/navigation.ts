@@ -1,9 +1,8 @@
 export const MOVU_NAV_ITEMS = [
   { key: 'dashboard', href: '/dashboard', icon: '⊞' },
-  { key: 'trends', href: '/trends', icon: '⌁' },
-  { key: 'registro', href: '/registro', icon: '+' },
   { key: 'plan', href: '/plan', icon: '☰' },
   { key: 'nutricion', href: '/nutricion', icon: '◇' },
+  { key: 'trends', href: '/trends', icon: '⌁' },
   { key: 'perfil', href: '/perfil', icon: '◉' },
 ] as const
 

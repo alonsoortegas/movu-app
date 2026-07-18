@@ -124,7 +124,6 @@ export default function BottomNav() {
         {MOVU_NAV_ITEMS.map((item, index) => {
           const active = focusedIndex === index;
           const current = activeIndex === index;
-          const primary = item.key === "registro";
 
           return (
             <Link
@@ -142,10 +141,9 @@ export default function BottomNav() {
             >
               <span
                 aria-hidden="true"
-                className={`data leading-none transition-all duration-300 ${primary ? "text-[19px] font-bold" : "text-[16px]"} ${
+                className={`data text-[16px] leading-none transition-all duration-300 ${
                   active ? "-translate-y-px scale-110 text-accent" : "text-[var(--text-faint)]"
                 }`}
-                style={primary && active ? { textShadow: "0 0 15px rgba(107,224,64,0.62)" } : undefined}
               >
                 {item.icon}
               </span>

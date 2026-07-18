@@ -46,17 +46,9 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="space-y-3 border-t border-[var(--ink-06)] px-3 py-4">
-        <Link
-          href="/registro"
-          className="btn-accent block w-full rounded-xl py-2.5 text-center text-sm font-bold"
-        >
-          {t("cta")}
-        </Link>
-        <div className="flex items-center justify-between gap-2">
-          <LocaleSwitcher />
-          <ThemeToggle />
-        </div>
+      <div className="flex items-center justify-between gap-2 border-t border-[var(--ink-06)] px-3 py-4">
+        <LocaleSwitcher />
+        <ThemeToggle />
       </div>
     </aside>
   );
