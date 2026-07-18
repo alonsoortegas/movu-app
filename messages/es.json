@@ -428,7 +428,9 @@
     "fat": "Grasa",
     "save": "Guardar cambios",
     "saved": "✓ Perfil guardado",
-    "savedShort": "✓ Guardado"
+    "savedShort": "✓ Guardado",
+    "logout": "Cerrar sesión",
+    "loggingOut": "Cerrando sesión…"
   },
   "planEditor": {
     "title": "Editor de plan",

@@ -429,7 +429,9 @@
     "fat": "Fat",
     "save": "Save changes",
     "saved": "✓ Profile saved",
-    "savedShort": "✓ Saved"
+    "savedShort": "✓ Saved",
+    "logout": "Abmelden",
+    "loggingOut": "Abmelden…"
   },
   "planEditor": {
     "title": "Plan-Editor",

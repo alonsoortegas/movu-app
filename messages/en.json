@@ -428,7 +428,9 @@
     "fat": "Fat",
     "save": "Save changes",
     "saved": "✓ Profile saved",
-    "savedShort": "✓ Saved"
+    "savedShort": "✓ Saved",
+    "logout": "Log out",
+    "loggingOut": "Logging out…"
   },
   "planEditor": {
     "title": "Plan editor",

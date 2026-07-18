@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { parseAppleHealthFile } from "@/lib/apple-health/parser-browser";
 import { Capacitor } from "@capacitor/core";
 import { useTranslations } from "next-intl";
+import { createClient } from "@/lib/supabase/client";
 import MobilePageIntro from "@/components/mobile/MobilePageIntro";
 import { MovuHealthKit } from "@/lib/healthkit/plugin";
 import { isHealthKitEnabled, runHealthKitSync, setHealthKitEnabled } from "@/lib/healthkit/sync";
@@ -149,6 +150,7 @@ export default function PerfilPage() {
   const [healthKitSyncing, setHealthKitSyncing] = useState(false);
   const [healthKitError, setHealthKitError] = useState<string | null>(null);
   const [healthKitLastSynced, setHealthKitLastSynced] = useState<string | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
   const appleFileRef = useRef<HTMLInputElement>(null);
   const initialBodyComp = useRef(bodyCompSignature(emptyBodyCompForm()));
 
@@ -306,6 +308,17 @@ export default function PerfilPage() {
     } catch (err) {
       setHealthKitError(err instanceof Error ? err.message : t("healthkit.error"));
       setHealthKitSyncing(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      window.location.assign("/login");
+    } catch {
+      setLoggingOut(false);
     }
   };
 
@@ -627,6 +640,17 @@ export default function PerfilPage() {
           </button>
         </div>
       </form>
+
+      <div className="mt-6 mb-20 md:mt-8 md:mb-0">
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="w-full rounded-xl border-2 border-[rgba(251,113,133,0.35)] bg-[rgba(251,113,133,0.08)] py-3.5 text-sm font-semibold text-[var(--coral)] transition-all hover:bg-[rgba(251,113,133,0.16)] disabled:opacity-60"
+        >
+          {loggingOut ? t("loggingOut") : t("logout")}
+        </button>
+      </div>
 
       <div className="fixed left-4 right-4 z-40 md:hidden" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 96px)" }}>
         {saveError && <p className="text-sm text-red-500 mb-2 text-center">{saveError}</p>}
