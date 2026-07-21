@@ -401,7 +401,17 @@ export default async function TrendsPage({
             />
             {weightValues.length >= 2 ? (
               <>
-                <DualSpark dataA={weightValues} dataB={rolling7Values} colorA={CYAN} colorB={MINT} />
+                <DualSpark
+                  dataA={weightValues}
+                  dataB={rolling7Values}
+                  colorA={CYAN}
+                  colorB={MINT}
+                  labels={bodyTrend.weights.map((p) => axisLabel(locale, p.date))}
+                  valueLabelsA={weightValues.map((v) => `${v.toFixed(1)} kg`)}
+                  valueLabelsB={rolling7Values.map((v) => `${v.toFixed(1)} kg`)}
+                  nameA={t('charts.weighIns')}
+                  nameB={t('charts.rolling7')}
+                />
                 {phaseBands.length > 0 && (
                   <div className="mt-2" aria-label={t('charts.phaseBands')}>
                     <div className="flex h-2 overflow-hidden rounded-full bg-[var(--ring-track)]">
@@ -501,7 +511,13 @@ export default async function TrendsPage({
                         ) : undefined
                       }
                     />
-                    <BigSpark data={ex.points.map((p) => p.value)} color={VIOLET} height={56} />
+                    <BigSpark
+                      data={ex.points.map((p) => p.value)}
+                      color={VIOLET}
+                      height={56}
+                      labels={ex.points.map((p) => axisLabel(locale, p.date))}
+                      valueLabels={ex.points.map((p) => `${p.value.toFixed(1)} kg`)}
+                    />
                     <AxisRow
                       first={ex.points[0] ? axisLabel(locale, ex.points[0].date) : '—'}
                       last={ex.points[ex.points.length - 1] ? axisLabel(locale, ex.points[ex.points.length - 1].date) : '—'}
@@ -514,7 +530,13 @@ export default async function TrendsPage({
                   title={t('charts.weeklyTonnage')}
                   right={<span className="data text-[10px] text-muted">{numberLabel(strength.weeklyTonnage.reduce((s, w) => s + w.kg, 0))} kg</span>}
                 />
-                <BarChart data={strength.weeklyTonnage.map((w) => w.kg)} color={VIOLET} />
+                <BarChart
+                  data={strength.weeklyTonnage.map((w) => w.kg)}
+                  color={VIOLET}
+                  showAxis
+                  labels={strength.weeklyTonnage.map((w) => axisLabel(locale, w.week))}
+                  valueLabels={strength.weeklyTonnage.map((w) => `${numberLabel(w.kg)} kg`)}
+                />
                 <AxisRow
                   first={strength.weeklyTonnage[0] ? axisLabel(locale, strength.weeklyTonnage[0].week) : '—'}
                   last={strength.weeklyTonnage.length ? axisLabel(locale, strength.weeklyTonnage[strength.weeklyTonnage.length - 1].week) : '—'}
@@ -540,7 +562,13 @@ export default async function TrendsPage({
             />
             {load.weeks.length > 0 ? (
               <>
-                <BarChart data={load.weeks.map((w) => w.trainingMin)} color={CYAN} />
+                <BarChart
+                  data={load.weeks.map((w) => w.trainingMin)}
+                  color={CYAN}
+                  showAxis
+                  labels={load.weeks.map((w) => axisLabel(locale, w.week))}
+                  valueLabels={load.weeks.map((w) => `${numberLabel(w.trainingMin)} min`)}
+                />
                 <AxisRow
                   first={axisLabel(locale, load.weeks[0].week)}
                   last={axisLabel(locale, load.weeks[load.weeks.length - 1].week)}
@@ -605,7 +633,13 @@ export default async function TrendsPage({
                     </span>
                   }
                 />
-                <BarChart data={running.weeks.map((w) => w.km)} color={MINT} />
+                <BarChart
+                  data={running.weeks.map((w) => w.km)}
+                  color={MINT}
+                  showAxis
+                  labels={running.weeks.map((w) => axisLabel(locale, w.week))}
+                  valueLabels={running.weeks.map((w) => `${numberLabel(w.km, 1)} km`)}
+                />
                 <AxisRow
                   first={axisLabel(locale, running.weeks[0].week)}
                   last={axisLabel(locale, running.weeks[running.weeks.length - 1].week)}
@@ -627,7 +661,13 @@ export default async function TrendsPage({
                   {running.pace.points.length >= 2 ? (
                     <>
                       {/* Negated so a dropping pace (faster) plots upward. */}
-                      <BigSpark data={running.pace.points.map((p) => -p.value)} color={CYAN} height={56} />
+                      <BigSpark
+                        data={running.pace.points.map((p) => -p.value)}
+                        color={CYAN}
+                        height={56}
+                        labels={running.pace.points.map((p) => axisLabel(locale, p.date))}
+                        valueLabels={running.pace.points.map((p) => `${formatPace(p.value)} /km`)}
+                      />
                       <AxisRow
                         first={formatPace(running.pace.points[0].value)}
                         last={formatPace(running.pace.points[running.pace.points.length - 1].value)}
@@ -652,7 +692,13 @@ export default async function TrendsPage({
                   />
                   {running.efficiency.points.length >= 2 ? (
                     <>
-                      <BigSpark data={running.efficiency.points.map((p) => p.value)} color={VIOLET} height={56} />
+                      <BigSpark
+                        data={running.efficiency.points.map((p) => p.value)}
+                        color={VIOLET}
+                        height={56}
+                        labels={running.efficiency.points.map((p) => axisLabel(locale, p.date))}
+                        valueLabels={running.efficiency.points.map((p) => p.value.toFixed(2))}
+                      />
                       <AxisRow
                         first={running.efficiency.points[0].value.toFixed(2)}
                         last={running.efficiency.points[running.efficiency.points.length - 1].value.toFixed(2)}
@@ -712,7 +758,13 @@ export default async function TrendsPage({
                   />
                   {running.vo2.points.length >= 2 ? (
                     <>
-                      <BigSpark data={running.vo2.points.map((p) => p.value)} color={AMBER} height={56} />
+                      <BigSpark
+                        data={running.vo2.points.map((p) => p.value)}
+                        color={AMBER}
+                        height={56}
+                        labels={running.vo2.points.map((p) => axisLabel(locale, p.date))}
+                        valueLabels={running.vo2.points.map((p) => p.value.toFixed(1))}
+                      />
                       <AxisRow
                         first={axisLabel(locale, running.vo2.points[0].date)}
                         last={axisLabel(locale, running.vo2.points[running.vo2.points.length - 1].date)}
@@ -747,6 +799,9 @@ export default async function TrendsPage({
                   colors={fuel.days.map((d) =>
                     d.kcalTarget && Math.abs(d.kcal - d.kcalTarget) <= 0.1 * d.kcalTarget ? MINT : AMBER,
                   )}
+                  showAxis
+                  labels={fuel.days.map((d) => axisLabel(locale, d.date))}
+                  valueLabels={fuel.days.map((d) => `${numberLabel(d.kcal)} kcal`)}
                 />
                 <AxisRow
                   first={axisLabel(locale, fuel.days[0].date)}
@@ -776,7 +831,11 @@ export default async function TrendsPage({
               <Panel>
                 <ChartTitle title={t('charts.recovery')} />
                 {recoverySeries.length >= 2 ? (
-                  <BigSpark data={recoverySeries} colorByValue />
+                  <BigSpark
+                    data={recoverySeries}
+                    colorByValue
+                    valueLabels={recoverySeries.map((v) => `${numberLabel(v)}%`)}
+                  />
                 ) : (
                   <EmptyNote>{t('emptyV2.noRecovery')}</EmptyNote>
                 )}
@@ -786,7 +845,16 @@ export default async function TrendsPage({
                   <ChartTitle title={t('sections.hrvRhr')} />
                   {hrvSeries.length >= 2 && rhrSeries.length >= 2 ? (
                     <>
-                      <DualSpark dataA={hrvSeries} dataB={rhrSeries} colorA={CYAN} colorB={CORAL} />
+                      <DualSpark
+                        dataA={hrvSeries}
+                        dataB={rhrSeries}
+                        colorA={CYAN}
+                        colorB={CORAL}
+                        valueLabelsA={hrvSeries.map((v) => `${numberLabel(v, 1)} ms`)}
+                        valueLabelsB={rhrSeries.map((v) => `${numberLabel(v)} bpm`)}
+                        nameA={t('metrics.hrv')}
+                        nameB={t('metrics.rhr')}
+                      />
                       <Legend items={[{ label: t('metrics.hrv'), color: CYAN }, { label: t('metrics.rhr'), color: CORAL, dashed: true }]} />
                     </>
                   ) : (
@@ -802,6 +870,11 @@ export default async function TrendsPage({
                         dataB={strainRecovery.map((m) => m.recovery_score!)}
                         colorA={AMBER}
                         colorB={MINT}
+                        labels={strainRecovery.map((m) => axisLabel(locale, m.date))}
+                        valueLabelsA={strainRecovery.map((m) => numberLabel(m.daily_strain!, 1))}
+                        valueLabelsB={strainRecovery.map((m) => `${numberLabel(m.recovery_score!)}%`)}
+                        nameA={t('metrics.strain')}
+                        nameB={t('metrics.recovery')}
                       />
                       <Legend items={[{ label: t('metrics.strain'), color: AMBER }, { label: t('metrics.recovery'), color: MINT, dashed: true }]} />
                     </>
@@ -816,7 +889,13 @@ export default async function TrendsPage({
             <Panel>
               <ChartTitle title={t('charts.sleepHours')} right={<span className="data text-[10px] text-muted">{avgOf(sleepHours, 1)}h {t('charts.avg')}</span>} />
               {sleepHours.length > 0 ? (
-                <BarChart data={sleepHours} color={VIOLET} maxVal={10} />
+                <BarChart
+                  data={sleepHours}
+                  color={VIOLET}
+                  maxVal={10}
+                  showAxis
+                  valueLabels={sleepHours.map((v) => `${v.toFixed(1)}h`)}
+                />
               ) : (
                 <EmptyNote>{t('emptyV2.noSleep')}</EmptyNote>
               )}

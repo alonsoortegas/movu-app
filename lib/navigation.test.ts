@@ -5,6 +5,7 @@ import {
   MOVU_NAV_ITEMS,
   nearestNavigationIndex,
   positionFromPointer,
+  settleNavigationIndex,
 } from './navigation'
 
 describe('LIFEOS_DOCK_GEOMETRY', () => {
@@ -74,5 +75,37 @@ describe('nearestNavigationIndex', () => {
     expect(nearestNavigationIndex(-2, 5)).toBe(0)
     expect(nearestNavigationIndex(2.6, 5)).toBe(3)
     expect(nearestNavigationIndex(20, 5)).toBe(4)
+  })
+})
+
+describe('settleNavigationIndex', () => {
+  it('commits the nearest index when the active pointer lifts', () => {
+    expect(
+      settleNavigationIndex({ type: 'pointerup', pointerId: 2 }, 2, 3.1, 5),
+    ).toBe(3)
+  })
+
+  it('never navigates on pointercancel, even though cancel events report position 0', () => {
+    expect(
+      settleNavigationIndex({ type: 'pointercancel', pointerId: 2 }, 2, 0, 5),
+    ).toBeNull()
+  })
+
+  it('ignores pointers that did not start the gesture', () => {
+    expect(
+      settleNavigationIndex({ type: 'pointerup', pointerId: 7 }, 2, 3.1, 5),
+    ).toBeNull()
+  })
+
+  it('ignores events when no gesture is active', () => {
+    expect(
+      settleNavigationIndex({ type: 'pointerup', pointerId: 2 }, null, 3.1, 5),
+    ).toBeNull()
+  })
+
+  it('falls back to null when no position could be resolved', () => {
+    expect(
+      settleNavigationIndex({ type: 'pointerup', pointerId: 2 }, 2, null, 5),
+    ).toBeNull()
   })
 })

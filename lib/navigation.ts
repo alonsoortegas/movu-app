@@ -36,3 +36,18 @@ export function positionFromPointer(
 export function nearestNavigationIndex(position: number, count: number): number {
   return Math.min(count - 1, Math.max(0, Math.round(position)))
 }
+
+export function settleNavigationIndex(
+  event: { type: string; pointerId: number },
+  activePointerId: number | null,
+  position: number | null,
+  count: number,
+): number | null {
+  if (activePointerId === null || event.pointerId !== activePointerId) return null
+  // pointercancel means the browser aborted the gesture (scroll takeover, palm
+  // rejection, edge swipe) and reports clientX 0 — committing it would always
+  // resolve to the first tab.
+  if (event.type !== 'pointerup') return null
+  if (position === null) return null
+  return nearestNavigationIndex(position, count)
+}

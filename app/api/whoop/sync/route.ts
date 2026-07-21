@@ -179,10 +179,12 @@ export async function POST(request: Request) {
 
   let sleepCount = 0
   if (dedupedSleepRows.length > 0) {
+    // Clear any prior WHOOP rows for these sleep ids first: whoop_sleep_id is
+    // unique, so a record that moved to a different date must have its stale row
+    // removed before the upsert below re-lands it on the new (user_id, date).
     const sleepIds = dedupedSleepRows
       .map(row => row.whoop_sleep_id)
       .filter((id): id is string => typeof id === 'string')
-    const sleepDates = [...new Set(dedupedSleepRows.map(row => row.date))]
 
     if (sleepIds.length > 0) {
       const { error } = await admin
@@ -192,17 +194,12 @@ export async function POST(request: Request) {
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    const { error: deleteByDateError } = await admin
-      .from('sleep_logs')
-      .delete()
-      .eq('user_id', user.id)
-      .eq('source', 'whoop')
-      .in('date', sleepDates)
-    if (deleteByDateError) return NextResponse.json({ error: deleteByDateError.message }, { status: 500 })
-
+    // Upsert on (user_id, date): the unique constraint is source-agnostic, so an
+    // existing row for the same day from another source (apple_health, healthkit,
+    // manual) must be updated in place rather than collided with.
     const { error } = await admin
       .from('sleep_logs')
-      .insert(dedupedSleepRows)
+      .upsert(dedupedSleepRows, { onConflict: 'user_id,date', ignoreDuplicates: false })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     sleepCount = dedupedSleepRows.length
   }

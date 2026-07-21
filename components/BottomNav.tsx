@@ -9,6 +9,7 @@ import {
   MOVU_NAV_ITEMS,
   nearestNavigationIndex,
   positionFromPointer,
+  settleNavigationIndex,
 } from "@/lib/navigation";
 
 export default function BottomNav() {
@@ -17,6 +18,7 @@ export default function BottomNav() {
   const t = useTranslations("bottomNav");
   const barRef = useRef<HTMLDivElement>(null);
   const dragPositionRef = useRef<number | null>(null);
+  const pointerIdRef = useRef<number | null>(null);
   const movedRef = useRef(false);
   const [dragPosition, setDragPositionState] = useState<number | null>(null);
   const activeIndex = getActiveNavigationIndex(pathname);
@@ -36,6 +38,7 @@ export default function BottomNav() {
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     movedRef.current = false;
+    pointerIdRef.current = event.pointerId;
     const position = pointerPosition(event.clientX);
     if (position !== null) setDragPosition(position);
   };
@@ -52,6 +55,7 @@ export default function BottomNav() {
     if (!dragging) return;
 
     const move = (event: PointerEvent) => {
+      if (event.pointerId !== pointerIdRef.current) return;
       const position = pointerPosition(event.clientX);
       if (position === null) return;
       if (Math.abs(position - (dragPositionRef.current ?? position)) > 0.03) {
@@ -61,11 +65,20 @@ export default function BottomNav() {
     };
 
     const settle = (event: PointerEvent) => {
-      const finalPosition = pointerPosition(event.clientX) ?? dragPositionRef.current;
+      if (event.pointerId !== pointerIdRef.current) return;
+      const finalPosition =
+        event.type === "pointerup"
+          ? pointerPosition(event.clientX) ?? dragPositionRef.current
+          : null;
+      const index = settleNavigationIndex(
+        event,
+        pointerIdRef.current,
+        finalPosition,
+        MOVU_NAV_ITEMS.length,
+      );
+      pointerIdRef.current = null;
       setDragPosition(null);
-      if (finalPosition === null) return;
-      const item = MOVU_NAV_ITEMS[nearestNavigationIndex(finalPosition, MOVU_NAV_ITEMS.length)];
-      router.push(item.href);
+      if (index !== null) router.push(MOVU_NAV_ITEMS[index].href);
     };
 
     window.addEventListener("pointermove", move);
