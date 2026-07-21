@@ -23,6 +23,12 @@ function signed(value: number, decimals = 2): string {
   return value > 0 ? `+${s}` : s
 }
 
+function weekLabel(locale: string, date: string): string {
+  const parsed = new Date(`${date}T12:00:00Z`)
+  if (Number.isNaN(parsed.getTime())) return '—'
+  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(parsed)
+}
+
 function StripPanel({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link href={href} className="panel mobile-sheet block rounded-[1.6rem] p-4 transition-colors hover:border-accent md:rounded-2xl">
@@ -108,6 +114,9 @@ export default async function WeekStrip({ locale, body, adherence, loadWeeks }: 
                   data={loadWeeks.map((w) => w.trainingMin)}
                   colors={loadWeeks.map((w) => (w.isCurrent ? MINT : CYAN))}
                   height={48}
+                  showAxis
+                  labels={loadWeeks.map((w) => weekLabel(locale, w.week))}
+                  valueLabels={loadWeeks.map((w) => `${w.trainingMin} min`)}
                 />
               </div>
               <p className="data mt-2 text-[10px] uppercase tracking-wide text-muted">
