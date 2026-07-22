@@ -767,6 +767,22 @@
     "nutritionPlan": "Nutrition plan",
     "viewNutritionPdf": "View PDF",
     "noNutritionPlan": "No active nutrition plan.",
+    "workoutStatus": {
+      "draft": "Draft",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "logged": "Logged"
+    },
+    "nutrition": {
+      "title": "Nutrition",
+      "viewPdf": "View PDF",
+      "missingPlan": "Waiting for the client to upload an active PDF plan.",
+      "missingTargets": "The client has not configured calorie and macro targets yet.",
+      "dayTypes": { "hard": "Hard day", "moderate": "Moderate day", "rest": "Rest day" },
+      "protein": "P",
+      "carbs": "C",
+      "fat": "F"
+    },
     "metrics": { "weight": "Weight", "muscle": "Muscle", "bodyFat": "Body fat", "recovery": "Recovery" },
     "access": {
       "title": "Coach access",

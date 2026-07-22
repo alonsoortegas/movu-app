@@ -768,6 +768,22 @@
     "nutritionPlan": "Ernährungsplan",
     "viewNutritionPdf": "PDF ansehen",
     "noNutritionPlan": "Kein aktiver Ernährungsplan.",
+    "workoutStatus": {
+      "draft": "Entwurf",
+      "in_progress": "Läuft",
+      "completed": "Abgeschlossen",
+      "logged": "Erfasst"
+    },
+    "nutrition": {
+      "title": "Ernährung",
+      "viewPdf": "PDF ansehen",
+      "missingPlan": "Der Klient muss noch einen aktiven PDF-Plan hochladen.",
+      "missingTargets": "Der Klient hat noch keine Kalorien- und Makroziele eingerichtet.",
+      "dayTypes": { "hard": "Intensiver Tag", "moderate": "Moderater Tag", "rest": "Ruhetag" },
+      "protein": "P",
+      "carbs": "K",
+      "fat": "F"
+    },
     "metrics": { "weight": "Gewicht", "muscle": "Muskelmasse", "bodyFat": "Körperfett", "recovery": "Erholung" },
     "access": {
       "title": "Coach-Zugriff",
