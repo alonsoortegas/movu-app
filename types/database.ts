@@ -667,11 +667,172 @@ export type Database = {
         }
         Relationships: []
       }
+      exercise_catalog: {
+        Row: {
+          id: string
+          user_id: string | null
+          slug: string
+          name_es: string
+          name_en: string
+          name_de: string
+          primary_muscle_group: string | null
+          secondary_muscle_groups: string[]
+          workout_types: string[]
+          default_tracking: string
+          active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          slug: string
+          name_es: string
+          name_en: string
+          name_de: string
+          primary_muscle_group?: string | null
+          secondary_muscle_groups?: string[]
+          workout_types?: string[]
+          default_tracking?: string
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          slug?: string
+          name_es?: string
+          name_en?: string
+          name_de?: string
+          primary_muscle_group?: string | null
+          secondary_muscle_groups?: string[]
+          workout_types?: string[]
+          default_tracking?: string
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      performed_workouts: {
+        Row: {
+          id: string
+          user_id: string
+          plan_session_id: string | null
+          activity_id: string | null
+          origin: string
+          title: string
+          workout_type: string
+          performed_on: string
+          started_at: string
+          ended_at: string | null
+          duration_min: number | null
+          notes: string | null
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          plan_session_id?: string | null
+          activity_id?: string | null
+          origin: string
+          title: string
+          workout_type: string
+          performed_on: string
+          started_at: string
+          ended_at?: string | null
+          duration_min?: number | null
+          notes?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          plan_session_id?: string | null
+          activity_id?: string | null
+          origin?: string
+          title?: string
+          workout_type?: string
+          performed_on?: string
+          started_at?: string
+          ended_at?: string | null
+          duration_min?: number | null
+          notes?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      performed_workout_exercises: {
+        Row: {
+          id: string
+          user_id: string
+          performed_workout_id: string
+          catalog_exercise_id: string | null
+          exercise_name: string
+          primary_muscle_group: string | null
+          prescribed_sets: number | null
+          prescribed_reps: string | null
+          prescribed_weight_kg: number | null
+          target_rpe: string | null
+          target_rir: string | null
+          rest_seconds: number | null
+          order_index: number
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          performed_workout_id: string
+          catalog_exercise_id?: string | null
+          exercise_name: string
+          primary_muscle_group?: string | null
+          prescribed_sets?: number | null
+          prescribed_reps?: string | null
+          prescribed_weight_kg?: number | null
+          target_rpe?: string | null
+          target_rir?: string | null
+          rest_seconds?: number | null
+          order_index?: number
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          performed_workout_id?: string
+          catalog_exercise_id?: string | null
+          exercise_name?: string
+          primary_muscle_group?: string | null
+          prescribed_sets?: number | null
+          prescribed_reps?: string | null
+          prescribed_weight_kg?: number | null
+          target_rpe?: string | null
+          target_rir?: string | null
+          rest_seconds?: number | null
+          order_index?: number
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       workout_set_logs: {
         Row: {
           id: string
           user_id: string
           exercise_id: string | null
+          performed_workout_id: string | null
+          performed_exercise_id: string | null
           exercise_name: string
           set_number: number | null
           weight_kg: number | null
@@ -684,6 +845,8 @@ export type Database = {
           id?: string
           user_id: string
           exercise_id?: string | null
+          performed_workout_id?: string | null
+          performed_exercise_id?: string | null
           exercise_name: string
           set_number?: number | null
           weight_kg?: number | null
@@ -696,6 +859,8 @@ export type Database = {
           id?: string
           user_id?: string
           exercise_id?: string | null
+          performed_workout_id?: string | null
+          performed_exercise_id?: string | null
           exercise_name?: string
           set_number?: number | null
           weight_kg?: number | null

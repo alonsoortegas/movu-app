@@ -258,6 +258,72 @@ export const workoutPlanExercises = pgTable('workout_plan_exercises', {
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+// ---------- exercise_catalog ----------
+export const exerciseCatalog = pgTable('exercise_catalog', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => userProfiles.id, { onDelete: 'cascade' }),
+  slug: text('slug').notNull(),
+  name_es: text('name_es').notNull(),
+  name_en: text('name_en').notNull(),
+  name_de: text('name_de').notNull(),
+  primary_muscle_group: text('primary_muscle_group'),
+  secondary_muscle_groups: text('secondary_muscle_groups').array().notNull().default([]),
+  workout_types: text('workout_types').array().notNull().default([]),
+  default_tracking: text('default_tracking').notNull().default('reps'),
+  active: boolean('active').notNull().default(true),
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ---------- performed_workouts ----------
+export const performedWorkouts = pgTable('performed_workouts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id')
+    .notNull()
+    .references(() => userProfiles.id, { onDelete: 'cascade' }),
+  plan_session_id: uuid('plan_session_id').references(() => workoutPlanSessions.id, {
+    onDelete: 'set null',
+  }),
+  activity_id: uuid('activity_id').references(() => activities.id, { onDelete: 'set null' }),
+  origin: text('origin').notNull(),
+  title: text('title').notNull(),
+  workout_type: text('workout_type').notNull(),
+  performed_on: date('performed_on').notNull(),
+  started_at: timestamp('started_at', { withTimezone: true }).notNull(),
+  ended_at: timestamp('ended_at', { withTimezone: true }),
+  duration_min: integer('duration_min'),
+  notes: text('notes'),
+  status: text('status').notNull().default('draft'),
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ---------- performed_workout_exercises ----------
+export const performedWorkoutExercises = pgTable('performed_workout_exercises', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id')
+    .notNull()
+    .references(() => userProfiles.id, { onDelete: 'cascade' }),
+  performed_workout_id: uuid('performed_workout_id')
+    .notNull()
+    .references(() => performedWorkouts.id, { onDelete: 'cascade' }),
+  catalog_exercise_id: uuid('catalog_exercise_id').references(() => exerciseCatalog.id, {
+    onDelete: 'set null',
+  }),
+  exercise_name: text('exercise_name').notNull(),
+  primary_muscle_group: text('primary_muscle_group'),
+  prescribed_sets: integer('prescribed_sets'),
+  prescribed_reps: text('prescribed_reps'),
+  prescribed_weight_kg: real('prescribed_weight_kg'),
+  target_rpe: text('target_rpe'),
+  target_rir: text('target_rir'),
+  rest_seconds: integer('rest_seconds'),
+  order_index: integer('order_index').notNull().default(0),
+  notes: text('notes'),
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 // ---------- workout_set_logs ----------
 export const workoutSetLogs = pgTable('workout_set_logs', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -267,6 +333,13 @@ export const workoutSetLogs = pgTable('workout_set_logs', {
   exercise_id: uuid('exercise_id').references(() => workoutPlanExercises.id, {
     onDelete: 'set null',
   }),
+  performed_workout_id: uuid('performed_workout_id').references(() => performedWorkouts.id, {
+    onDelete: 'cascade',
+  }),
+  performed_exercise_id: uuid('performed_exercise_id').references(
+    () => performedWorkoutExercises.id,
+    { onDelete: 'cascade' },
+  ),
   exercise_name: text('exercise_name').notNull(),
   set_number: integer('set_number'),
   weight_kg: real('weight_kg'),
@@ -410,6 +483,12 @@ export type WorkoutPlanSession = typeof workoutPlanSessions.$inferSelect
 export type NewWorkoutPlanSession = typeof workoutPlanSessions.$inferInsert
 export type WorkoutPlanExercise = typeof workoutPlanExercises.$inferSelect
 export type NewWorkoutPlanExercise = typeof workoutPlanExercises.$inferInsert
+export type ExerciseCatalogRow = typeof exerciseCatalog.$inferSelect
+export type NewExerciseCatalogRow = typeof exerciseCatalog.$inferInsert
+export type PerformedWorkout = typeof performedWorkouts.$inferSelect
+export type NewPerformedWorkout = typeof performedWorkouts.$inferInsert
+export type PerformedWorkoutExercise = typeof performedWorkoutExercises.$inferSelect
+export type NewPerformedWorkoutExercise = typeof performedWorkoutExercises.$inferInsert
 export type WorkoutSetLog = typeof workoutSetLogs.$inferSelect
 export type NewWorkoutSetLog = typeof workoutSetLogs.$inferInsert
 export type FoodItem = typeof foodItems.$inferSelect

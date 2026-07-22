@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { resolveSetLogExercise } from '@/lib/workout/set-log'
+import { resolvePerformedSetLogLink, resolveSetLogExercise } from '@/lib/workout/set-log'
 
 // GET /api/set-logs?exercise_ids=a,b,c — recent logs for those plan exercises.
 // GET /api/set-logs?exercise_name=Deadlift — recent logs by name (history across plans).
@@ -35,10 +35,51 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
-  const { exercise_id, exercise_name, set_number, weight_kg, reps, rpe, notes } = body
+  const {
+    exercise_id,
+    performed_workout_id,
+    performed_exercise_id,
+    exercise_name,
+    set_number,
+    weight_kg,
+    reps,
+    rpe,
+    notes,
+  } = body
+
+  const hasPerformedLink = Boolean(performed_workout_id || performed_exercise_id)
+  let performedLink: ReturnType<typeof resolvePerformedSetLogLink> = null
+  if (hasPerformedLink) {
+    let ownedPerformedExercise: {
+      id: string
+      performed_workout_id: string
+      exercise_name: string
+    } | null = null
+    if (performed_workout_id && performed_exercise_id) {
+      const { data, error: performedError } = await supabase
+        .from('performed_workout_exercises')
+        .select('id, performed_workout_id, exercise_name')
+        .eq('id', performed_exercise_id)
+        .eq('performed_workout_id', performed_workout_id)
+        .eq('user_id', user.id)
+        .maybeSingle()
+      if (performedError) return NextResponse.json({ error: performedError.message }, { status: 500 })
+      ownedPerformedExercise = data
+    }
+    performedLink = resolvePerformedSetLogLink(
+      { performed_workout_id, performed_exercise_id },
+      ownedPerformedExercise,
+    )
+    if (!performedLink) {
+      return NextResponse.json(
+        { error: 'performed exercise not found or workout link invalid' },
+        { status: performed_workout_id && performed_exercise_id ? 404 : 400 },
+      )
+    }
+  }
 
   let ownedExercise: { id: string; exercise_name: string } | null = null
-  if (exercise_id) {
+  if (exercise_id && !performedLink) {
     const { data, error: exerciseError } = await supabase
       .from('workout_plan_exercises')
       .select('id, exercise_name')
@@ -48,7 +89,12 @@ export async function POST(request: Request) {
     if (exerciseError) return NextResponse.json({ error: exerciseError.message }, { status: 500 })
     ownedExercise = data
   }
-  const resolvedExercise = resolveSetLogExercise({ exercise_id, exercise_name }, ownedExercise)
+  const resolvedExercise = performedLink
+    ? {
+        exercise_id: null,
+        exercise_name: performedLink.exercise_name,
+      }
+    : resolveSetLogExercise({ exercise_id, exercise_name }, ownedExercise)
   if (!resolvedExercise) return NextResponse.json({ error: 'exercise not found or name missing' }, { status: exercise_id ? 404 : 400 })
   const weight = weight_kg == null ? null : Number(weight_kg)
   if (weight != null && (!Number.isFinite(weight) || weight < 0)) {
@@ -68,6 +114,8 @@ export async function POST(request: Request) {
     .insert({
       user_id: user.id,
       exercise_id: resolvedExercise.exercise_id,
+      performed_workout_id: performedLink?.performed_workout_id ?? null,
+      performed_exercise_id: performedLink?.performed_exercise_id ?? null,
       exercise_name: resolvedExercise.exercise_name,
       set_number: Number.isInteger(Number(set_number)) ? Number(set_number) : null,
       weight_kg: weight,
