@@ -14,6 +14,7 @@ import {
   parseWeightInput,
   type DayKey,
 } from '@/lib/workout/logic'
+import { formatPrescription, getBlockInstruction } from '@/lib/workout/prescription-copy'
 
 type Plan = Database['public']['Tables']['workout_plans']['Row']
 type Session = Database['public']['Tables']['workout_plan_sessions']['Row']
@@ -202,6 +203,7 @@ export default function PlanWeekView({
         const sessionExercises = exercises
           .filter((e) => e.session_id === session.id)
           .sort((a, b) => a.order_index - b.order_index)
+        const hasGroupedExercises = sessionExercises.some((exercise) => exercise.superset_group != null)
         return (
           <div key={session.id} className="space-y-3">
             <div className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl">
@@ -220,6 +222,17 @@ export default function PlanWeekView({
                 </Link>
               </div>
               {session.notes && <p className="mt-2 text-xs text-[var(--text-dim)]">{session.notes}</p>}
+              {sessionExercises.length > 0 && (
+                <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--ink-02)] p-3">
+                  <div className="data text-[9px] font-bold uppercase tracking-[0.14em] text-muted">
+                    {t('blockInstruction.title')}
+                  </div>
+                  <p className="mt-1 text-[11px] leading-relaxed text-[var(--text-dim)]">
+                    {t('blockInstruction.straight_sets')}
+                    {hasGroupedExercises ? ` ${t('blockInstruction.circuit')}` : ''}
+                  </p>
+                </div>
+              )}
             </div>
 
             {sessionExercises.map((ex) => {
@@ -242,19 +255,30 @@ export default function PlanWeekView({
                       <div className="truncate text-sm font-semibold text-[var(--text)]">
                         {ex.exercise_name}
                         {ex.superset_group != null && (
-                          <span className="data ml-2 rounded-full border border-[var(--border)] px-1.5 py-0.5 text-[9px] text-[var(--violet)]">
-                            SS{ex.superset_group}
+                          <span
+                            className="data ml-2 rounded-full border border-[var(--border)] px-1.5 py-0.5 text-[9px] text-[var(--violet)]"
+                            title={t(`blockInstruction.${getBlockInstruction(ex.superset_group)}`)}
+                          >
+                            {t('blockInstruction.blockLabel', { block: ex.superset_group })}
                           </span>
                         )}
                       </div>
                       <div className="data mt-0.5 text-[10px] text-muted">
                         {[
-                          setsTarget != null ? `${setsTarget}×${ex.prescribed_reps ?? '—'}` : ex.prescribed_reps,
-                          ex.prescribed_weight_kg != null ? `${ex.prescribed_weight_kg} kg` : null,
-                          ex.target_rpe ? `RPE ${ex.target_rpe}` : null,
-                        ]
-                          .filter(Boolean)
-                          .join(' · ')}
+                          ...formatPrescription({
+                            sets: setsTarget,
+                            reps: ex.prescribed_reps,
+                            targetRpe: ex.target_rpe,
+                            targetRir: null,
+                            labels: {
+                              sets: t('logger.sets'),
+                              reps: t('logger.repetitions'),
+                              perceivedEffort: t('logger.perceivedEffort'),
+                              repsInReserve: t('logger.repsInReserve'),
+                            },
+                          }),
+                          ...(ex.prescribed_weight_kg != null ? [`${ex.prescribed_weight_kg} kg`] : []),
+                        ].join(' · ')}
                       </div>
                     </div>
                     <div className="flex flex-shrink-0 items-center gap-2">
@@ -341,7 +365,7 @@ export default function PlanWeekView({
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <label className="data w-14 flex-shrink-0 text-[10px] uppercase text-muted">RPE</label>
+                        <label className="data w-14 flex-shrink-0 text-[10px] uppercase text-muted">{t('logger.rpeShort')}</label>
                         <div className="flex flex-wrap gap-1">
                           {RPE_OPTIONS.map((rpe) => (
                             <button
@@ -358,9 +382,13 @@ export default function PlanWeekView({
                           ))}
                         </div>
                       </div>
+                      <div className="rounded-lg border border-dashed border-[var(--border)] px-2.5 py-2 text-[10px] leading-relaxed text-[var(--text-faint)]">
+                        <p>{t('logger.rpeHelp')}</p>
+                        <p className="mt-1">{t('logger.rirHelp')}</p>
+                      </div>
 
                       <button onClick={() => logSet(ex)} className="btn-accent w-full rounded-xl px-3 py-2.5 text-sm font-bold active:scale-[0.98]">
-                        {t('logger.logSet', { set: setsDone + 1 })}
+                        {t('logger.logSet')}
                       </button>
 
                       {s.loggedSets.length > 0 && (

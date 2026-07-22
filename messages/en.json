@@ -267,10 +267,23 @@
       "cardio": "Cardio",
       "other": "Other"
     },
+    "blockInstruction": {
+      "title": "How to complete this session",
+      "straight_sets": "For exercises without a block, complete every set before moving to the next exercise.",
+      "circuit": "For exercises in the same block, perform one set of each exercise and repeat the block until all sets are complete.",
+      "blockLabel": "Block {block}"
+    },
     "logger": {
       "weight": "Weight",
       "reps": "Reps",
-      "logSet": "Log set {set}",
+      "sets": "sets",
+      "repetitions": "repetitions",
+      "perceivedEffort": "perceived effort",
+      "repsInReserve": "repetitions in reserve",
+      "rpeShort": "RPE",
+      "rpeHelp": "RPE (rating of perceived exertion): 6 feels light and 10 is your maximum effort.",
+      "rirHelp": "RIR (repetitions in reserve): how many more good-form repetitions you could complete; RIR 1–2 means one or two remained.",
+      "logSet": "Log set",
       "setRow": "Set {set}",
       "lastSet": "Last time: {weight} kg × {reps}",
       "recentHistory": "Recent history",

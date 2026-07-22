@@ -267,10 +267,23 @@
       "cardio": "Cardio",
       "other": "Otro"
     },
+    "blockInstruction": {
+      "title": "Cómo completar la sesión",
+      "straight_sets": "En ejercicios sin bloque, completa todas las series antes de pasar al siguiente.",
+      "circuit": "En ejercicios con el mismo bloque, realiza una serie de cada ejercicio y repite el bloque hasta completar las series.",
+      "blockLabel": "Bloque {block}"
+    },
     "logger": {
       "weight": "Peso",
       "reps": "Reps",
-      "logSet": "Registrar serie {set}",
+      "sets": "series",
+      "repetitions": "repeticiones",
+      "perceivedEffort": "esfuerzo percibido",
+      "repsInReserve": "repeticiones en reserva",
+      "rpeShort": "RPE",
+      "rpeHelp": "RPE (esfuerzo percibido): 6 se siente ligero y 10 es tu esfuerzo máximo.",
+      "rirHelp": "RIR (repeticiones en reserva): cuántas repeticiones más podrías completar con buena técnica; RIR 1–2 significa que quedaban una o dos.",
+      "logSet": "Registrar serie",
       "setRow": "Serie {set}",
       "lastSet": "Última vez: {weight} kg × {reps}",
       "recentHistory": "Historial reciente",

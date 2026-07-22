@@ -268,10 +268,23 @@
       "cardio": "Cardio",
       "other": "Sonstiges"
     },
+    "blockInstruction": {
+      "title": "So absolvierst du die Einheit",
+      "straight_sets": "Bei Übungen ohne Block absolvierst du alle Sätze, bevor du zur nächsten Übung wechselst.",
+      "circuit": "Bei Übungen im selben Block absolvierst du je einen Satz pro Übung und wiederholst den Block, bis alle Sätze fertig sind.",
+      "blockLabel": "Block {block}"
+    },
     "logger": {
       "weight": "Gewicht",
       "reps": "Wdh",
-      "logSet": "Satz {set} loggen",
+      "sets": "Sätze",
+      "repetitions": "Wiederholungen",
+      "perceivedEffort": "subjektive Anstrengung",
+      "repsInReserve": "Wiederholungen in Reserve",
+      "rpeShort": "RPE",
+      "rpeHelp": "RPE (subjektive Anstrengung): 6 fühlt sich leicht an und 10 ist deine maximale Anstrengung.",
+      "rirHelp": "RIR (Wiederholungen in Reserve): wie viele saubere Wiederholungen noch möglich wären; RIR 1–2 bedeutet eine oder zwei.",
+      "logSet": "Satz erfassen",
       "setRow": "Satz {set}",
       "lastSet": "Letztes Mal: {weight} kg × {reps}",
       "recentHistory": "Letzte Einträge",
