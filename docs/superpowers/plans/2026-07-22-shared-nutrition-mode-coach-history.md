@@ -92,7 +92,7 @@ Commit: `feat: add coach history and nutrition mode helpers`.
 ### Task 2: Persist and Validate the Shared Nutrition Mode
 
 **Files:**
-- Create: `supabase/migrations/20260722145217_shared_nutrition_mode.sql`
+- Create: `supabase/migrations/20260722145616_shared_nutrition_mode.sql`
 - Create: `supabase/tests/database/shared_nutrition_mode.test.sql`
 - Modify: `db/schema.ts`
 - Modify: `types/database.ts`

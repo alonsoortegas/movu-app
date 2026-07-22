@@ -31,6 +31,7 @@ export const userProfiles = pgTable('user_profiles', {
   id: uuid('id').primaryKey(),
   email: text('email'),
   account_role: text('account_role').notNull().default('member'),
+  nutrition_tracking_mode: text('nutrition_tracking_mode').notNull().default('macro_targets'),
   full_name: text('full_name'),
   city: text('city'),
   sex: text('sex'),

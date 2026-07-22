@@ -156,6 +156,7 @@ export type Database = {
           id: string
           email: string | null
           account_role: string
+          nutrition_tracking_mode: string
           full_name: string | null
           city: string | null
           sex: string | null
@@ -177,6 +178,7 @@ export type Database = {
           id: string
           email?: string | null
           account_role?: string
+          nutrition_tracking_mode?: string
           full_name?: string | null
           city?: string | null
           sex?: string | null
@@ -198,6 +200,7 @@ export type Database = {
           id?: string
           email?: string | null
           account_role?: string
+          nutrition_tracking_mode?: string
           full_name?: string | null
           city?: string | null
           sex?: string | null

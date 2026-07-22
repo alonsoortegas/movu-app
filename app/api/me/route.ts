@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import type { Database } from '@/types/database'
+import { buildNutritionModeProfileUpdate } from '@/lib/profile/nutrition-mode-update'
 
 type ProfileUpdate = Database['public']['Tables']['user_profiles']['Update']
 
@@ -11,7 +12,7 @@ export async function GET() {
 
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('full_name, city, sex, goal, max_hr_bpm, onboarding_complete, data_source, account_role')
+    .select('full_name, city, sex, goal, max_hr_bpm, onboarding_complete, data_source, account_role, nutrition_tracking_mode')
     .eq('id', user.id)
     .single()
 
@@ -44,12 +45,22 @@ export async function PATCH(request: Request) {
   }
   if (body.goal !== undefined) update.goal = body.goal
   if (body.max_hr_bpm !== undefined) update.max_hr_bpm = body.max_hr_bpm
+  if (body.nutrition_tracking_mode !== undefined) {
+    try {
+      Object.assign(update, buildNutritionModeProfileUpdate(body.nutrition_tracking_mode))
+    } catch (error) {
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : 'Invalid nutrition tracking mode' },
+        { status: 400 },
+      )
+    }
+  }
 
   const { data: profile, error } = await supabase
     .from('user_profiles')
     .update(update)
     .eq('id', user.id)
-    .select('full_name, city, sex, goal, max_hr_bpm')
+    .select('full_name, city, sex, goal, max_hr_bpm, nutrition_tracking_mode')
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
