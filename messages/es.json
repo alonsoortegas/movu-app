@@ -432,6 +432,14 @@
   "perfil": {
     "title": "Perfil",
     "subtitle": "Tus datos y metas de entrenamiento",
+    "nutritionMethod": {
+      "title": "Método de nutrición",
+      "description": "Esta elección organiza tu vista y la información que verá tu coach.",
+      "pdf": "Plan PDF",
+      "pdfDescription": "Usa el documento de tu nutriólogo como referencia principal.",
+      "macros": "Objetivos de calorías y macros",
+      "macrosDescription": "Usa objetivos por tipo de día y el registro detallado."
+    },
     "dataSource": "Fuente de datos",
     "healthkit": {
       "title": "Apple Health",
@@ -591,6 +599,7 @@
     "overTarget": "Vas {kcal} kcal por encima del objetivo",
     "openCatalog": "Editar catálogo y objetivos",
     "detailedOptional": "Registro detallado (opcional)",
+    "planDocumentsOptional": "Documentos del plan (opcional)",
     "planDocument": {
       "eyebrow": "Plan de nutrición actual",
       "noProvider": "Profesional no especificado",

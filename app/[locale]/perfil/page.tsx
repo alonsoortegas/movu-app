@@ -12,6 +12,8 @@ import MobilePageIntro from "@/components/mobile/MobilePageIntro";
 import { MovuHealthKit } from "@/lib/healthkit/plugin";
 import { isHealthKitEnabled, runHealthKitSync, setHealthKitEnabled } from "@/lib/healthkit/sync";
 import CoachAccessCard from "@/components/coaching/CoachAccessCard";
+import NutritionModeSelector from "@/components/nutrition/NutritionModeSelector";
+import type { NutritionTrackingMode } from "@/lib/nutrition/tracking-mode";
 
 const GOAL_KEYS = ["loseGainMuscle", "gainMuscle", "loseWeight", "endurance", "stayActive"] as const;
 const SEX_KEYS = ["female", "male", "other", "prefer_not_to_say"] as const;
@@ -133,6 +135,7 @@ export default function PerfilPage() {
   const [goal, setGoal] = useState("loseGainMuscle");
   const [maxHr, setMaxHr] = useState("");
   const [weeklyGoal, setWeeklyGoal] = useState("5");
+  const [nutritionMode, setNutritionMode] = useState<NutritionTrackingMode>("macro_targets");
   const [bodyComp, setBodyComp] = useState<BodyCompForm>(() => emptyBodyCompForm());
   const [bodyHistory, setBodyHistory] = useState<BodyMeasurement[]>([]);
   const [saved, setSaved] = useState(false);
@@ -190,6 +193,9 @@ export default function PerfilPage() {
         if (profile.goal) setGoal(profile.goal);
         if (profile.max_hr_bpm) setMaxHr(String(profile.max_hr_bpm));
         if (profile.data_source) setDataSource(profile.data_source);
+        if (profile.nutrition_tracking_mode === "plan_document" || profile.nutrition_tracking_mode === "macro_targets") {
+          setNutritionMode(profile.nutrition_tracking_mode);
+        }
 
         const history = measurements.measurements ?? [];
         setBodyHistory(history);
@@ -336,6 +342,7 @@ export default function PerfilPage() {
           sex: sex || null,
           goal,
           max_hr_bpm: maxHr ? parseInt(maxHr) : undefined,
+          nutrition_tracking_mode: nutritionMode,
         }),
       });
       if (!patchRes.ok) {
@@ -533,6 +540,19 @@ export default function PerfilPage() {
             </div>
           </div>
         </section>
+
+        <NutritionModeSelector
+          value={nutritionMode}
+          onChange={setNutritionMode}
+          labels={{
+            title: t("nutritionMethod.title"),
+            description: t("nutritionMethod.description"),
+            pdf: t("nutritionMethod.pdf"),
+            pdfDescription: t("nutritionMethod.pdfDescription"),
+            macros: t("nutritionMethod.macros"),
+            macrosDescription: t("nutritionMethod.macrosDescription"),
+          }}
+        />
 
         <section className="space-y-4">
           <div className="flex items-center justify-between gap-3 flex-wrap">

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getNutritionPlanModeTransition } from '@/lib/nutrition/plan-mode-transition'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -32,9 +33,26 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     .update({ active: false, updated_at: new Date().toISOString() })
     .eq('id', id)
     .eq('user_id', user.id)
+    .eq('active', true)
     .select()
     .maybeSingle()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!plan) return NextResponse.json({ error: 'Plan not found' }, { status: 404 })
+
+  const { error: modeError } = await supabase
+    .from('user_profiles')
+    .update({ nutrition_tracking_mode: getNutritionPlanModeTransition('archive') })
+    .eq('id', user.id)
+  if (modeError) {
+    const { error: restoreError } = await supabase
+      .from('nutrition_plans')
+      .update({ active: true, updated_at: new Date().toISOString() })
+      .eq('id', plan.id)
+      .eq('user_id', user.id)
+    return NextResponse.json(
+      { error: restoreError ? `Nutrition mode update failed; rollback failed: ${restoreError.message}` : modeError.message },
+      { status: 500 },
+    )
+  }
   return NextResponse.json({ plan })
 }

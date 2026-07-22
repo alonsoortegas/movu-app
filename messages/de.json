@@ -433,6 +433,14 @@
   "perfil": {
     "title": "Profile",
     "subtitle": "Your data and training goals",
+    "nutritionMethod": {
+      "title": "Ernährungsmethode",
+      "description": "Diese Auswahl steuert deine Ansicht und die Ansicht deines Coaches.",
+      "pdf": "PDF-Plan",
+      "pdfDescription": "Nutze das Dokument deiner Ernährungsberatung als Hauptreferenz.",
+      "macros": "Kalorien- und Makroziele",
+      "macrosDescription": "Nutze Tagesziele und das detaillierte Protokoll."
+    },
     "dataSource": "Data source",
     "healthkit": {
       "title": "Apple Health",
@@ -592,6 +600,7 @@
     "overTarget": "{kcal} kcal über dem Ziel",
     "openCatalog": "Katalog und Ziele bearbeiten",
     "detailedOptional": "Detailliertes Protokoll (optional)",
+    "planDocumentsOptional": "Plandokumente (optional)",
     "planDocument": {
       "eyebrow": "Aktueller Ernährungsplan",
       "noProvider": "Anbieter nicht angegeben",

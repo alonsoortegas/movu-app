@@ -3,11 +3,13 @@
 import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import type { Database } from '@/types/database'
+import { useRouter } from '@/i18n/navigation'
 
 type Plan = Database['public']['Tables']['nutrition_plans']['Row']
 
 export default function NutritionPlanCard({ initialPlans }: { initialPlans: Plan[] }) {
   const t = useTranslations('nutrition.planDocument')
+  const router = useRouter()
   const [plans, setPlans] = useState(initialPlans)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -23,6 +25,7 @@ export default function NutritionPlanCard({ initialPlans }: { initialPlans: Plan
       if (!response.ok) throw new Error(data.error ?? t('uploadError'))
       setPlans((current) => [data.plan, ...current.map((plan) => ({ ...plan, active: false }))])
       formRef.current?.reset()
+      router.refresh()
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : t('uploadError'))
     } finally {
@@ -39,7 +42,10 @@ export default function NutritionPlanCard({ initialPlans }: { initialPlans: Plan
 
   async function archive(id: string) {
     const response = await fetch(`/api/nutrition/plans/${id}`, { method: 'DELETE' })
-    if (response.ok) setPlans((current) => current.map((plan) => plan.id === id ? { ...plan, active: false } : plan))
+    if (response.ok) {
+      setPlans((current) => current.map((plan) => plan.id === id ? { ...plan, active: false } : plan))
+      router.refresh()
+    }
   }
 
   return (

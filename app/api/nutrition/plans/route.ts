@@ -5,6 +5,7 @@ import {
   isValidNutritionPlanRange,
   validateNutritionPlanUpload,
 } from '@/lib/nutrition/plan-document'
+import { getNutritionPlanModeTransition } from '@/lib/nutrition/plan-mode-transition'
 
 export async function GET() {
   const supabase = await createClient()
@@ -95,6 +96,34 @@ export async function POST(request: Request) {
       throw activateError
     }
 
+    const { error: modeError } = await supabase
+      .from('user_profiles')
+      .update({ nutrition_tracking_mode: getNutritionPlanModeTransition('upload') })
+      .eq('id', user.id)
+    if (modeError) {
+      const { error: deleteMetadataError } = await supabase
+        .from('nutrition_plans')
+        .delete()
+        .eq('id', activePlan.id)
+        .eq('user_id', user.id)
+      const { error: restoreError } = previousActive?.length
+        ? await supabase
+            .from('nutrition_plans')
+            .update({ active: true, updated_at: new Date().toISOString() })
+            .in('id', previousActive.map((item) => item.id))
+        : { error: null }
+      const { error: removeObjectError } = await supabase.storage
+        .from('nutrition-plans')
+        .remove([uploadedPath])
+      uploadedPath = null
+      const compensationError = deleteMetadataError ?? restoreError ?? removeObjectError
+      return NextResponse.json(
+        { error: compensationError ? `Nutrition mode update failed; rollback failed: ${compensationError.message}` : modeError.message },
+        { status: 500 },
+      )
+    }
+
+    uploadedPath = null
     return NextResponse.json({ plan: activePlan }, { status: 201 })
   } catch (error) {
     if (uploadedPath) {
