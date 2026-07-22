@@ -11,7 +11,8 @@
       "registro": "Log",
       "plan": "Plan",
       "nutricion": "Nutrition",
-      "perfil": "Profile"
+      "perfil": "Profile",
+      "coach": "Coaching"
     },
     "cta": "+ Log today"
   },
@@ -719,6 +720,32 @@
         "saveGroup": "Group could not be saved",
         "deleteGroup": "Group could not be deleted"
       }
+    }
+  },
+  "coaching": {
+    "eyebrow": "Coaching workspace",
+    "title": "Clients",
+    "description": "A read-only follow-up view for clients who gave you active access.",
+    "search": "Search clients",
+    "empty": "No active clients match your search.",
+    "latestWorkout": "Latest workout",
+    "open": "Open",
+    "unnamedClient": "Unnamed client",
+    "back": "All clients",
+    "noGoal": "No goal recorded",
+    "recentWorkouts": "Recent workouts",
+    "noWorkouts": "No workouts have been logged yet.",
+    "metrics": { "weight": "Weight", "muscle": "Muscle", "bodyFat": "Body fat", "recovery": "Recovery" },
+    "access": {
+      "title": "Coach access",
+      "description": "Give your coach read-only access. You can revoke it immediately.",
+      "emailPlaceholder": "coach@email.com",
+      "grant": "Grant access",
+      "saving": "Saving…",
+      "revoke": "Revoke",
+      "coach": "Coach",
+      "error": "Access could not be updated",
+      "status": { "active": "Active", "pending": "Pending", "revoked": "Revoked" }
     }
   }
 }

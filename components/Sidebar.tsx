@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { getActiveNavigationIndex, MOVU_NAV_ITEMS } from "@/lib/navigation";
@@ -10,6 +11,14 @@ export default function Sidebar() {
   const pathname = usePathname();
   const t = useTranslations("sidebar");
   const activeIndex = getActiveNavigationIndex(pathname);
+  const [isCoach, setIsCoach] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((response) => response.json())
+      .then((profile) => setIsCoach(profile.account_role === "coach"))
+      .catch(() => {});
+  }, []);
 
   return (
     <aside className="glass-thick sticky top-0 hidden h-screen w-[220px] flex-shrink-0 flex-col border-r border-[var(--border)] md:flex">
@@ -44,6 +53,20 @@ export default function Sidebar() {
             </Link>
           );
         })}
+        {isCoach && (
+          <Link
+            href="/coach"
+            aria-current={pathname.startsWith("/coach") ? "page" : undefined}
+            className={`group relative flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-semibold transition-all ${
+              pathname.startsWith("/coach")
+                ? "border-[rgba(107,224,64,0.38)] bg-[var(--accent-soft)] text-[var(--text)]"
+                : "border-transparent text-[var(--text-dim)] hover:border-[var(--border)] hover:bg-[var(--ink-04)]"
+            }`}
+          >
+            <span className="data w-5 text-center text-base text-accent" aria-hidden="true">◎</span>
+            <span>{t("nav.coach")}</span>
+          </Link>
+        )}
       </nav>
 
       <div className="flex items-center justify-between gap-2 border-t border-[var(--ink-06)] px-3 py-4">

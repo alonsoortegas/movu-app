@@ -12,7 +12,8 @@
       "registro": "Log",
       "plan": "Plan",
       "nutricion": "Ernährung",
-      "perfil": "Profile"
+      "perfil": "Profile",
+      "coach": "Coaching"
     },
     "cta": "+ Log today"
   },
@@ -720,6 +721,32 @@
         "saveGroup": "Gruppe konnte nicht gespeichert werden",
         "deleteGroup": "Gruppe konnte nicht gelöscht werden"
       }
+    }
+  },
+  "coaching": {
+    "eyebrow": "Coaching-Bereich",
+    "title": "Klienten",
+    "description": "Schreibgeschützte Übersicht für Klienten mit aktivem Zugriff.",
+    "search": "Klienten suchen",
+    "empty": "Keine passenden aktiven Klienten.",
+    "latestWorkout": "Letztes Training",
+    "open": "Öffnen",
+    "unnamedClient": "Klient ohne Namen",
+    "back": "Alle Klienten",
+    "noGoal": "Kein Ziel hinterlegt",
+    "recentWorkouts": "Letzte Trainings",
+    "noWorkouts": "Noch keine Trainings erfasst.",
+    "metrics": { "weight": "Gewicht", "muscle": "Muskelmasse", "bodyFat": "Körperfett", "recovery": "Erholung" },
+    "access": {
+      "title": "Coach-Zugriff",
+      "description": "Gib deinem Coach Lesezugriff. Du kannst ihn sofort widerrufen.",
+      "emailPlaceholder": "coach@email.com",
+      "grant": "Zugriff geben",
+      "saving": "Speichern…",
+      "revoke": "Widerrufen",
+      "coach": "Coach",
+      "error": "Zugriff konnte nicht aktualisiert werden",
+      "status": { "active": "Aktiv", "pending": "Ausstehend", "revoked": "Widerrufen" }
     }
   }
 }

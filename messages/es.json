@@ -11,7 +11,8 @@
       "registro": "Registro",
       "plan": "Plan",
       "nutricion": "Nutrición",
-      "perfil": "Perfil"
+      "perfil": "Perfil",
+      "coach": "Coaching"
     },
     "cta": "+ Registrar hoy"
   },
@@ -719,6 +720,32 @@
         "saveGroup": "No se pudo guardar el grupo",
         "deleteGroup": "No se pudo eliminar el grupo"
       }
+    }
+  },
+  "coaching": {
+    "eyebrow": "Espacio de coaching",
+    "title": "Clientes",
+    "description": "Vista de seguimiento para clientes que te dieron acceso activo.",
+    "search": "Buscar cliente",
+    "empty": "No hay clientes activos que coincidan.",
+    "latestWorkout": "Último entrenamiento",
+    "open": "Abrir",
+    "unnamedClient": "Cliente sin nombre",
+    "back": "Todos los clientes",
+    "noGoal": "Sin objetivo registrado",
+    "recentWorkouts": "Entrenamientos recientes",
+    "noWorkouts": "Aún no hay entrenamientos registrados.",
+    "metrics": { "weight": "Peso", "muscle": "Músculo", "bodyFat": "Grasa corporal", "recovery": "Recuperación" },
+    "access": {
+      "title": "Acceso de coach",
+      "description": "Da acceso de solo lectura a tu coach. Puedes revocarlo al instante.",
+      "emailPlaceholder": "correo@coach.com",
+      "grant": "Dar acceso",
+      "saving": "Guardando…",
+      "revoke": "Revocar",
+      "coach": "Coach",
+      "error": "No se pudo actualizar el acceso",
+      "status": { "active": "Activo", "pending": "Pendiente", "revoked": "Revocado" }
     }
   }
 }

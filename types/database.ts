@@ -154,6 +154,8 @@ export type Database = {
       user_profiles: {
         Row: {
           id: string
+          email: string | null
+          account_role: string
           full_name: string | null
           city: string | null
           sex: string | null
@@ -173,6 +175,8 @@ export type Database = {
         }
         Insert: {
           id: string
+          email?: string | null
+          account_role?: string
           full_name?: string | null
           city?: string | null
           sex?: string | null
@@ -192,6 +196,8 @@ export type Database = {
         }
         Update: {
           id?: string
+          email?: string | null
+          account_role?: string
           full_name?: string | null
           city?: string | null
           sex?: string | null
@@ -208,6 +214,39 @@ export type Database = {
           invite_code_used?: string | null
           onboarding_complete?: boolean
           created_at?: string
+        }
+        Relationships: []
+      }
+      coach_client_access: {
+        Row: {
+          id: string
+          client_id: string
+          coach_id: string
+          status: string
+          granted_at: string | null
+          revoked_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          coach_id: string
+          status?: string
+          granted_at?: string | null
+          revoked_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          coach_id?: string
+          status?: string
+          granted_at?: string | null
+          revoked_at?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }

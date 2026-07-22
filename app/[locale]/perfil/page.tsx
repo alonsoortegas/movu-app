@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import MobilePageIntro from "@/components/mobile/MobilePageIntro";
 import { MovuHealthKit } from "@/lib/healthkit/plugin";
 import { isHealthKitEnabled, runHealthKitSync, setHealthKitEnabled } from "@/lib/healthkit/sync";
+import CoachAccessCard from "@/components/coaching/CoachAccessCard";
 
 const GOAL_KEYS = ["loseGainMuscle", "gainMuscle", "loseWeight", "endurance", "stayActive"] as const;
 const SEX_KEYS = ["female", "male", "other", "prefer_not_to_say"] as const;
@@ -640,6 +641,8 @@ export default function PerfilPage() {
           </button>
         </div>
       </form>
+
+      <CoachAccessCard />
 
       <div className="mt-6 mb-20 md:mt-8 md:mb-0">
         <button

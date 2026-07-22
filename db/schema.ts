@@ -29,6 +29,8 @@ export const waitlist = pgTable('waitlist', {
 // ---------- user_profiles ----------
 export const userProfiles = pgTable('user_profiles', {
   id: uuid('id').primaryKey(),
+  email: text('email'),
+  account_role: text('account_role').notNull().default('member'),
   full_name: text('full_name'),
   city: text('city'),
   sex: text('sex'),
@@ -45,6 +47,22 @@ export const userProfiles = pgTable('user_profiles', {
   invite_code_used: text('invite_code_used'),
   onboarding_complete: boolean('onboarding_complete').notNull().default(false),
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+// ---------- coach_client_access ----------
+export const coachClientAccess = pgTable('coach_client_access', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  client_id: uuid('client_id')
+    .notNull()
+    .references(() => userProfiles.id, { onDelete: 'cascade' }),
+  coach_id: uuid('coach_id')
+    .notNull()
+    .references(() => userProfiles.id, { onDelete: 'cascade' }),
+  status: text('status').notNull().default('active'),
+  granted_at: timestamp('granted_at', { withTimezone: true }),
+  revoked_at: timestamp('revoked_at', { withTimezone: true }),
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 // ---------- invite_codes ----------
@@ -192,6 +210,8 @@ export type Waitlist = typeof waitlist.$inferSelect
 export type NewWaitlist = typeof waitlist.$inferInsert
 export type UserProfile = typeof userProfiles.$inferSelect
 export type NewUserProfile = typeof userProfiles.$inferInsert
+export type CoachClientAccess = typeof coachClientAccess.$inferSelect
+export type NewCoachClientAccess = typeof coachClientAccess.$inferInsert
 export type InviteCode = typeof inviteCodes.$inferSelect
 export type NewInviteCode = typeof inviteCodes.$inferInsert
 export type Activity = typeof activities.$inferSelect
