@@ -590,6 +590,26 @@
     "remaining": "Te quedan {kcal} kcal y {protein} g de proteína",
     "overTarget": "Vas {kcal} kcal por encima del objetivo",
     "openCatalog": "Editar catálogo y objetivos",
+    "detailedOptional": "Registro detallado (opcional)",
+    "planDocument": {
+      "eyebrow": "Plan de nutrición actual",
+      "noProvider": "Profesional no especificado",
+      "openEnded": "Vigente",
+      "viewPdf": "Ver PDF",
+      "archive": "Archivar",
+      "empty": "Sube el plan que sigues para que Movu y tu coach usen la misma referencia.",
+      "uploadNew": "Subir un nuevo plan",
+      "title": "Título del plan",
+      "provider": "Nombre del profesional",
+      "calories": "Objetivo diario de kcal",
+      "upload": "Subir PDF",
+      "uploading": "Subiendo…",
+      "history": "Historial de planes",
+      "uploadError": "No se pudo subir el plan",
+      "viewError": "No se pudo abrir el PDF",
+      "reference": "Referencia: {source} · {kcal} kcal",
+      "defaultSource": "plan de nutrición"
+    },
     "logger": {
       "title": "Registrar comida",
       "meals": {
@@ -735,6 +755,9 @@
     "noGoal": "Sin objetivo registrado",
     "recentWorkouts": "Entrenamientos recientes",
     "noWorkouts": "Aún no hay entrenamientos registrados.",
+    "nutritionPlan": "Plan de nutrición",
+    "viewNutritionPdf": "Ver PDF",
+    "noNutritionPlan": "No hay un plan de nutrición activo.",
     "metrics": { "weight": "Peso", "muscle": "Músculo", "bodyFat": "Grasa corporal", "recovery": "Recuperación" },
     "access": {
       "title": "Acceso de coach",

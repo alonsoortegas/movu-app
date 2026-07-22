@@ -38,6 +38,8 @@ export default function NutritionToday({
   groups,
   groupItems,
   initialPortions,
+  planCaloriesTarget,
+  planSourceLabel,
 }: {
   date: string
   initialDayType: NutritionDayType | null
@@ -48,6 +50,8 @@ export default function NutritionToday({
   groups: Group[]
   groupItems: GroupItem[]
   initialPortions: SavedPortion[]
+  planCaloriesTarget: number | null
+  planSourceLabel: string | null
 }) {
   const t = useTranslations('nutrition')
   const locale = useLocale()
@@ -58,15 +62,15 @@ export default function NutritionToday({
 
   const target = useMemo(() => {
     const row = targets.find((row) => row.day_type === dayType) ?? targets[0]
-    if (!row) return null
+    if (!row && !planCaloriesTarget) return null
     const totals: MacroTotals = {
-      calories: row.calories_target,
-      protein_g: row.protein_target,
-      carbs_g: row.carbs_target,
-      fat_g: row.fat_target,
+      calories: planCaloriesTarget ?? row!.calories_target,
+      protein_g: row?.protein_target ?? 0,
+      carbs_g: row?.carbs_target ?? 0,
+      fat_g: row?.fat_target ?? 0,
     }
     return totals
-  }, [targets, dayType])
+  }, [targets, dayType, planCaloriesTarget])
 
   const consumed = useMemo(() => calculateConsumed(items), [items])
   const remaining = target ? calculateRemaining(target, consumed) : null
@@ -111,6 +115,11 @@ export default function NutritionToday({
   return (
     <div className="space-y-4">
       {/* Day type */}
+      {planCaloriesTarget && (
+        <p className="data text-[10px] font-semibold uppercase tracking-wide text-accent">
+          {t('planDocument.reference', { source: planSourceLabel || t('planDocument.defaultSource'), kcal: planCaloriesTarget })}
+        </p>
+      )}
       <div className="flex gap-1.5">
         {DAY_TYPES.map((type) => (
           <button

@@ -591,6 +591,26 @@
     "remaining": "Noch {kcal} kcal und {protein} g Protein",
     "overTarget": "{kcal} kcal über dem Ziel",
     "openCatalog": "Katalog und Ziele bearbeiten",
+    "detailedOptional": "Detailliertes Protokoll (optional)",
+    "planDocument": {
+      "eyebrow": "Aktueller Ernährungsplan",
+      "noProvider": "Anbieter nicht angegeben",
+      "openEnded": "Laufend",
+      "viewPdf": "PDF ansehen",
+      "archive": "Archivieren",
+      "empty": "Lade deinen Plan hoch, damit Movu und dein Coach dieselbe Grundlage nutzen.",
+      "uploadNew": "Neuen Plan hochladen",
+      "title": "Plantitel",
+      "provider": "Name des Anbieters",
+      "calories": "Tägliches kcal-Ziel",
+      "upload": "PDF hochladen",
+      "uploading": "Wird hochgeladen…",
+      "history": "Planverlauf",
+      "uploadError": "Plan konnte nicht hochgeladen werden",
+      "viewError": "PDF konnte nicht geöffnet werden",
+      "reference": "Referenz: {source} · {kcal} kcal",
+      "defaultSource": "Ernährungsplan"
+    },
     "logger": {
       "title": "Mahlzeit erfassen",
       "meals": {
@@ -736,6 +756,9 @@
     "noGoal": "Kein Ziel hinterlegt",
     "recentWorkouts": "Letzte Trainings",
     "noWorkouts": "Noch keine Trainings erfasst.",
+    "nutritionPlan": "Ernährungsplan",
+    "viewNutritionPdf": "PDF ansehen",
+    "noNutritionPlan": "Kein aktiver Ernährungsplan.",
     "metrics": { "weight": "Gewicht", "muscle": "Muskelmasse", "bodyFat": "Körperfett", "recovery": "Erholung" },
     "access": {
       "title": "Coach-Zugriff",

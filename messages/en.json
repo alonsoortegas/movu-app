@@ -590,6 +590,26 @@
     "remaining": "{kcal} kcal and {protein} g protein remaining",
     "overTarget": "{kcal} kcal over target",
     "openCatalog": "Edit catalog and targets",
+    "detailedOptional": "Detailed logging (optional)",
+    "planDocument": {
+      "eyebrow": "Current nutrition plan",
+      "noProvider": "Provider not specified",
+      "openEnded": "Ongoing",
+      "viewPdf": "View PDF",
+      "archive": "Archive",
+      "empty": "Upload the plan you follow so Movu and your coach share the same reference.",
+      "uploadNew": "Upload a new plan",
+      "title": "Plan title",
+      "provider": "Provider name",
+      "calories": "Daily kcal target",
+      "upload": "Upload PDF",
+      "uploading": "Uploading…",
+      "history": "Plan history",
+      "uploadError": "The plan could not be uploaded",
+      "viewError": "The PDF could not be opened",
+      "reference": "Reference: {source} · {kcal} kcal",
+      "defaultSource": "nutrition plan"
+    },
     "logger": {
       "title": "Log a meal",
       "meals": {
@@ -735,6 +755,9 @@
     "noGoal": "No goal recorded",
     "recentWorkouts": "Recent workouts",
     "noWorkouts": "No workouts have been logged yet.",
+    "nutritionPlan": "Nutrition plan",
+    "viewNutritionPdf": "View PDF",
+    "noNutritionPlan": "No active nutrition plan.",
     "metrics": { "weight": "Weight", "muscle": "Muscle", "bodyFat": "Body fat", "recovery": "Recovery" },
     "access": {
       "title": "Coach access",

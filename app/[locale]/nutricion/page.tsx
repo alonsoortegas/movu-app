@@ -6,6 +6,7 @@ import NutritionToday from '@/components/nutrition/NutritionToday'
 import { dateKey } from '@/lib/trends/compute'
 import type { NutritionDayType } from '@/lib/nutrition/macros'
 import type { Database } from '@/types/database'
+import NutritionPlanCard from '@/components/nutrition/NutritionPlanCard'
 
 type MealLogItem = Database['public']['Tables']['meal_log_items']['Row']
 
@@ -20,8 +21,9 @@ export default async function NutritionPage({ params }: { params: Promise<{ loca
 
   const today = dateKey(new Date().toISOString())
 
-  const [dayResult, targetsResult, logsResult, foodsResult, groupsResult, groupItemsResult, portionsResult] =
+  const [plansResult, dayResult, targetsResult, logsResult, foodsResult, groupsResult, groupItemsResult, portionsResult] =
     await Promise.all([
+      supabase.from('nutrition_plans').select('*').eq('user_id', user!.id).order('starts_on', { ascending: false }),
       supabase.from('nutrition_days').select('*').eq('user_id', user!.id).eq('date', today).maybeSingle(),
       supabase.from('nutrition_targets').select('*').eq('user_id', user!.id),
       supabase.from('meal_logs').select('*').eq('user_id', user!.id).eq('date', today).order('logged_at'),
@@ -52,6 +54,11 @@ export default async function NutritionPage({ params }: { params: Promise<{ loca
         <h1 className="display text-2xl font-bold text-[var(--text)]">{t('title')}</h1>
         <p className="mt-0.5 text-sm text-muted">{t('subtitle')}</p>
       </div>
+      <div className="mb-4">
+        <NutritionPlanCard initialPlans={plansResult.data ?? []} />
+      </div>
+      <details>
+        <summary className="mb-4 cursor-pointer text-sm font-semibold text-[var(--text-dim)]">{t('detailedOptional')}</summary>
       <NutritionToday
         date={today}
         initialDayType={(dayResult.data?.day_type as NutritionDayType | undefined) ?? null}
@@ -62,7 +69,10 @@ export default async function NutritionPage({ params }: { params: Promise<{ loca
         groups={groupsResult.data ?? []}
         groupItems={groupItems}
         initialPortions={portionsResult.data ?? []}
+        planCaloriesTarget={(plansResult.data ?? []).find((plan) => plan.active)?.calories_target ?? null}
+        planSourceLabel={(plansResult.data ?? []).find((plan) => plan.active)?.provider_name ?? null}
       />
+      </details>
     </div>
   )
 }

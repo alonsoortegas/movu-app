@@ -1051,6 +1051,57 @@ export type Database = {
         }
         Relationships: []
       }
+      nutrition_plans: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          provider_name: string | null
+          calories_target: number | null
+          starts_on: string
+          ends_on: string | null
+          storage_path: string
+          original_filename: string
+          mime_type: string
+          notes: string | null
+          active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          provider_name?: string | null
+          calories_target?: number | null
+          starts_on: string
+          ends_on?: string | null
+          storage_path: string
+          original_filename: string
+          mime_type?: string
+          notes?: string | null
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          provider_name?: string | null
+          calories_target?: number | null
+          starts_on?: string
+          ends_on?: string | null
+          storage_path?: string
+          original_filename?: string
+          mime_type?: string
+          notes?: string | null
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       nutrition_targets: {
         Row: {
           id: string

@@ -225,6 +225,27 @@ export type NewBodyMeasurement = typeof bodyMeasurements.$inferInsert
 export type Insight = typeof insights.$inferSelect
 export type NewInsight = typeof insights.$inferInsert
 
+// ---------- nutrition_plans ----------
+export const nutritionPlans = pgTable('nutrition_plans', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').notNull().references(() => userProfiles.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  provider_name: text('provider_name'),
+  calories_target: integer('calories_target'),
+  starts_on: date('starts_on').notNull(),
+  ends_on: date('ends_on'),
+  storage_path: text('storage_path').notNull(),
+  original_filename: text('original_filename').notNull(),
+  mime_type: text('mime_type').notNull().default('application/pdf'),
+  notes: text('notes'),
+  active: boolean('active').notNull().default(true),
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export type NutritionPlan = typeof nutritionPlans.$inferSelect
+export type NewNutritionPlan = typeof nutritionPlans.$inferInsert
+
 // ---------- workout_plans (lifeos port) ----------
 export const workoutPlans = pgTable('workout_plans', {
   id: uuid('id').primaryKey().defaultRandom(),
