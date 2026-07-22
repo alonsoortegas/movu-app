@@ -284,6 +284,9 @@
       "rpeShort": "RPE",
       "rpeHelp": "RPE (subjektive Anstrengung): 6 fühlt sich leicht an und 10 ist deine maximale Anstrengung.",
       "rirHelp": "RIR (Wiederholungen in Reserve): wie viele saubere Wiederholungen noch möglich wären; RIR 1–2 bedeutet eine oder zwei.",
+      "openLogger": "Einheit starten oder fortsetzen",
+      "opening": "Einheit wird geöffnet…",
+      "openFailed": "Einheit konnte nicht geöffnet werden",
       "logSet": "Satz erfassen",
       "setRow": "Satz {set}",
       "lastSet": "Letztes Mal: {weight} kg × {reps}",
@@ -304,6 +307,69 @@
       "notStartedBody": "Sobald das Startdatum erreicht ist, siehst du hier die aktuelle Woche.",
       "expiredTitle": "Dein Plan ist beendet",
       "expiredBody": "Erstelle einen neuen Plan oder verlängere den aktuellen im Editor."
+    }
+  },
+  "performedWorkout": {
+    "backToPlan": "Zurück zum Plan",
+    "completedHelp": "Diese Einheit ist abgeschlossen und schreibgeschützt. Öffne sie erneut, um Daten zu korrigieren oder zu ergänzen.",
+    "addExercise": "Übung hinzufügen",
+    "remove": "Entfernen",
+    "weight": "Gewicht (kg)",
+    "reps": "Wiederholungen",
+    "rpe": "RPE (subjektive Anstrengung)",
+    "logSet": "Satz erfassen",
+    "setNumber": "Satz {set}",
+    "lastSet": "Letztes Mal: {weight} kg × {reps}",
+    "useSuggestion": "Vorschlag verwenden: {weight} kg",
+    "complete": "Einheit abschließen",
+    "reopen": "Einheit erneut öffnen",
+    "rest": "Pause",
+    "origin": {
+      "planned": "Geplante Einheit",
+      "manual": "Manuelle Einheit",
+      "whoop": "WHOOP",
+      "apple_health": "Apple Health"
+    },
+    "status": {
+      "draft": "Entwurf",
+      "in_progress": "Läuft",
+      "completed": "Abgeschlossen"
+    },
+    "labels": {
+      "sets": "Sätze",
+      "repetitions": "Wiederholungen",
+      "perceivedEffort": "subjektive Anstrengung",
+      "repsInReserve": "Wiederholungen in Reserve"
+    },
+    "errors": {
+      "addExercise": "Übung konnte nicht hinzugefügt werden",
+      "removeExercise": "Übung konnte nicht entfernt werden",
+      "invalidWeight": "Gib ein gültiges Gewicht ein",
+      "logSet": "Satz konnte nicht erfasst werden",
+      "status": "Einheit konnte nicht aktualisiert werden"
+    },
+    "picker": {
+      "title": "Übung hinzufügen",
+      "subtitle": "Suche nach Namen oder filtere nach Muskelgruppe.",
+      "close": "Schließen",
+      "search": "Übung suchen",
+      "searchPlaceholder": "z. B. Wall Balls, Kniebeuge…",
+      "all": "Alle",
+      "unclassified": "Nicht klassifiziert",
+      "empty": "Keine Übungen passen zu diesen Filtern.",
+      "createCustom": "„{name}“ als eigene Übung erstellen",
+      "creating": "Wird erstellt…",
+      "loadFailed": "Katalog konnte nicht geladen werden",
+      "createFailed": "Übung konnte nicht erstellt werden",
+      "muscles": {
+        "legs": "Beine",
+        "glutes": "Gesäß",
+        "chest": "Brust",
+        "back": "Rücken",
+        "shoulders": "Schultern",
+        "arms": "Arme",
+        "core": "Core"
+      }
     }
   },
   "registro": {

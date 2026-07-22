@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import type { WorkoutType } from "@/types";
 import MobilePageIntro from "@/components/mobile/MobilePageIntro";
+import { useRouter } from "@/i18n/navigation";
 
 const CLASS_TYPE_KEYS: WorkoutType[] = ["weightlifting", "functional-fitness", "bootcamp", "running", "cycling", "cardio", "yoga", "other"];
 const CLASS_EMOJIS: Record<string, string> = {
@@ -35,6 +36,17 @@ const WORKOUT_SUBTYPES_BY_TYPE: Record<string, string[]> = {
   other: ["Pádel"],
 };
 
+const HYROX_EXERCISES = [
+  { exercise_name: "SkiErg", primary_muscle_group: "back", order_index: 0 },
+  { exercise_name: "Sled push", primary_muscle_group: "legs", order_index: 1 },
+  { exercise_name: "Sled pull", primary_muscle_group: "back", order_index: 2 },
+  { exercise_name: "Burpee broad jump", primary_muscle_group: "legs", order_index: 3 },
+  { exercise_name: "Rowing", primary_muscle_group: "back", order_index: 4 },
+  { exercise_name: "Farmers carry", primary_muscle_group: "arms", order_index: 5 },
+  { exercise_name: "Sandbag lunge", primary_muscle_group: "legs", order_index: 6 },
+  { exercise_name: "Wall balls", primary_muscle_group: "legs", order_index: 7 },
+];
+
 function localDateValue(date = new Date()): string {
   const local = new Date(date);
   local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
@@ -44,6 +56,7 @@ function localDateValue(date = new Date()): string {
 export default function RegistroPage() {
   const t = useTranslations("registro");
   const locale = useLocale();
+  const router = useRouter();
   const todayLabel = useMemo(() =>
     new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long" }).format(new Date()),
     [locale]
@@ -106,21 +119,31 @@ export default function RegistroPage() {
           distance_km: distance ? Number(distance) : undefined,
         }),
       });
+      const activityBody = await res.json();
       if (!res.ok) {
-        const data = await res.json();
+        const data = activityBody;
         throw new Error(data.error ?? "Failed to save");
       }
-      setType("weightlifting");
-      setWorkoutDate(todayValue);
-      setClassName(WORKOUT_SUBTYPES_BY_TYPE.weightlifting[0]);
-      setStudio("");
-      setCoachName("");
-      setDuration("");
-      setCalories("");
-      setDistance("");
-      setEffort(3);
+      const workoutResponse = await fetch("/api/performed-workouts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          activity_id: activityBody.activity.id,
+          title: className || t(`classTypes.${type}`),
+          workout_type: type,
+          performed_on: workoutDate,
+          started_at: `${workoutDate}T12:00:00.000Z`,
+          duration_min: Number(duration),
+          status: "in_progress",
+          exercises: className.toLowerCase() === "hyrox" ? HYROX_EXERCISES : [],
+        }),
+      });
+      const workoutBody = await workoutResponse.json();
+      if (!workoutResponse.ok) {
+        throw new Error(workoutBody.error ?? "Failed to create workout session");
+      }
       setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      router.push(`/registro/${workoutBody.workout.id}`);
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Something went wrong");
     } finally {

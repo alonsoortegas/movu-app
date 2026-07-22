@@ -283,6 +283,9 @@
       "rpeShort": "RPE",
       "rpeHelp": "RPE (rating of perceived exertion): 6 feels light and 10 is your maximum effort.",
       "rirHelp": "RIR (repetitions in reserve): how many more good-form repetitions you could complete; RIR 1–2 means one or two remained.",
+      "openLogger": "Start or continue session",
+      "opening": "Opening session…",
+      "openFailed": "Could not open the session",
       "logSet": "Log set",
       "setRow": "Set {set}",
       "lastSet": "Last time: {weight} kg × {reps}",
@@ -303,6 +306,69 @@
       "notStartedBody": "Once the start date arrives you will see the current week here.",
       "expiredTitle": "Your plan has ended",
       "expiredBody": "Create a new plan or extend the current one from the editor."
+    }
+  },
+  "performedWorkout": {
+    "backToPlan": "Back to plan",
+    "completedHelp": "This session is complete and read-only. Reopen it if you need to correct or add data.",
+    "addExercise": "Add exercise",
+    "remove": "Remove",
+    "weight": "Weight (kg)",
+    "reps": "Repetitions",
+    "rpe": "RPE (perceived effort)",
+    "logSet": "Log set",
+    "setNumber": "Set {set}",
+    "lastSet": "Last time: {weight} kg × {reps}",
+    "useSuggestion": "Use suggestion: {weight} kg",
+    "complete": "Complete session",
+    "reopen": "Reopen session",
+    "rest": "Rest",
+    "origin": {
+      "planned": "Planned session",
+      "manual": "Manual session",
+      "whoop": "WHOOP",
+      "apple_health": "Apple Health"
+    },
+    "status": {
+      "draft": "Draft",
+      "in_progress": "In progress",
+      "completed": "Completed"
+    },
+    "labels": {
+      "sets": "sets",
+      "repetitions": "repetitions",
+      "perceivedEffort": "perceived effort",
+      "repsInReserve": "repetitions in reserve"
+    },
+    "errors": {
+      "addExercise": "Could not add the exercise",
+      "removeExercise": "Could not remove the exercise",
+      "invalidWeight": "Enter a valid weight",
+      "logSet": "Could not log the set",
+      "status": "Could not update the session"
+    },
+    "picker": {
+      "title": "Add exercise",
+      "subtitle": "Search by name or filter by muscle group.",
+      "close": "Close",
+      "search": "Search exercise",
+      "searchPlaceholder": "e.g. wall balls, squat…",
+      "all": "All",
+      "unclassified": "Unclassified",
+      "empty": "No exercises match these filters.",
+      "createCustom": "Create “{name}” as a custom exercise",
+      "creating": "Creating…",
+      "loadFailed": "Could not load the catalog",
+      "createFailed": "Could not create the exercise",
+      "muscles": {
+        "legs": "Legs",
+        "glutes": "Glutes",
+        "chest": "Chest",
+        "back": "Back",
+        "shoulders": "Shoulders",
+        "arms": "Arms",
+        "core": "Core"
+      }
     }
   },
   "registro": {

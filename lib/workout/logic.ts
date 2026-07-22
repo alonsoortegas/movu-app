@@ -29,6 +29,17 @@ export interface PlanWeekStatus {
   reason: 'not_started' | 'active' | 'expired'
 }
 
+export function getPlanWeekDayDate(
+  planStartDate: string,
+  week: number,
+  day: DayKey,
+): string {
+  const start = new Date(`${planStartDate}T00:00:00Z`)
+  const offset = (week - 1) * 7 + DAY_ORDER.indexOf(day)
+  start.setUTCDate(start.getUTCDate() + offset)
+  return start.toISOString().slice(0, 10)
+}
+
 // "Week N" of a plan, counted in the product's calendar timezone.
 export function getPlanWeek(
   plan: { start_date: string; weeks: number },

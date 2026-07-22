@@ -283,6 +283,9 @@
       "rpeShort": "RPE",
       "rpeHelp": "RPE (esfuerzo percibido): 6 se siente ligero y 10 es tu esfuerzo máximo.",
       "rirHelp": "RIR (repeticiones en reserva): cuántas repeticiones más podrías completar con buena técnica; RIR 1–2 significa que quedaban una o dos.",
+      "openLogger": "Iniciar o continuar sesión",
+      "opening": "Abriendo sesión…",
+      "openFailed": "No se pudo abrir la sesión",
       "logSet": "Registrar serie",
       "setRow": "Serie {set}",
       "lastSet": "Última vez: {weight} kg × {reps}",
@@ -303,6 +306,69 @@
       "notStartedBody": "Cuando llegue la fecha de inicio verás aquí la semana en curso.",
       "expiredTitle": "Tu plan terminó",
       "expiredBody": "Crea un nuevo plan o extiende las semanas del actual desde el editor."
+    }
+  },
+  "performedWorkout": {
+    "backToPlan": "Volver al plan",
+    "completedHelp": "Esta sesión está completa y en modo lectura. Reábrela si necesitas corregir o añadir datos.",
+    "addExercise": "Añadir ejercicio",
+    "remove": "Quitar",
+    "weight": "Peso (kg)",
+    "reps": "Repeticiones",
+    "rpe": "RPE (esfuerzo percibido)",
+    "logSet": "Registrar serie",
+    "setNumber": "Serie {set}",
+    "lastSet": "Última vez: {weight} kg × {reps}",
+    "useSuggestion": "Usar sugerencia: {weight} kg",
+    "complete": "Completar sesión",
+    "reopen": "Reabrir sesión",
+    "rest": "Descanso",
+    "origin": {
+      "planned": "Sesión del plan",
+      "manual": "Sesión manual",
+      "whoop": "WHOOP",
+      "apple_health": "Apple Health"
+    },
+    "status": {
+      "draft": "Borrador",
+      "in_progress": "En curso",
+      "completed": "Completada"
+    },
+    "labels": {
+      "sets": "series",
+      "repetitions": "repeticiones",
+      "perceivedEffort": "esfuerzo percibido",
+      "repsInReserve": "repeticiones en reserva"
+    },
+    "errors": {
+      "addExercise": "No se pudo añadir el ejercicio",
+      "removeExercise": "No se pudo quitar el ejercicio",
+      "invalidWeight": "Ingresa un peso válido",
+      "logSet": "No se pudo registrar la serie",
+      "status": "No se pudo actualizar la sesión"
+    },
+    "picker": {
+      "title": "Añadir ejercicio",
+      "subtitle": "Busca por nombre o filtra por grupo muscular.",
+      "close": "Cerrar",
+      "search": "Buscar ejercicio",
+      "searchPlaceholder": "Ej. wall balls, sentadilla…",
+      "all": "Todos",
+      "unclassified": "Sin clasificar",
+      "empty": "No encontramos ejercicios con estos filtros.",
+      "createCustom": "Crear “{name}” como ejercicio personalizado",
+      "creating": "Creando…",
+      "loadFailed": "No se pudo cargar el catálogo",
+      "createFailed": "No se pudo crear el ejercicio",
+      "muscles": {
+        "legs": "Piernas",
+        "glutes": "Glúteos",
+        "chest": "Pecho",
+        "back": "Espalda",
+        "shoulders": "Hombros",
+        "arms": "Brazos",
+        "core": "Core"
+      }
     }
   },
   "registro": {

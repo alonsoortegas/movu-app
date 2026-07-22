@@ -3,6 +3,7 @@ import {
   DAY_ORDER,
   RPE_OPTIONS,
   getPlanWeek,
+  getPlanWeekDayDate,
   getProgressionSuggestion,
   getTodayKey,
   parseReps,
@@ -105,6 +106,14 @@ describe('getPlanWeek', () => {
       week: null,
       reason: 'not_started',
     })
+  })
+})
+
+describe('getPlanWeekDayDate', () => {
+  it('maps a plan week and weekday to a calendar date', () => {
+    expect(getPlanWeekDayDate('2026-07-20', 1, 'monday')).toBe('2026-07-20')
+    expect(getPlanWeekDayDate('2026-07-20', 1, 'sunday')).toBe('2026-07-26')
+    expect(getPlanWeekDayDate('2026-07-20', 3, 'wednesday')).toBe('2026-08-05')
   })
 })
 
