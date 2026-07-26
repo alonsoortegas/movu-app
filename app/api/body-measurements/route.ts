@@ -1,13 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import type { Database } from '@/types/database'
+import { calculateFatMassKg } from '@/lib/body-composition'
 
 type BodyMeasurementInsert = Database['public']['Tables']['body_measurements']['Insert']
 
 const NUMERIC_FIELDS = [
   'weight_kg',
   'muscle_mass_kg',
-  'fat_mass_kg',
   'fat_percentage',
   'visceral_fat_level',
   'bmr_kcal',
@@ -80,13 +80,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'At least one body measurement is required' }, { status: 400 })
   }
 
-  if (
-    row.fat_mass_kg === undefined &&
-    row.weight_kg != null &&
-    row.fat_percentage != null
-  ) {
-    row.fat_mass_kg = row.weight_kg * (row.fat_percentage / 100)
-  }
+  row.fat_mass_kg = calculateFatMassKg(row.weight_kg, row.fat_percentage)
 
   if (typeof body.notes === 'string' && body.notes.trim()) row.notes = body.notes.trim()
 

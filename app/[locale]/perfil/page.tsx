@@ -14,6 +14,7 @@ import { isHealthKitEnabled, runHealthKitSync, setHealthKitEnabled } from "@/lib
 import CoachAccessCard from "@/components/coaching/CoachAccessCard";
 import NutritionModeSelector from "@/components/nutrition/NutritionModeSelector";
 import type { NutritionTrackingMode } from "@/lib/nutrition/tracking-mode";
+import { calculateFatMassKg } from "@/lib/body-composition";
 
 const GOAL_KEYS = ["loseGainMuscle", "gainMuscle", "loseWeight", "endurance", "stayActive"] as const;
 const SEX_KEYS = ["female", "male", "other", "prefer_not_to_say"] as const;
@@ -163,6 +164,11 @@ export default function PerfilPage() {
   const fatDelta = delta(bodyComp.fat_percentage, previousMeasurement?.fat_percentage, true);
   const weightDelta = delta(bodyComp.weight_kg, previousMeasurement?.weight_kg, true);
   const visceralDelta = delta(bodyComp.visceral_fat_level, previousMeasurement?.visceral_fat_level, true);
+  const calculatedFatMass = calculateFatMassKg(
+    numeric(bodyComp.weight_kg),
+    numeric(bodyComp.fat_percentage),
+  );
+  const calculatedFatMassLabel = calculatedFatMass === null ? "" : calculatedFatMass.toFixed(1);
   const whoopNeedsReconnect = Boolean(
     dataSource === "whoop" && (whoopStatus?.reauth_required || syncError === "whoop_reauth_required"),
   );
@@ -360,6 +366,7 @@ export default function PerfilPage() {
           measured_at: bodyComp.measured_at,
           notes: bodyComp.notes,
         });
+        payload.fat_mass_kg = calculatedFatMass;
 
         const measRes = await fetch("/api/body-measurements", {
           method: "POST",
@@ -580,7 +587,15 @@ export default function PerfilPage() {
                   )}
                 </div>
                 <div className="flex items-end gap-1">
-                  <input type="number" value={bodyComp[field.key]} onChange={(e) => updateBodyComp(field.key, e.target.value)} step="0.1" className="text-xl md:text-2xl font-bold text-[var(--text)] w-full min-w-0 bg-transparent outline-none border-b-2 border-transparent focus:border-accent" />
+                  <input
+                    type="number"
+                    value={field.key === "fat_mass_kg" ? calculatedFatMassLabel : bodyComp[field.key]}
+                    onChange={(e) => updateBodyComp(field.key, e.target.value)}
+                    readOnly={field.key === "fat_mass_kg"}
+                    aria-readonly={field.key === "fat_mass_kg"}
+                    step="0.1"
+                    className={`text-xl md:text-2xl font-bold w-full min-w-0 bg-transparent outline-none border-b-2 border-transparent ${field.key === "fat_mass_kg" ? "text-[var(--text-dim)] cursor-default" : "text-[var(--text)] focus:border-accent"}`}
+                  />
                   <span className="text-sm text-muted mb-0.5">{field.unit}</span>
                 </div>
               </div>

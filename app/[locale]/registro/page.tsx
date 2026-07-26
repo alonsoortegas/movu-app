@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import type { WorkoutType } from "@/types";
 import MobilePageIntro from "@/components/mobile/MobilePageIntro";
@@ -70,29 +70,13 @@ export default function RegistroPage() {
   const [duration, setDuration] = useState("");
   const [calories, setCalories] = useState("");
   const [distance, setDistance] = useState("");
-  const [dailyDate, setDailyDate] = useState(todayValue);
-  const [sleepHours, setSleepHours] = useState("");
-  const [steps, setSteps] = useState("");
-  const [profileSex, setProfileSex] = useState<string | null>(null);
-  const [isOnPeriod, setIsOnPeriod] = useState<boolean | null>(null);
   const [effort, setEffort] = useState(3);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [dailySaved, setDailySaved] = useState(false);
-  const [dailyLoading, setDailyLoading] = useState(false);
-  const [dailyError, setDailyError] = useState<string | null>(null);
 
   const subtypeOptions = WORKOUT_SUBTYPES_BY_TYPE[type] ?? [];
   const showDistance = type === "running" || type === "cycling" || type === "cardio";
-  const showPeriodQuestion = profileSex === "female";
-
-  useEffect(() => {
-    fetch("/api/me")
-      .then((r) => r.json())
-      .then((profile) => setProfileSex(profile.sex ?? null))
-      .catch(() => {});
-  }, []);
 
   const handleTypeChange = (nextType: WorkoutType) => {
     setType(nextType);
@@ -148,38 +132,6 @@ export default function RegistroPage() {
       setSaveError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDailySave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setDailyError(null);
-    setDailyLoading(true);
-    try {
-      const res = await fetch("/api/daily-log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          date: dailyDate,
-          sleep_hours: sleepHours ? Number(sleepHours) : undefined,
-          steps: steps ? Number(steps) : undefined,
-          is_on_period: showPeriodQuestion && isOnPeriod !== null ? isOnPeriod : undefined,
-        }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? "Failed to save");
-      }
-      setSleepHours("");
-      setSteps("");
-      setIsOnPeriod(null);
-      setDailyDate(todayValue);
-      setDailySaved(true);
-      setTimeout(() => setDailySaved(false), 3000);
-    } catch (err) {
-      setDailyError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setDailyLoading(false);
     }
   };
 
@@ -275,58 +227,6 @@ export default function RegistroPage() {
           {loading ? "Saving…" : saved ? t("savedShort") : t("save")}
         </button>
       </div>
-      <form onSubmit={handleDailySave} className="panel mobile-sheet mt-6 space-y-4 rounded-[1.6rem] p-4 md:mt-8 md:rounded-2xl md:p-5">
-        <div>
-          <h2 className="display text-lg font-semibold text-[var(--text)]">{t("dailyLogTitle")}</h2>
-          <p className="data mt-1 text-[10px] uppercase tracking-[0.14em] text-muted">{t("dailyLogSubtitle")}</p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("dailyLogDate")}</label>
-          <input type="date" value={dailyDate} onChange={(e) => setDailyDate(e.target.value)}
-            className="w-full bg-[var(--surface)] border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
-        </div>
-        <div className="grid grid-cols-2 gap-3 md:gap-4">
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("sleepHours")}</label>
-            <input type="number" value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder={t("sleepHoursPlaceholder")} step="0.1" min={0} max={24}
-              className="w-full bg-[var(--surface)] border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("steps")}</label>
-            <input type="number" value={steps} onChange={(e) => setSteps(e.target.value)} placeholder={t("stepsPlaceholder")} min={0}
-              className="w-full bg-[var(--surface)] border border-border rounded-lg px-4 py-3 h-11 md:h-auto text-sm text-[var(--text)] placeholder-muted outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all" />
-          </div>
-        </div>
-        {showPeriodQuestion && (
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-dim)] mb-2">{t("periodQuestion")}</label>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { value: true, label: t("yes") },
-                { value: false, label: t("no") },
-              ].map((option) => (
-                <button
-                  key={String(option.value)}
-                  type="button"
-                  onClick={() => setIsOnPeriod(option.value)}
-                  className={`py-3 rounded-lg border-2 text-sm font-semibold transition-all ${
-                    isOnPeriod === option.value
-                      ? "bg-accent-light border-accent text-[var(--text)]"
-                      : "bg-[var(--surface)] border-border text-muted hover:border-[var(--border-hi)]"
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        {dailyError && <p className="text-sm text-red-500">{dailyError}</p>}
-        <button type="submit" disabled={dailyLoading}
-          className={`w-full rounded-xl py-3 text-sm font-semibold transition-all disabled:opacity-60 ${dailySaved ? "bg-[#4caf50] text-white" : "glass border border-[var(--border-hi)] text-[var(--text)]"}`}>
-          {dailyLoading ? "Saving…" : dailySaved ? t("dailyLogSaved") : t("dailyLogSave")}
-        </button>
-      </form>
     </div>
   );
 }

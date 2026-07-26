@@ -70,7 +70,7 @@ export default async function WeekStrip({ locale, body, adherence, loadWeeks }: 
       <h2 className="data mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-faint)]">
         {t('label')}
       </h2>
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <StripPanel href={trendsHref}>
           <PanelLabel>{t('weight')}</PanelLabel>
           {body ? (

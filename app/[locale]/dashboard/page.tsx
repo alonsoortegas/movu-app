@@ -409,7 +409,6 @@ export default async function DashboardPage({
                         .join(' · ')}
                     </div>
                   </div>
-                  <span className="data text-sm text-muted">→</span>
                 </div>
               ))
             )}
