@@ -6,6 +6,7 @@ import {
   validateNutritionPlanUpload,
 } from '@/lib/nutrition/plan-document'
 import { getNutritionPlanModeTransition } from '@/lib/nutrition/plan-mode-transition'
+import { parsePlanTargets, planTargetInsert } from '@/lib/nutrition/plan-targets'
 
 export async function GET() {
   const supabase = await createClient()
@@ -36,13 +37,15 @@ export async function POST(request: Request) {
     const startsOn = String(form.get('starts_on') ?? '')
     const endsOnValue = String(form.get('ends_on') ?? '').trim()
     const endsOn = endsOnValue || null
-    const caloriesValue = String(form.get('calories_target') ?? '').trim()
-    const caloriesTarget = caloriesValue ? Number(caloriesValue) : null
+    const parsedTargets = parsePlanTargets({
+      calories_target: String(form.get('calories_target') ?? ''),
+      protein_target_g: String(form.get('protein_target_g') ?? ''),
+      carbs_target_g: String(form.get('carbs_target_g') ?? ''),
+      fat_target_g: String(form.get('fat_target_g') ?? ''),
+    })
     if (!title) throw new Error('Title is required')
     if (!isValidNutritionPlanRange(startsOn, endsOn)) throw new Error('Invalid effective dates')
-    if (caloriesTarget !== null && (!Number.isInteger(caloriesTarget) || caloriesTarget < 500 || caloriesTarget > 10000)) {
-      throw new Error('Calories target must be between 500 and 10000')
-    }
+    if (!parsedTargets.ok) throw new Error(`Invalid ${parsedTargets.field}: ${parsedTargets.code}`)
 
     const planId = crypto.randomUUID()
     uploadedPath = buildNutritionPlanStoragePath(user.id, planId, upload.filename)
@@ -58,7 +61,7 @@ export async function POST(request: Request) {
         user_id: user.id,
         title,
         provider_name: String(form.get('provider_name') ?? '').trim() || null,
-        calories_target: caloriesTarget,
+        ...planTargetInsert(parsedTargets.targets),
         starts_on: startsOn,
         ends_on: endsOn,
         storage_path: uploadedPath,

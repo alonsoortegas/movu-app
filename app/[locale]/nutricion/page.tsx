@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import MobilePageIntro from '@/components/mobile/MobilePageIntro'
 import NutritionToday from '@/components/nutrition/NutritionToday'
 import { dateKey } from '@/lib/trends/compute'
-import type { NutritionDayType } from '@/lib/nutrition/macros'
+import type { MacroTotals, NutritionDayType } from '@/lib/nutrition/macros'
 import type { Database } from '@/types/database'
 import NutritionPlanCard from '@/components/nutrition/NutritionPlanCard'
 import { parseNutritionTrackingMode } from '@/lib/nutrition/tracking-mode'
@@ -50,6 +50,17 @@ export default async function NutritionPage({ params }: { params: Promise<{ loca
   const groupItems = (groupItemsResult.data ?? []).filter((item) => groupIds.has(item.group_id))
   const mode = parseNutritionTrackingMode(profileResult.data?.nutrition_tracking_mode ?? 'macro_targets')
   const activePlan = (plansResult.data ?? []).find((plan) => plan.active)
+  const planTargets: MacroTotals | null = activePlan?.calories_target != null &&
+      activePlan.protein_target_g != null &&
+      activePlan.carbs_target_g != null &&
+      activePlan.fat_target_g != null
+    ? {
+        calories: activePlan.calories_target,
+        protein_g: activePlan.protein_target_g,
+        carbs_g: activePlan.carbs_target_g,
+        fat_g: activePlan.fat_target_g,
+      }
+    : null
 
   const planCard = <NutritionPlanCard initialPlans={plansResult.data ?? []} />
   const nutritionToday = (
@@ -63,7 +74,8 @@ export default async function NutritionPage({ params }: { params: Promise<{ loca
       groups={groupsResult.data ?? []}
       groupItems={groupItems}
       initialPortions={portionsResult.data ?? []}
-      planCaloriesTarget={mode === 'plan_document' ? activePlan?.calories_target ?? null : null}
+      trackingMode={mode}
+      planTargets={planTargets}
       planSourceLabel={mode === 'plan_document' ? activePlan?.provider_name ?? null : null}
     />
   )

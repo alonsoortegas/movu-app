@@ -16,6 +16,8 @@ import {
   type NutritionDayType,
 } from '@/lib/nutrition/macros'
 import { mergeSavedFoodPortion } from '@/lib/nutrition/portions'
+import { resolveNutritionTarget } from '@/lib/nutrition/plan-targets'
+import type { NutritionTrackingMode } from '@/lib/nutrition/tracking-mode'
 
 type Food = Database['public']['Tables']['food_items']['Row']
 type Group = Database['public']['Tables']['food_substitution_groups']['Row']
@@ -38,7 +40,8 @@ export default function NutritionToday({
   groups,
   groupItems,
   initialPortions,
-  planCaloriesTarget,
+  trackingMode,
+  planTargets,
   planSourceLabel,
 }: {
   date: string
@@ -50,7 +53,8 @@ export default function NutritionToday({
   groups: Group[]
   groupItems: GroupItem[]
   initialPortions: SavedPortion[]
-  planCaloriesTarget: number | null
+  trackingMode: NutritionTrackingMode
+  planTargets: MacroTotals | null
   planSourceLabel: string | null
 }) {
   const t = useTranslations('nutrition')
@@ -62,15 +66,16 @@ export default function NutritionToday({
 
   const target = useMemo(() => {
     const row = targets.find((row) => row.day_type === dayType) ?? targets[0]
-    if (!row && !planCaloriesTarget) return null
-    const totals: MacroTotals = {
-      calories: planCaloriesTarget ?? row!.calories_target,
-      protein_g: row?.protein_target ?? 0,
-      carbs_g: row?.carbs_target ?? 0,
-      fat_g: row?.fat_target ?? 0,
-    }
-    return totals
-  }, [targets, dayType, planCaloriesTarget])
+    const dayTarget: MacroTotals | null = row
+      ? {
+          calories: row.calories_target,
+          protein_g: row.protein_target,
+          carbs_g: row.carbs_target,
+          fat_g: row.fat_target,
+        }
+      : null
+    return resolveNutritionTarget(trackingMode, planTargets, dayTarget)
+  }, [targets, dayType, trackingMode, planTargets])
 
   const consumed = useMemo(() => calculateConsumed(items), [items])
   const remaining = target ? calculateRemaining(target, consumed) : null
@@ -115,9 +120,9 @@ export default function NutritionToday({
   return (
     <div className="space-y-4">
       {/* Day type */}
-      {planCaloriesTarget && (
+      {trackingMode === 'plan_document' && planTargets && (
         <p className="data text-[10px] font-semibold uppercase tracking-wide text-accent">
-          {t('planDocument.reference', { source: planSourceLabel || t('planDocument.defaultSource'), kcal: planCaloriesTarget })}
+          {t('planDocument.reference', { source: planSourceLabel || t('planDocument.defaultSource'), kcal: planTargets.calories })}
         </p>
       )}
       <div className="flex gap-1.5">
@@ -138,7 +143,7 @@ export default function NutritionToday({
         <div className="glass ticks rounded-2xl border border-[var(--border-hi)] p-5 text-center">
           <div className="mb-1 text-sm font-bold text-[var(--text)]">{t('noTargets.title')}</div>
           <p className="mx-auto mb-4 max-w-lg text-sm text-[var(--text-dim)]">{t('noTargets.body')}</p>
-          <Link href={`/${locale}/nutricion/catalogo`} className="btn-accent inline-flex rounded-xl px-4 py-2.5 text-sm font-bold">
+          <Link href={trackingMode === 'plan_document' ? '#nutrition-plan' : `/${locale}/nutricion/catalogo`} className="btn-accent inline-flex rounded-xl px-4 py-2.5 text-sm font-bold">
             {t('noTargets.action')}
           </Link>
         </div>

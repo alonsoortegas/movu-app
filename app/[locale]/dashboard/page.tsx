@@ -17,7 +17,9 @@ import {
 } from '@/lib/trends/compute'
 import { getPlanWeek, getTodayKey } from '@/lib/workout/logic'
 import { fuelTargetsForDayType, padLoadWeeks, resolveTodaySession } from '@/lib/dashboard/today'
-import { calculateConsumed, EMPTY_MACRO_TOTALS, type NutritionDayType } from '@/lib/nutrition/macros'
+import { calculateConsumed, EMPTY_MACRO_TOTALS, type MacroTotals, type NutritionDayType } from '@/lib/nutrition/macros'
+import { resolveNutritionTarget } from '@/lib/nutrition/plan-targets'
+import { parseNutritionTrackingMode } from '@/lib/nutrition/tracking-mode'
 import MobilePageIntro from '@/components/mobile/MobilePageIntro'
 import TodaySessionCard, { type TodaySessionCardProps } from '@/components/dashboard/TodaySessionCard'
 import FuelTodayCard from '@/components/dashboard/FuelTodayCard'
@@ -100,8 +102,9 @@ export default async function DashboardPage({
     measurementsResult,
     phasesResult,
     loadActivitiesResult,
+    nutritionPlanResult,
   ] = await Promise.all([
-    supabase.from('user_profiles').select('full_name').eq('id', user!.id).maybeSingle(),
+    supabase.from('user_profiles').select('full_name, nutrition_tracking_mode').eq('id', user!.id).maybeSingle(),
     supabase
       .from('sleep_logs')
       .select('hours')
@@ -149,13 +152,20 @@ export default async function DashboardPage({
       .select('start_date_utc, activity_category, moving_time_s')
       .eq('user_id', user!.id)
       .gte('start_date_utc', loadStartIso),
+    supabase
+      .from('nutrition_plans')
+      .select('calories_target, protein_target_g, carbs_target_g, fat_target_g')
+      .eq('user_id', user!.id)
+      .eq('active', true)
+      .limit(1)
+      .maybeSingle(),
   ])
 
   const queryError =
     profileResult.error ?? todaySleepResult.error ?? todayMetricResult.error ??
     recentResult.error ?? plansResult.error ?? weekNutritionDaysResult.error ??
     targetsResult.error ?? weekMealLogsResult.error ?? measurementsResult.error ??
-    phasesResult.error ?? loadActivitiesResult.error
+    phasesResult.error ?? loadActivitiesResult.error ?? nutritionPlanResult.error
   if (queryError) {
     console.error('Failed to load dashboard data', JSON.stringify({
       code: queryError.code,
@@ -176,6 +186,7 @@ export default async function DashboardPage({
   const measurements = measurementsResult.data
   const phases = phasesResult.data
   const loadActivities = loadActivitiesResult.data
+  const nutritionPlan = nutritionPlanResult.data
 
   const displayName = getDisplayName(profile?.full_name, user?.email)
 
@@ -261,7 +272,20 @@ export default async function DashboardPage({
       fat_g: item.fat_g ?? 0,
     }))
   const consumedToday = todayItems.length ? calculateConsumed(todayItems) : EMPTY_MACRO_TOTALS
-  const todayTarget = fuelTargetsForDayType(targets ?? [], todayDayType)
+  const trackingMode = parseNutritionTrackingMode(profile?.nutrition_tracking_mode ?? 'macro_targets')
+  const planTargets: MacroTotals | null = nutritionPlan?.calories_target != null &&
+      nutritionPlan.protein_target_g != null &&
+      nutritionPlan.carbs_target_g != null &&
+      nutritionPlan.fat_target_g != null
+    ? {
+        calories: nutritionPlan.calories_target,
+        protein_g: nutritionPlan.protein_target_g,
+        carbs_g: nutritionPlan.carbs_target_g,
+        fat_g: nutritionPlan.fat_target_g,
+      }
+    : null
+  const dayTarget = fuelTargetsForDayType(targets ?? [], todayDayType)
+  const todayTarget = resolveNutritionTarget(trackingMode, planTargets, dayTarget)
 
   const fuelByDate = new Map<string, { kcal: number; protein: number; items: number }>()
   for (const log of mealLogs) {
@@ -278,7 +302,11 @@ export default async function DashboardPage({
   const fuelDays: FuelDay[] = [...fuelDates].map((date) => {
     const agg = fuelByDate.get(date)
     const dayType = (dayTypeByDate.get(date) as NutritionDayType | undefined) ?? 'moderate'
-    const target = fuelTargetsForDayType(targetRows, dayType)
+    const target = resolveNutritionTarget(
+      trackingMode,
+      planTargets,
+      fuelTargetsForDayType(targetRows, dayType),
+    )
     return {
       date,
       kcal: Math.round(agg?.kcal ?? 0),

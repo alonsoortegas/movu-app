@@ -289,6 +289,7 @@ export default function CatalogEditor({
             <div className="data text-[10px] font-bold uppercase tracking-[0.18em] text-accent">{t('targets.eyebrow')}</div>
             <h2 className="mt-1 text-base font-bold text-[var(--text)]">{t('targets.title')}</h2>
             <p className="mt-1 text-xs text-muted">{t('targets.body')}</p>
+            <p className="mt-2 text-xs text-[var(--text-dim)]">{t('targets.dailyObjectivesHelp')}</p>
           </div>
           <label className="data flex items-center gap-2 text-[11px] text-[var(--text-dim)]">
             <input type="checkbox" checked={sameEveryDay} onChange={(event) => setSameEveryDay(event.target.checked)} />
@@ -336,6 +337,7 @@ export default function CatalogEditor({
             <div className="data text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--cyan)]">{t('foods.eyebrow')}</div>
             <h2 className="mt-1 text-base font-bold text-[var(--text)]">{t('foods.title')}</h2>
             <p className="mt-1 text-xs text-muted">{t('foods.body')}</p>
+            <p className="mt-2 text-xs text-[var(--text-dim)]">{t('foods.frequentFoodsHelp')}</p>
           </div>
           <button onClick={openNewFood} className={smallBtn}>+ {t('foods.add')}</button>
         </div>
@@ -377,7 +379,7 @@ export default function CatalogEditor({
             </div>
             <input value={foodDraft.notes} onChange={(event) => setFoodDraft((draft) => ({ ...draft, notes: event.target.value }))} placeholder={t('foods.fields.notes')} className={`${inputCls} w-full`} />
             <div className="flex gap-2">
-              <button onClick={saveFood} disabled={busy} className="btn-accent flex-1 rounded-xl px-3 py-2.5 text-sm font-bold disabled:opacity-60">{foodEditingId ? t('foods.save') : t('foods.create')}</button>
+              <button onClick={saveFood} disabled={busy} className="btn-accent flex-1 rounded-xl px-3 py-2.5 text-sm font-bold disabled:opacity-60">{foodEditingId ? t('foods.save') : t('foods.saveFrequentFood')}</button>
               <button onClick={() => setFoodOpen(false)} className={smallBtn}>{t('cancel')}</button>
             </div>
           </div>

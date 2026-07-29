@@ -60,6 +60,7 @@ export default async function FuelTodayCard({
         <MacroBar label={t('kcal')} consumed={consumed.calories} target={target?.calories ?? null} color={KCAL_COLOR} />
         <MacroBar label={t('protein')} consumed={consumed.protein_g} target={target?.protein_g ?? null} color={PROTEIN_COLOR} />
       </div>
+      <p className="mt-3 text-xs text-[var(--text-dim)]">{t('todayFuelHelp')}</p>
       {target && remainingKcal != null ? (
         <p className="data mt-3 text-xs text-[var(--text-dim)]">
           {remainingKcal >= 0

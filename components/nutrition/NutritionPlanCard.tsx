@@ -12,6 +12,7 @@ export default function NutritionPlanCard({ initialPlans }: { initialPlans: Plan
   const router = useRouter()
   const [plans, setPlans] = useState(initialPlans)
   const [uploading, setUploading] = useState(false)
+  const [savingTargets, setSavingTargets] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const active = plans.find((plan) => plan.active)
@@ -48,9 +49,30 @@ export default function NutritionPlanCard({ initialPlans }: { initialPlans: Plan
     }
   }
 
+  async function updateTargets(id: string, formData: FormData) {
+    setSavingTargets(true)
+    setError(null)
+    try {
+      const response = await fetch(`/api/nutrition/plans/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(formData)),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error ?? t('targetsError'))
+      setPlans((current) => current.map((plan) => plan.id === id ? data.plan : plan))
+      router.refresh()
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : t('targetsError'))
+    } finally {
+      setSavingTargets(false)
+    }
+  }
+
   return (
-    <section className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
+    <section id="nutrition-plan" className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">
       <p className="data text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">{t('eyebrow')}</p>
+      <p className="mt-2 text-xs text-muted">{t('referenceOnly')}</p>
       {active ? (
         <div className="mt-3">
           <div className="flex items-start justify-between gap-4">
@@ -65,17 +87,35 @@ export default function NutritionPlanCard({ initialPlans }: { initialPlans: Plan
             <button type="button" onClick={() => view(active.id)} className="btn-accent rounded-xl px-4 py-2.5 text-sm font-semibold">{t('viewPdf')}</button>
             <button type="button" onClick={() => archive(active.id)} className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-[var(--text-dim)]">{t('archive')}</button>
           </div>
+          <details className="mt-4 border-t border-border pt-4">
+            <summary className="cursor-pointer text-sm font-semibold text-[var(--text)]">{t('editTargets')}</summary>
+            <form action={(formData) => updateTargets(active.id, formData)} className="mt-3 grid gap-3 sm:grid-cols-2">
+              <input name="calories_target" type="number" min="500" max="10000" defaultValue={active.calories_target ?? ''} placeholder={t('calories')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
+              <input name="protein_target_g" inputMode="decimal" defaultValue={active.protein_target_g ?? ''} placeholder={t('proteinTarget')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
+              <input name="carbs_target_g" inputMode="decimal" defaultValue={active.carbs_target_g ?? ''} placeholder={t('carbsTarget')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
+              <input name="fat_target_g" inputMode="decimal" defaultValue={active.fat_target_g ?? ''} placeholder={t('fatTarget')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
+              <input name="notes" defaultValue={active.notes ?? ''} placeholder={t('notes')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm sm:col-span-2" />
+              <button disabled={savingTargets} className="btn-accent rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-60 sm:col-span-2">
+                {savingTargets ? t('savingTargets') : t('saveTargets')}
+              </button>
+            </form>
+          </details>
         </div>
       ) : <p className="mt-3 text-sm text-[var(--text-dim)]">{t('empty')}</p>}
 
       <details className="mt-5 border-t border-border pt-4">
         <summary className="cursor-pointer text-sm font-semibold text-[var(--text)]">{t('uploadNew')}</summary>
+        <p className="mt-2 text-xs text-muted">{t('targetsOptional')}</p>
         <form ref={formRef} action={upload} className="mt-4 grid gap-3 sm:grid-cols-2">
           <input name="title" required placeholder={t('title')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
           <input name="provider_name" placeholder={t('provider')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
           <input name="starts_on" type="date" required className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
           <input name="ends_on" type="date" className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
           <input name="calories_target" type="number" min="500" max="10000" placeholder={t('calories')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
+          <input name="protein_target_g" inputMode="decimal" placeholder={t('proteinTarget')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
+          <input name="carbs_target_g" inputMode="decimal" placeholder={t('carbsTarget')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
+          <input name="fat_target_g" inputMode="decimal" placeholder={t('fatTarget')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
+          <input name="notes" placeholder={t('notes')} className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
           <input name="file" type="file" accept="application/pdf,.pdf" required className="rounded-xl border border-border bg-surface px-3 py-2 text-sm" />
           <button disabled={uploading} className="btn-accent rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-60 sm:col-span-2">{uploading ? t('uploading') : t('upload')}</button>
         </form>
