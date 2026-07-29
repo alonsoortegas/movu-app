@@ -1061,6 +1061,9 @@ export type Database = {
           title: string
           provider_name: string | null
           calories_target: number | null
+          protein_target_g: number | null
+          carbs_target_g: number | null
+          fat_target_g: number | null
           starts_on: string
           ends_on: string | null
           storage_path: string
@@ -1077,6 +1080,9 @@ export type Database = {
           title: string
           provider_name?: string | null
           calories_target?: number | null
+          protein_target_g?: number | null
+          carbs_target_g?: number | null
+          fat_target_g?: number | null
           starts_on: string
           ends_on?: string | null
           storage_path: string
@@ -1093,6 +1099,9 @@ export type Database = {
           title?: string
           provider_name?: string | null
           calories_target?: number | null
+          protein_target_g?: number | null
+          carbs_target_g?: number | null
+          fat_target_g?: number | null
           starts_on?: string
           ends_on?: string | null
           storage_path?: string
