@@ -1261,6 +1261,10 @@ export type Database = {
     }
     Views: Record<string, never>
     Functions: {
+      import_workout_plan: {
+        Args: { p_plan: Json }
+        Returns: string
+      }
       upsert_apple_health_activities: {
         Args: { p_rows: Json }
         Returns: number
