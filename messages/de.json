@@ -277,6 +277,7 @@
     },
     "logger": {
       "weight": "Gewicht",
+      "suggestedWeight": "Empfohlenes Gewicht: {weight} kg",
       "reps": "Wdh",
       "sets": "Sätze",
       "repetitions": "Wiederholungen",
@@ -316,6 +317,8 @@
     "addExercise": "Übung hinzufügen",
     "remove": "Entfernen",
     "weight": "Gewicht (kg)",
+    "suggestedWeight": "Empfohlenes Gewicht: {weight} kg",
+    "performedWeight": "Verwendetes Gewicht (kg)",
     "reps": "Wiederholungen",
     "rpe": "RPE (subjektive Anstrengung)",
     "logSet": "Satz erfassen",
@@ -539,6 +542,65 @@
     "saveExercise": "Übung speichern",
     "cancel": "Abbrechen",
     "backToPlan": "Zurück zum Plan",
+    "import": {
+      "createExternal": "Mit externer KI erstellen",
+      "directImport": "Plan-JSON importieren",
+      "title": "Plan erstellen und importieren",
+      "privacy": "Movu sendet diese Daten nicht an eine KI. Du prüfst und kopierst den Prompt.",
+      "close": "Schließen",
+      "steps": {
+        "prepare": "1 · Vorbereiten",
+        "copy": "2 · Kopieren",
+        "paste": "3 · Antwort einfügen",
+        "review": "4 · Prüfen und importieren"
+      },
+      "fields": {
+        "goal": "Ziel oder Event",
+        "eventDate": "Eventdatum",
+        "duration": "Maximale Einheitsdauer (Min.)",
+        "level": "Aktuelles Niveau",
+        "days": "Verfügbare Tage",
+        "equipment": "Verfügbare Ausrüstung",
+        "limitations": "Einschränkungen oder Beschwerden",
+        "current_performance": "Relevante aktuelle Leistung"
+      },
+      "levels": {
+        "beginner": "Anfänger",
+        "intermediate": "Fortgeschritten",
+        "advanced": "Erfahren"
+      },
+      "days": {
+        "monday": "Montag",
+        "tuesday": "Dienstag",
+        "wednesday": "Mittwoch",
+        "thursday": "Donnerstag",
+        "friday": "Freitag",
+        "saturday": "Samstag",
+        "sunday": "Sonntag"
+      },
+      "includeWeight": "Mein Gewicht einbeziehen ({weight} kg)",
+      "includeSex": "Geschlecht einbeziehen ({sex})",
+      "actions": {
+        "preparePrompt": "Prompt vorbereiten",
+        "copyPrompt": "Prompt kopieren",
+        "pasteResponse": "Ich habe die Antwort",
+        "review": "Validieren und prüfen",
+        "back": "JSON korrigieren",
+        "import": "Plan importieren",
+        "importing": "Wird importiert…"
+      },
+      "copied": "Prompt kopiert. Füge ihn in die gewünschte KI ein.",
+      "manualCopy": "Kein Zugriff auf die Zwischenablage. Markiere und kopiere den Text manuell.",
+      "pasteHelp": "Füge nur das JSON der KI ein oder wähle eine .json-Datei.",
+      "jsonPlaceholder": "{\"schema_version\":\"1.0\", ...}",
+      "invalidField": "{path}: {code}",
+      "previewSummary": "Start {date} · {weeks} Wochen · {sessions} Einheiten",
+      "week": "Woche {week}",
+      "suggestedWeight": "Empfohlenes Gewicht: {weight} kg",
+      "errors": {
+        "importFailed": "Der Plan konnte nicht importiert werden. Der aktuelle Plan blieb unverändert."
+      }
+    },
     "days": {
       "monday": "Montag",
       "tuesday": "Dienstag",

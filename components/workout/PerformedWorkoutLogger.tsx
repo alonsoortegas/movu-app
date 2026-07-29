@@ -213,6 +213,11 @@ export default function PerformedWorkoutLogger({
                     },
                   }).join(' · ')}
                 </p>
+                {exercise.prescribed_weight_kg != null && (
+                  <p className="data mt-1 text-[10px] text-accent">
+                    {t('suggestedWeight', { weight: exercise.prescribed_weight_kg })}
+                  </p>
+                )}
               </div>
               {!readOnly && (
                 <button type="button" onClick={() => removeExercise(exercise)} className="min-h-11 px-2 text-xs text-[var(--coral)]">
@@ -231,7 +236,7 @@ export default function PerformedWorkoutLogger({
                 )}
                 <div className="grid grid-cols-[1fr_auto] gap-3">
                   <label className="text-xs text-muted">
-                    {t('weight')}
+                    {t('performedWeight')}
                     <input value={draft.weight} onChange={(event) => patchDraft(exercise.id, { weight: event.target.value })} inputMode="decimal" className="mt-1 min-h-11 w-full rounded-xl border border-[var(--border)] bg-transparent px-3 text-sm text-[var(--text)]" />
                   </label>
                   <div className="text-xs text-muted">

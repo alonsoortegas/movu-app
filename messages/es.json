@@ -67,6 +67,7 @@
     "week": {
       "label": "Tu semana",
       "weight": "Peso",
+      "suggestedWeight": "Peso sugerido: {weight} kg",
       "perWeek": "sem",
       "phase": { "bulk": "Volumen", "cut": "Definición", "maintenance": "Mantenimiento" },
       "verdict": { "on_track": "En objetivo", "fast": "Rápido", "slow": "Lento" },
@@ -315,6 +316,8 @@
     "addExercise": "Añadir ejercicio",
     "remove": "Quitar",
     "weight": "Peso (kg)",
+    "suggestedWeight": "Peso sugerido: {weight} kg",
+    "performedWeight": "Peso realizado (kg)",
     "reps": "Repeticiones",
     "rpe": "RPE (esfuerzo percibido)",
     "logSet": "Registrar serie",
@@ -538,6 +541,65 @@
     "saveExercise": "Guardar ejercicio",
     "cancel": "Cancelar",
     "backToPlan": "Volver a mi plan",
+    "import": {
+      "createExternal": "Crear con IA externa",
+      "directImport": "Importar plan JSON",
+      "title": "Crear e importar un plan",
+      "privacy": "Movu no envía estos datos a ninguna IA. Tú revisas y copias el prompt.",
+      "close": "Cerrar",
+      "steps": {
+        "prepare": "1 · Preparar",
+        "copy": "2 · Copiar",
+        "paste": "3 · Pegar respuesta",
+        "review": "4 · Revisar e importar"
+      },
+      "fields": {
+        "goal": "Objetivo o evento",
+        "eventDate": "Fecha del evento",
+        "duration": "Duración máxima por sesión (min)",
+        "level": "Nivel actual",
+        "days": "Días disponibles",
+        "equipment": "Equipo disponible",
+        "limitations": "Limitaciones o molestias",
+        "current_performance": "Rendimiento actual relevante"
+      },
+      "levels": {
+        "beginner": "Principiante",
+        "intermediate": "Intermedio",
+        "advanced": "Avanzado"
+      },
+      "days": {
+        "monday": "Lunes",
+        "tuesday": "Martes",
+        "wednesday": "Miércoles",
+        "thursday": "Jueves",
+        "friday": "Viernes",
+        "saturday": "Sábado",
+        "sunday": "Domingo"
+      },
+      "includeWeight": "Incluir mi peso ({weight} kg)",
+      "includeSex": "Incluir sexo ({sex})",
+      "actions": {
+        "preparePrompt": "Preparar prompt",
+        "copyPrompt": "Copiar prompt",
+        "pasteResponse": "Ya tengo la respuesta",
+        "review": "Validar y revisar",
+        "back": "Corregir JSON",
+        "import": "Importar plan",
+        "importing": "Importando…"
+      },
+      "copied": "Prompt copiado. Pégalo en la IA que prefieras.",
+      "manualCopy": "No se pudo usar el portapapeles. Selecciona el texto y cópialo manualmente.",
+      "pasteHelp": "Pega únicamente el JSON devuelto por la IA o selecciona un archivo .json.",
+      "jsonPlaceholder": "{\"schema_version\":\"1.0\", ...}",
+      "invalidField": "{path}: {code}",
+      "previewSummary": "Inicia {date} · {weeks} semanas · {sessions} sesiones",
+      "week": "Semana {week}",
+      "suggestedWeight": "Peso sugerido: {weight} kg",
+      "errors": {
+        "importFailed": "No se pudo importar el plan. Tu plan actual no cambió."
+      }
+    },
     "days": {
       "monday": "Lunes",
       "tuesday": "Martes",

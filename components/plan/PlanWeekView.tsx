@@ -199,7 +199,9 @@ export default function PlanWeekView({
                               repsInReserve: t('logger.repsInReserve'),
                             },
                           }),
-                          ...(ex.prescribed_weight_kg != null ? [`${ex.prescribed_weight_kg} kg`] : []),
+                           ...(ex.prescribed_weight_kg != null
+                             ? [t('logger.suggestedWeight', { weight: ex.prescribed_weight_kg })]
+                             : []),
                         ].join(' · ')}
                       </div>
                     </div>

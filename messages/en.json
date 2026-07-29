@@ -67,6 +67,7 @@
     "week": {
       "label": "Your week",
       "weight": "Weight",
+      "suggestedWeight": "Suggested weight: {weight} kg",
       "perWeek": "wk",
       "phase": { "bulk": "Bulk", "cut": "Cut", "maintenance": "Maintenance" },
       "verdict": { "on_track": "On track", "fast": "Fast", "slow": "Slow" },
@@ -315,6 +316,8 @@
     "addExercise": "Add exercise",
     "remove": "Remove",
     "weight": "Weight (kg)",
+    "suggestedWeight": "Suggested weight: {weight} kg",
+    "performedWeight": "Performed weight (kg)",
     "reps": "Repetitions",
     "rpe": "RPE (perceived effort)",
     "logSet": "Log set",
@@ -538,6 +541,65 @@
     "saveExercise": "Save exercise",
     "cancel": "Cancel",
     "backToPlan": "Back to my plan",
+    "import": {
+      "createExternal": "Create with external AI",
+      "directImport": "Import plan JSON",
+      "title": "Create and import a plan",
+      "privacy": "Movu does not send this data to any AI. You review and copy the prompt.",
+      "close": "Close",
+      "steps": {
+        "prepare": "1 · Prepare",
+        "copy": "2 · Copy",
+        "paste": "3 · Paste response",
+        "review": "4 · Review and import"
+      },
+      "fields": {
+        "goal": "Goal or event",
+        "eventDate": "Event date",
+        "duration": "Maximum session duration (min)",
+        "level": "Current level",
+        "days": "Available days",
+        "equipment": "Available equipment",
+        "limitations": "Limitations or discomfort",
+        "current_performance": "Relevant current performance"
+      },
+      "levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "includeWeight": "Include my weight ({weight} kg)",
+      "includeSex": "Include sex ({sex})",
+      "actions": {
+        "preparePrompt": "Prepare prompt",
+        "copyPrompt": "Copy prompt",
+        "pasteResponse": "I have the response",
+        "review": "Validate and review",
+        "back": "Fix JSON",
+        "import": "Import plan",
+        "importing": "Importing…"
+      },
+      "copied": "Prompt copied. Paste it into the AI you prefer.",
+      "manualCopy": "Clipboard access failed. Select the text and copy it manually.",
+      "pasteHelp": "Paste only the JSON returned by the AI or select a .json file.",
+      "jsonPlaceholder": "{\"schema_version\":\"1.0\", ...}",
+      "invalidField": "{path}: {code}",
+      "previewSummary": "Starts {date} · {weeks} weeks · {sessions} sessions",
+      "week": "Week {week}",
+      "suggestedWeight": "Suggested weight: {weight} kg",
+      "errors": {
+        "importFailed": "The plan could not be imported. Your current plan was not changed."
+      }
+    },
     "days": {
       "monday": "Monday",
       "tuesday": "Tuesday",

@@ -6,6 +6,10 @@ import { useLocale, useTranslations } from 'next-intl'
 import type { Database } from '@/types/database'
 import { DAY_ORDER, type DayKey } from '@/lib/workout/logic'
 import { dateKey } from '@/lib/trends/compute'
+import PlanImportWizard, {
+  type PlanImportDefaults,
+  type WizardStep,
+} from './PlanImportWizard'
 
 type Plan = Database['public']['Tables']['workout_plans']['Row']
 type Session = Database['public']['Tables']['workout_plan_sessions']['Row']
@@ -60,7 +64,13 @@ const EMPTY_SESSION_FORM: SessionForm = {
   notes: '',
 }
 
-export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
+export default function PlanEditor({
+  initialPlans,
+  importDefaults,
+}: {
+  initialPlans: Plan[]
+  importDefaults: PlanImportDefaults
+}) {
   const t = useTranslations('planEditor')
   const locale = useLocale()
 
@@ -93,8 +103,29 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null)
 
   const [copyTarget, setCopyTarget] = useState('')
+  const [importStep, setImportStep] = useState<WizardStep | null>(null)
 
   const plan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId])
+
+  async function handleImported(planId: string) {
+    const response = await fetch(`/api/plan?plan_id=${planId}`)
+    if (!response.ok) {
+      fail(t('import.errors.importFailed'))
+      return
+    }
+    const data = await response.json()
+    setPlans((current) => [
+      data.plan,
+      ...current
+        .filter((item) => item.id !== data.plan.id)
+        .map((item) => ({ ...item, active: false })),
+    ])
+    setSelectedPlanId(data.plan.id)
+    setSelectedWeek(1)
+    setSessions(data.sessions)
+    setExercises(data.exercises)
+    setImportStep(null)
+  }
 
   const loadPlan = useCallback(async (planId: string) => {
     const res = await fetch(`/api/plan?plan_id=${planId}`)
@@ -322,6 +353,14 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
 
   return (
     <div className="space-y-4">
+      {importStep && (
+        <PlanImportWizard
+          defaults={importDefaults}
+          initialStep={importStep}
+          onClose={() => setImportStep(null)}
+          onImported={handleImported}
+        />
+      )}
       {error && (
         <div className="rounded-xl border border-[rgba(251,113,133,0.35)] bg-[rgba(251,113,133,0.1)] px-3 py-2 text-xs text-[var(--coral)]">
           {error}
@@ -351,6 +390,12 @@ export default function PlanEditor({ initialPlans }: { initialPlans: Plan[] }) {
           ))}
           <button onClick={openCreateMeta} className={smallBtn}>
             + {t('newPlan')}
+          </button>
+          <button onClick={() => setImportStep('prepare')} className={smallBtn}>
+            {t('import.createExternal')}
+          </button>
+          <button onClick={() => setImportStep('paste')} className={smallBtn}>
+            {t('import.directImport')}
           </button>
           {plan && (
             <button onClick={openEditMeta} className={smallBtn}>
