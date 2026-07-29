@@ -10,12 +10,13 @@ Make Movu's current behavior understandable and immediately useful without calli
 
 The MVP will:
 
-1. Import a structured training plan generated outside Movu.
-2. Let an athlete preview the plan before it becomes active.
-3. Preserve suggested weights in the prescription and actual weights in workout logs.
-4. Treat an uploaded nutrition PDF as a reference document only.
-5. Require nutrition targets to be entered manually.
-6. Remove WHOOP connection and synchronization controls from Trends.
+1. Build and copy a complete prompt for use in an external LLM.
+2. Import the structured training plan returned by that LLM.
+3. Let an athlete preview the plan before it becomes active.
+4. Preserve suggested weights in the prescription and actual weights in workout logs.
+5. Treat an uploaded nutrition PDF as a reference document only.
+6. Require nutrition targets to be entered manually.
+7. Remove WHOOP connection and synchronization controls from Trends.
 
 ## Product Boundaries
 
@@ -30,16 +31,22 @@ The MVP will:
 
 ### User flow
 
-The plan editor gains an **Importar plan JSON** action.
+The plan editor gains a guided **Crear con IA externa** workflow and a direct **Importar plan JSON** action for advanced users.
 
-1. The user generates a plan outside Movu using a maintained prompt supplied by Movu.
-2. The user pastes JSON or selects a `.json` file.
-3. Movu parses and validates the document without changing stored data.
-4. Movu shows a preview grouped by week and day, including exercises, prescriptions, suggested weights, and warnings.
-5. The user confirms the import.
-6. Movu creates the complete plan and then marks it active.
+1. Movu pre-fills a short plan brief from the user's profile.
+2. The user reviews and edits the goal, event, event date, available days, session duration, training level, equipment, limitations, and relevant current performance.
+3. Movu builds a complete prompt containing that brief, generation rules, and the versioned JSON contract.
+4. The user presses **Copiar prompt** and pastes it into the external LLM of their choice.
+5. The external LLM returns JSON.
+6. The user returns to the same workflow and pastes the response or selects a `.json` file.
+7. Movu parses and validates the document without changing stored data.
+8. Movu shows a preview grouped by week and day, including exercises, prescriptions, suggested weights, and warnings.
+9. The user confirms the import.
+10. Movu creates the complete plan and then marks it active.
 
 The existing active plan is deactivated only after the new plan has been created successfully. A failed import leaves the current plan unchanged.
+
+The workflow remains open while the user switches applications. Its draft brief and pasted response are kept only in browser state for the current session; the MVP does not persist prompt history or LLM responses.
 
 ### Versioned contract
 
@@ -99,7 +106,14 @@ The contract will be expressed once as a runtime schema. TypeScript types, API v
 
 ### External prompt
 
-Movu will include a copyable prompt for use outside the application. It will instruct the LLM to:
+Movu will generate a copyable prompt inside the plan workflow. The prompt combines:
+
+- A stable Movu instruction template.
+- The versioned JSON contract and one valid compact example.
+- User-reviewed context from the plan brief.
+- Relevant profile values only when the user has chosen to include them.
+
+The prompt will instruct the LLM to:
 
 - Return JSON only, with no markdown fences or commentary.
 - Follow schema version `1.0`.
@@ -109,6 +123,21 @@ Movu will include a copyable prompt for use outside the application. It will ins
 - Never invent medical clearance, injuries, personal records, or unavailable equipment.
 
 The prompt is an operator tool, not a user-facing AI feature. The importer remains the authority: output that does not validate is rejected.
+
+Movu does not name or require a specific LLM, send data to an LLM, store an LLM credential, or automatically open a third-party conversation. The user controls where the copied prompt is submitted. Before copying, the workflow shows exactly which personal context will be included.
+
+### Guided workflow states
+
+The same interface moves through four explicit states:
+
+1. **Preparar** — review the plan brief and personal context.
+2. **Copiar** — preview and copy the complete prompt.
+3. **Pegar respuesta** — paste JSON or upload a JSON file.
+4. **Revisar e importar** — inspect the normalized plan and confirm.
+
+Returning to an earlier state does not modify the active plan. The import button remains disabled until validation succeeds.
+
+Clipboard failure falls back to a selectable read-only text area and a clear manual-copy instruction. A successful copy shows a confirmation without implying that a plan has already been created.
 
 ### Persistence
 
@@ -190,11 +219,13 @@ This change does not delete the WHOOP API routes, tokens, Profile controls, data
 
 ### Training import
 
+- A pure prompt builder turns a user-reviewed brief and schema version into copyable text.
 - A pure schema module parses, normalizes, and reports field-level errors.
+- A guided client workflow owns the prepare, copy, paste, and preview states.
 - A preview component renders only validated normalized data.
 - An authenticated import endpoint owns persistence and active-plan transition.
 - A database operation provides atomic creation.
-- The external prompt is a version-controlled document tied to schema `1.0`.
+- The prompt template is version-controlled and tied to schema `1.0`.
 
 ### Nutrition
 
@@ -211,6 +242,7 @@ This change does not delete the WHOOP API routes, tokens, Profile controls, data
 ## Error Handling
 
 - Invalid JSON reports syntax failure without sending or storing the content.
+- Clipboard failure leaves the prompt visible and selectable for manual copying.
 - Structurally invalid plans report paths such as `weeks[1].sessions[0].exercises[2].sets`.
 - Unsupported schema versions explain that the prompt and importer versions must match.
 - Duplicate weeks, invalid dates, or unsafe numeric values block preview and import.
@@ -223,6 +255,9 @@ This change does not delete the WHOOP API routes, tokens, Profile controls, data
 
 ### Automated tests
 
+- Prompt builder includes the reviewed brief, generation rules, schema version, and JSON contract.
+- Prompt builder omits profile context that the user did not choose to include.
+- Guided workflow does not enable import before a response validates.
 - Runtime schema accepts a complete four-week plan.
 - Runtime schema accepts nullable prescription fields.
 - Runtime schema rejects malformed JSON, unknown versions, unknown fields, duplicate/nonconsecutive weeks, invalid days, negative values, and out-of-range RPE.
@@ -236,22 +271,25 @@ This change does not delete the WHOOP API routes, tokens, Profile controls, data
 
 ### Manual acceptance
 
-1. Generate a four-week HYROX plan externally, paste it, preview it, and import it.
-2. Confirm the imported plan appears by week and day with suggested weights.
-3. Complete a set with a different actual weight and verify both values remain distinct.
-4. Attempt an invalid import and verify the previous plan remains active.
-5. Upload a PDF without macros and see a clear manual-configuration action.
-6. Upload or edit a plan with manual calories and macros and see them as today's objectives.
-7. Open the food catalog and understand its purpose without prior explanation.
-8. Open Trends and see no WHOOP connection or synchronization prompt.
-9. Confirm existing stored recovery data still renders after the WHOOP card is removed.
+1. Open **Crear con IA externa**, review the pre-filled brief, and remove one optional profile value.
+2. Copy the prompt and confirm it contains the JSON contract but not the removed profile value.
+3. Generate a four-week HYROX plan externally, return to Movu, paste it, preview it, and import it.
+4. Confirm the imported plan appears by week and day with suggested weights.
+5. Complete a set with a different actual weight and verify both values remain distinct.
+6. Attempt an invalid import and verify the previous plan remains active.
+7. Upload a PDF without macros and see a clear manual-configuration action.
+8. Upload or edit a plan with manual calories and macros and see them as today's objectives.
+9. Open the food catalog and understand its purpose without prior explanation.
+10. Open Trends and see no WHOOP connection or synchronization prompt.
+11. Confirm existing stored recovery data still renders after the WHOOP card is removed.
 
 ## Delivery Order
 
-1. Add the versioned training-plan schema, fixtures, and external prompt.
-2. Add preview and atomic import.
-3. Clarify prescribed versus performed weight.
-4. Add manual macro fields and explanatory nutrition copy.
-5. Clarify daily objectives, fuel, and personal catalog language.
-6. Remove WHOOP controls from Trends.
-7. Run focused tests, full tests, typecheck, lint, and responsive manual verification.
+1. Add the versioned training-plan schema, fixtures, prompt builder, and prompt tests.
+2. Add the guided prepare, copy, paste, and preview workflow.
+3. Add atomic plan import.
+4. Clarify prescribed versus performed weight.
+5. Add manual macro fields and explanatory nutrition copy.
+6. Clarify daily objectives, fuel, and personal catalog language.
+7. Remove WHOOP controls from Trends.
+8. Run focused tests, full tests, typecheck, lint, and responsive manual verification.
