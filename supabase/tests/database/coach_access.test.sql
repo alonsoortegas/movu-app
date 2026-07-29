@@ -27,6 +27,7 @@ insert into public.coach_client_access (client_id, coach_id, status, granted_at)
 
 set local role authenticated;
 set local request.jwt.claim.sub = '61000000-0000-4000-8000-000000000002';
+set local request.jwt.claim.role = 'authenticated';
 
 select results_eq(
   $$select id from public.user_profiles where id = '61000000-0000-4000-8000-000000000001'$$,
