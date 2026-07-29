@@ -6,7 +6,6 @@ import type { Database, HrZones } from '@/types/database'
 import MobilePageIntro from '@/components/mobile/MobilePageIntro'
 import { AxisRow, BarChart, BigSpark, ChartTitle, DualSpark, Legend } from '@/components/charts/charts'
 import PhaseEditor from '@/components/trends/PhaseEditor'
-import WhoopStatus from '@/components/trends/WhoopStatus'
 import {
   computeBodyTrend,
   computeFuelTrends,
@@ -156,7 +155,6 @@ export default async function TrendsPage({
     mealLogsResult,
     nutritionDaysResult,
     targetsResult,
-    profileResult,
   ] = await Promise.all([
     supabase.from('daily_metrics').select('*').eq('user_id', user!.id).gte('date', startDate).order('date', { ascending: true }),
     supabase.from('sleep_logs').select('*').eq('user_id', user!.id).gte('date', startDate).order('date', { ascending: true }),
@@ -167,13 +165,12 @@ export default async function TrendsPage({
     supabase.from('meal_logs').select('id, date, meal_log_items ( calories, protein_g )').eq('user_id', user!.id).gte('date', startDate),
     supabase.from('nutrition_days').select('date, day_type').eq('user_id', user!.id).gte('date', startDate),
     supabase.from('nutrition_targets').select('*').eq('user_id', user!.id),
-    supabase.from('user_profiles').select('whoop_user_id, whoop_access_token, whoop_refresh_token, whoop_token_expires').eq('id', user!.id).maybeSingle(),
   ])
 
   const queryError =
     metricsResult.error ?? sleepResult.error ?? activitiesResult.error ?? bodyResult.error ??
     setLogsResult.error ?? phasesResult.error ?? mealLogsResult.error ?? nutritionDaysResult.error ??
-    targetsResult.error ?? profileResult.error
+    targetsResult.error
   if (queryError) {
     console.error('Failed to load trends data', JSON.stringify({
       code: queryError.code,
@@ -198,11 +195,6 @@ export default async function TrendsPage({
   }>
   const nutritionDays = nutritionDaysResult.data ?? []
   const targets = targetsResult.data ?? []
-  const whoopConnected = Boolean(profileResult.data?.whoop_user_id && profileResult.data?.whoop_access_token)
-  const whoopTokenExpired = profileResult.data?.whoop_token_expires
-    ? new Date(profileResult.data.whoop_token_expires) < new Date()
-    : true
-  const whoopReauthRequired = whoopConnected && whoopTokenExpired && !profileResult.data?.whoop_refresh_token
 
   // ── Body ────────────────────────────────────────────────────────────────────
   const openPhaseRow = selectActivePhase(phases, todayKey)
@@ -340,11 +332,6 @@ export default async function TrendsPage({
       <MobilePageIntro
         title={t('title')}
         eyebrow={t('subtitle')}
-        aside={
-          <Link href={`/${locale}/perfil`} className="glass grid min-h-11 min-w-11 place-items-center rounded-full border border-[var(--border)] text-base text-accent">
-            ↻<span className="sr-only">{t('syncCta')}</span>
-          </Link>
-        }
       />
       <div className="mb-6 hidden items-end justify-between gap-3 md:flex">
         <div>
@@ -818,10 +805,9 @@ export default async function TrendsPage({
             )}
           </Panel>
 
-          {/* ── Recovery ── */}
-          <SectionLabel>{t('sectionsV2.recovery')}</SectionLabel>
-          <WhoopStatus connected={whoopConnected} reauthRequired={whoopReauthRequired} />
-          {metrics.length > 0 && (
+           {/* ── Recovery ── */}
+           <SectionLabel>{t('sectionsV2.recovery')}</SectionLabel>
+           {metrics.length > 0 && (
             <>
               <div className="grid grid-cols-3 gap-2">
                 <MiniStat label={t('metrics.recovery')} value={avgOf(recoverySeries)} unit="%" color={MINT} />
