@@ -53,5 +53,6 @@ describe('buildPlanPrompt', () => {
 
     expect(prompt).toContain('"name": "Workout plan"')
     expect(prompt).not.toContain('HYROX Acapulco')
+    expect(prompt).toContain('superset_group must be a nonnegative integer or null')
   })
 })

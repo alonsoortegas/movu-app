@@ -63,6 +63,29 @@ describe('parseImportedPlanJson', () => {
     expect(parseImportedPlanJson(JSON.stringify(input)).ok).toBe(true)
   })
 
+  it('normalizes common alphabetic superset labels', () => {
+    const input = structuredClone(validPlan)
+    input.weeks[0].sessions[0].exercises.push(
+      {
+        ...structuredClone(input.weeks[0].sessions[0].exercises[0]),
+        name: 'Exercise A1',
+        superset_group: 'A' as unknown as null,
+      },
+      {
+        ...structuredClone(input.weeks[0].sessions[0].exercises[0]),
+        name: 'Exercise B1',
+        superset_group: 'B' as unknown as null,
+      },
+    )
+
+    const result = parseImportedPlanJson(JSON.stringify(input))
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      expect(result.plan.weeks[0].sessions[0].exercises[1].superset_group).toBe(1)
+      expect(result.plan.weeks[0].sessions[0].exercises[2].superset_group).toBe(2)
+    }
+  })
+
   it('rejects malformed and oversized JSON', () => {
     expect(parseImportedPlanJson('{').ok).toBe(false)
     const result = parseImportedPlanJson(' '.repeat(500 * 1024 + 1))

@@ -138,6 +138,13 @@ function normalizeRpe(value: unknown, path: string): string | null | PlanImportI
   return text
 }
 
+function normalizeSupersetGroup(value: unknown, path: string): number | null | PlanImportIssue {
+  if (typeof value === 'string' && /^[a-z]$/i.test(value.trim())) {
+    return value.trim().toUpperCase().charCodeAt(0) - 64
+  }
+  return nullableNonnegativeNumber(value, path, true)
+}
+
 function parseExercise(value: unknown, path: string): ImportedExerciseV1 | PlanImportIssue {
   if (!isRecord(value)) return { path, code: 'expected_object' }
   const unknown = firstUnknownField(value, EXERCISE_FIELDS, path)
@@ -159,7 +166,7 @@ function parseExercise(value: unknown, path: string): ImportedExerciseV1 | PlanI
   if (isIssue(rpe)) return rpe
   const rest = nullableNonnegativeNumber(value.rest_seconds, `${path}.rest_seconds`, true)
   if (isIssue(rest)) return rest
-  const superset = nullableNonnegativeNumber(value.superset_group, `${path}.superset_group`, true)
+  const superset = normalizeSupersetGroup(value.superset_group, `${path}.superset_group`)
   if (isIssue(superset)) return superset
   if (value.is_isometric != null && typeof value.is_isometric !== 'boolean') {
     return { path: `${path}.is_isometric`, code: 'invalid_boolean' }

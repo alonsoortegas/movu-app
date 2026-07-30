@@ -80,6 +80,7 @@ RULES
 - Weeks must start at 1 and be consecutive.
 - Include every field shown in the contract. Use null when an optional prescription is unknown.
 - Use suggested_weight_kg only when the context supports a responsible suggestion; otherwise use null.
+- superset_group must be a nonnegative integer or null. Exercises in the same superset use the same integer; never use letters.
 - Numeric RPE must be between 1 and 10.
 - Never invent medical clearance, injuries, personal records, or equipment.
 - Keep the progression appropriate for the event date and available training window.
