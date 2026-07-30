@@ -342,26 +342,8 @@ export default function CatalogEditor({
           <button onClick={openNewFood} className={smallBtn}>+ {t('foods.add')}</button>
         </div>
 
-        {foods.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-[var(--border)] p-4 text-center text-xs text-muted">{t('foods.empty')}</p>
-        ) : (
-          <div className="grid gap-2 md:grid-cols-2">
-            {foods.map((food) => (
-              <div key={food.id} className="flex items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2.5">
-                <button onClick={() => openFood(food)} className="min-w-0 flex-1 text-left">
-                  <div className="truncate text-sm font-semibold text-[var(--text)]">{food.name}</div>
-                  <div className="data mt-0.5 text-[10px] text-muted">
-                    {food.portion_label} · {food.calories} kcal · P{food.protein_g} C{food.carbs_g} G{food.fat_g}
-                  </div>
-                </button>
-                <button onClick={() => deleteFood(food)} className={smallBtn} aria-label={t('foods.delete')}>✕</button>
-              </div>
-            ))}
-          </div>
-        )}
-
         {foodOpen && (
-          <div className="mt-4 space-y-2 border-t border-dashed border-[var(--border)] pt-4">
+          <div className="mb-4 space-y-2 border-b border-dashed border-[var(--border)] pb-4">
             <div className="grid gap-2 md:grid-cols-2">
               <input value={foodDraft.name} onChange={(event) => setFoodDraft((draft) => ({ ...draft, name: event.target.value }))} placeholder={t('foods.fields.name')} className={inputCls} />
               <input value={foodDraft.portion_label} onChange={(event) => setFoodDraft((draft) => ({ ...draft, portion_label: event.target.value }))} placeholder={t('foods.fields.portion')} className={inputCls} />
@@ -384,6 +366,25 @@ export default function CatalogEditor({
             </div>
           </div>
         )}
+
+        {foods.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-[var(--border)] p-4 text-center text-xs text-muted">{t('foods.empty')}</p>
+        ) : (
+          <div className="grid gap-2 md:grid-cols-2">
+            {foods.map((food) => (
+              <div key={food.id} className="flex items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2.5">
+                <button onClick={() => openFood(food)} className="min-w-0 flex-1 text-left">
+                  <div className="truncate text-sm font-semibold text-[var(--text)]">{food.name}</div>
+                  <div className="data mt-0.5 text-[10px] text-muted">
+                    {food.portion_label} · {food.calories} kcal · P{food.protein_g} C{food.carbs_g} G{food.fat_g}
+                  </div>
+                </button>
+                <button onClick={() => deleteFood(food)} className={smallBtn} aria-label={t('foods.delete')}>✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+
       </section>
 
       <section className="panel mobile-sheet rounded-[1.6rem] p-4 md:rounded-2xl md:p-5">

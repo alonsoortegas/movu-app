@@ -592,7 +592,7 @@
       "copied": "Prompt copied. Paste it into the AI you prefer.",
       "manualCopy": "Clipboard access failed. Select the text and copy it manually.",
       "pasteHelp": "Paste only the JSON returned by the AI or select a .json file.",
-      "jsonPlaceholder": "{\"schema_version\":\"1.0\", ...}",
+      "jsonPlaceholder": "Paste the plan JSON here (schema_version 1.0)",
       "invalidField": "{path}: {code}",
       "previewSummary": "Starts {date} · {weeks} weeks · {sessions} sessions",
       "week": "Week {week}",

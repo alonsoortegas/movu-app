@@ -593,7 +593,7 @@
       "copied": "Prompt kopiert. Füge ihn in die gewünschte KI ein.",
       "manualCopy": "Kein Zugriff auf die Zwischenablage. Markiere und kopiere den Text manuell.",
       "pasteHelp": "Füge nur das JSON der KI ein oder wähle eine .json-Datei.",
-      "jsonPlaceholder": "{\"schema_version\":\"1.0\", ...}",
+      "jsonPlaceholder": "Plan-JSON hier einfügen (schema_version 1.0)",
       "invalidField": "{path}: {code}",
       "previewSummary": "Start {date} · {weeks} Wochen · {sessions} Einheiten",
       "week": "Woche {week}",

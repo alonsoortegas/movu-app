@@ -55,4 +55,11 @@ describe('manual nutrition plan workflow', () => {
       expect(catalog.dashboard.fuel.todayFuelHelp).toBeTruthy()
     }
   })
+
+  it('renders the food editor before a populated catalog can push it off screen', () => {
+    const editorPosition = catalogSource.indexOf('{foodOpen &&')
+    const catalogPosition = catalogSource.indexOf('{foods.length === 0')
+    expect(editorPosition).toBeGreaterThan(-1)
+    expect(editorPosition).toBeLessThan(catalogPosition)
+  })
 })

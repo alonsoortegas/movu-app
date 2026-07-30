@@ -592,7 +592,7 @@
       "copied": "Prompt copiado. Pégalo en la IA que prefieras.",
       "manualCopy": "No se pudo usar el portapapeles. Selecciona el texto y cópialo manualmente.",
       "pasteHelp": "Pega únicamente el JSON devuelto por la IA o selecciona un archivo .json.",
-      "jsonPlaceholder": "{\"schema_version\":\"1.0\", ...}",
+      "jsonPlaceholder": "Pega aquí el JSON del plan (schema_version 1.0)",
       "invalidField": "{path}: {code}",
       "previewSummary": "Inicia {date} · {weeks} semanas · {sessions} sesiones",
       "week": "Semana {week}",

@@ -1,6 +1,10 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { parse } from '@formatjs/icu-messageformat-parser'
 import { describe, expect, it } from 'vitest'
+import es from '@/messages/es.json'
+import en from '@/messages/en.json'
+import de from '@/messages/de.json'
 
 const wizardPath = resolve(process.cwd(), 'components/plan/PlanImportWizard.tsx')
 const wizardSource = existsSync(wizardPath) ? readFileSync(wizardPath, 'utf8') : ''
@@ -28,5 +32,11 @@ describe('external plan workflow layout', () => {
     expect(planViewSource).toContain("t('logger.suggestedWeight'")
     expect(loggerSource).toContain("t('suggestedWeight'")
     expect(loggerSource).toContain("t('performedWeight')")
+  })
+
+  it('keeps the JSON placeholder valid in ICU messages', () => {
+    for (const messages of [es, en, de]) {
+      expect(() => parse(messages.planEditor.import.jsonPlaceholder)).not.toThrow()
+    }
   })
 })
