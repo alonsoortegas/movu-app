@@ -20,7 +20,7 @@ export interface PlanPromptContext {
 
 const CONTRACT_EXAMPLE = {
   schema_version: '1.0',
-  name: 'HYROX Acapulco — 4 weeks',
+  name: 'Workout plan',
   start_date: '2026-08-01',
   weeks: [
     {

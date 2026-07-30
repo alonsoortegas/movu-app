@@ -39,4 +39,19 @@ describe('buildPlanPrompt', () => {
     expect(prompt).not.toContain('72 kg')
     expect(prompt).not.toContain('female')
   })
+
+  it('uses a neutral plan name in the JSON contract example', () => {
+    const prompt = buildPlanPrompt(
+      { ...brief, goal: 'Improve general fitness', event_date: null },
+      {
+        includeWeight: false,
+        weightKg: null,
+        includeSex: false,
+        sex: null,
+      },
+    )
+
+    expect(prompt).toContain('"name": "Workout plan"')
+    expect(prompt).not.toContain('HYROX Acapulco')
+  })
 })
